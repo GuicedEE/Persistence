@@ -32,16 +32,6 @@ public class DBStartupAsync implements GuicePostStartup
 	 * <p>
 	 * <p>
 	 * <p>
-	 * <code>
-	 * public class TestDBStartup extends DBStartupAsync
-	 * {
-	 *
-	 * @Inject public TestDBStartup(@TestCustomPersistenceLoader PersistService ps, @TestCustomPersistenceLoader DataSource ds)
-	 * 		{
-	 * 		ps.start();
-	 * 		}
-	 * 		}
-	 * 		</code>
 	 */
 	protected DBStartupAsync(DataSource dataSource)
 	{
@@ -54,17 +44,6 @@ public class DBStartupAsync implements GuicePostStartup
 	 * <p>
 	 * <p>
 	 * <p>
-	 * <code>
-	 * public class TestDBStartup extends DBStartupAsync
-	 * {
-	 *
-	 * @Inject public TestDBStartup(@TestCustomPersistenceLoader PersistService ps, @TestCustomPersistenceLoader DataSource ds)
-	 * 		*    super(ps,ds);
-	 * 		{
-	 * 		ps.start();
-	 * 		}
-	 * 		}
-	 * 		</code>
 	 */
 	protected DBStartupAsync(PersistService persistService, DataSource dataSource)
 	{
