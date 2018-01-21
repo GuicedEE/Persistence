@@ -1,12 +1,14 @@
 package za.co.mmagon.guiceinjection.db.connectionbasebuilders;
 
 import com.oracle.jaxb21.Persistence;
-import za.co.mmagon.guiceinjection.db.AbstractDatabaseProviderModule;
 import za.co.mmagon.guiceinjection.db.ConnectionBaseInfo;
 
 import java.util.Properties;
 
-public abstract class JPADefaultConnectionBaseBuilder extends AbstractDatabaseProviderModule
+/**
+ * A default connection string builder for H2 Databases
+ */
+public abstract class EclipseLinkDefaultConnectionBaseBuilder extends JPADefaultConnectionBaseBuilder
 {
 	@Override
 	protected ConnectionBaseInfo getConnectionBaseInfo(Persistence.PersistenceUnit unit, Properties filteredProperties)
@@ -16,22 +18,22 @@ public abstract class JPADefaultConnectionBaseBuilder extends AbstractDatabasePr
 		{
 			switch (prop)
 			{
-				case "javax.persistence.jdbc.url":
+				case "eclipselink.jdbc.url":
 				{
 					cbi.setUrl(filteredProperties.getProperty(prop));
 					break;
 				}
-				case "javax.persistence.jdbc.user":
+				case "eclipselink.jdbc.user":
 				{
 					cbi.setUsername(filteredProperties.getProperty(prop));
 					break;
 				}
-				case "javax.persistence.jdbc.password":
+				case "eclipselink.jdbc.password":
 				{
 					cbi.setPassword(filteredProperties.getProperty(prop));
 					break;
 				}
-				case "javax.persistence.jdbc.driver":
+				case "eclipselink.jdbc.driver":
 				{
 					cbi.setDriverClass(filteredProperties.getProperty(prop));
 					break;
