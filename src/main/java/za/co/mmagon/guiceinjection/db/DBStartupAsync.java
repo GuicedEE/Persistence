@@ -8,7 +8,7 @@ import javax.sql.DataSource;
 import java.util.logging.Logger;
 
 @DBStartup
-public class DBStartupAsync implements GuicePostStartup
+public abstract class DBStartupAsync implements GuicePostStartup
 {
 	private static final Logger log = Logger.getLogger("DBStartupAsync");
 
@@ -51,11 +51,15 @@ public class DBStartupAsync implements GuicePostStartup
 		this.persistService = persistService;
 	}
 
+	/**
+	 * Starts the persistence service, should be threaded if the sort orders are properly applied
+	 */
 	@Override
 	public void postLoad()
 	{
 		if (persistService != null)
 		{
+			log.config("Starting DB Startup [" + getClass() + "]");
 			persistService.start();
 		}
 	}

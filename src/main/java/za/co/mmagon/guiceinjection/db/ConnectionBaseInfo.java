@@ -23,10 +23,12 @@ public class ConnectionBaseInfo implements Serializable
 	private String jndiName;
 	private String jdbcIdentifier;
 
-
 	private Integer minPoolSize = 5;
 	private Integer maxPoolSize = 15;
+	private Boolean prefill = false;
+	private Boolean useStrictMin = false;
 
+	private String validationQuery;
 
 	private String serverInstanceNameProperty;
 
@@ -331,6 +333,106 @@ public class ConnectionBaseInfo implements Serializable
 	public ConnectionBaseInfo setServerInstanceNameProperty(String serverInstanceNameProperty)
 	{
 		this.serverInstanceNameProperty = serverInstanceNameProperty;
+		return this;
+	}
+
+	/**
+	 * Gets the minimum pool size
+	 *
+	 * @return
+	 */
+	public Integer getMinPoolSize() {
+		return minPoolSize;
+	}
+
+	/**
+	 * Sets the minimum pool size
+	 *
+	 * @param minPoolSize
+	 * @return
+	 */
+	public ConnectionBaseInfo setMinPoolSize(Integer minPoolSize) {
+		this.minPoolSize = minPoolSize;
+		return this;
+	}
+
+	/**
+	 * Sets the maximum pool size
+	 *
+	 * @return
+	 */
+	public Integer getMaxPoolSize() {
+		return maxPoolSize;
+	}
+
+	/**
+	 * Sets the maximum pool size
+	 *
+	 * @param maxPoolSize
+	 * @return
+	 */
+	public ConnectionBaseInfo setMaxPoolSize(Integer maxPoolSize) {
+		this.maxPoolSize = maxPoolSize;
+		return this;
+	}
+
+	/**
+	 * Sets the prefill
+	 *
+	 * @return
+	 */
+	public Boolean getPrefill() {
+		return prefill;
+	}
+
+	/**
+	 * If the connection pool must prefil
+	 *
+	 * @param prefill
+	 * @return
+	 */
+	public ConnectionBaseInfo setPrefill(Boolean prefill) {
+		this.prefill = prefill;
+		return this;
+	}
+
+	/**
+	 * If the minimum number of connections is strictly defined
+	 *
+	 * @return
+	 */
+	public Boolean getUseStrictMin() {
+		return useStrictMin;
+	}
+
+	/**
+	 * Sets to use strict minimum connections
+	 *
+	 * @param useStrictMin
+	 * @return
+	 */
+	public ConnectionBaseInfo setUseStrictMin(Boolean useStrictMin) {
+		this.useStrictMin = useStrictMin;
+		return this;
+	}
+
+	/**
+	 * Sets the validation query to use for the connection
+	 *
+	 * @return
+	 */
+	public String getValidationQuery() {
+		return validationQuery;
+	}
+
+	/**
+	 * Sets the validation query to use
+	 *
+	 * @param validationQuery
+	 * @return
+	 */
+	public ConnectionBaseInfo setValidationQuery(String validationQuery) {
+		this.validationQuery = validationQuery;
 		return this;
 	}
 }

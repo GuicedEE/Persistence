@@ -13,7 +13,7 @@ import java.util.Properties;
 /**
  * Provides jar scoped persistence private modules, and exposes them to the ear level
  *
- * @author bpmm097
+ * @author GedMarc
  */
 public class JpaPersistPrivateModule extends PrivateModule
 {
@@ -34,18 +34,24 @@ public class JpaPersistPrivateModule extends PrivateModule
 		this.qualifier = qualifier;
 	}
 
+	/**
+	 * Configures the JPA
+	 */
 	@Override
-	protected void configure()
-	{
+	protected void configure() {
 		install(new JpaPersistModule(persistenceUnitName).properties(props));
 		rebind(qualifier, EntityManagerFactory.class, EntityManager.class, PersistService.class, UnitOfWork.class);
 		doConfigure();
 	}
 
-	public void rebind(Class<? extends Annotation> qualifier, Class<?>... classes)
-	{
-		for (Class<?> clazz : classes)
-		{
+	/**
+	 * Rebinds and exposes the default connection handlers with the qualifier
+	 *
+	 * @param qualifier
+	 * @param classes
+	 */
+	public void rebind(Class<? extends Annotation> qualifier, Class<?>... classes) {
+		for (Class<?> clazz : classes) {
 			rebind(qualifier, clazz);
 		}
 	}
@@ -54,13 +60,18 @@ public class JpaPersistPrivateModule extends PrivateModule
 	 * bind your interfaces and classes as well as concrete ones that use JPA
 	 * classes explicitly
 	 */
-	protected void doConfigure()
-	{
+	protected void doConfigure() {
 		//Nothing needed
 	}
 
-	public <T> void rebind(Class<? extends Annotation> qualifier, Class<T> clazz)
-	{
+	/**
+	 * Rebinds and exposes the default connection handlers with the qualifier
+	 *
+	 * @param qualifier
+	 * @param clazz
+	 * @param <T>
+	 */
+	public <T> void rebind(Class<? extends Annotation> qualifier, Class<T> clazz) {
 		bind(clazz).annotatedWith(qualifier).toProvider(binder().getProvider(clazz));
 		expose(clazz).annotatedWith(qualifier);
 	}
