@@ -22,7 +22,7 @@ public abstract class DBStartupAsync implements GuicePostStartup
 	@SuppressWarnings("")
 	private DataSource dataSource;
 
-	public DBStartupAsync() {
+	protected DBStartupAsync() {
 		log.finer("Invalid DB Startup Call to blank constructor. Hopefully this is only being called from guice context!." +
 				"Make sure to super an injected data source and/or persistence service");
 	}
