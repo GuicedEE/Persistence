@@ -82,6 +82,13 @@ public class PersistenceFileHandler implements FileContentsScanner, PackageConte
 	private Set<Persistence.PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile)
 	{
 		Set<Persistence.PersistenceUnit> units = new HashSet<>();
+		if (GuicedPersistenceBinding.getPersistenceContext() == null) {
+			try {
+				persistenceContextExecutorService.awaitTermination(5, TimeUnit.SECONDS);
+			} catch (InterruptedException e) {
+				log.log(Level.SEVERE, "Unable to get persistence context from the service. Timed Out while building", e);
+			}
+		}
 		JAXBContext pContext = GuicedPersistenceBinding.getPersistenceContext();
 		String content = new String(persistenceFile);
 		try
