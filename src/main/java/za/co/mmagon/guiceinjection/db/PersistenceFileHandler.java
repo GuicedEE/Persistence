@@ -2,6 +2,7 @@ package za.co.mmagon.guiceinjection.db;
 
 import com.oracle.jaxb21.Persistence;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.FileMatchContentsProcessorWithContext;
+import za.co.mmagon.guiceinjection.exceptions.NoConnectionInfoException;
 import za.co.mmagon.guiceinjection.scanners.FileContentsScanner;
 import za.co.mmagon.guiceinjection.scanners.PackageContentsScanner;
 
@@ -38,7 +39,7 @@ public class PersistenceFileHandler implements FileContentsScanner, PackageConte
 			catch (JAXBException e)
 			{
 				log.log(Level.SEVERE, "Unable to load Persistence Context JPA 2.1", e);
-				throw new RuntimeException("Persistence Unit Load Failed", e);
+				throw new NoConnectionInfoException("Persistence Unit Load Failed", e);
 			}
 		};
 		persistenceContextExecutorService.execute(loadAsync);
@@ -64,6 +65,7 @@ public class PersistenceFileHandler implements FileContentsScanner, PackageConte
 				catch (InterruptedException e)
 				{
 					log.log(Level.SEVERE, "Unable to wait for persistence jaxb context to load..", e);
+					throw new NoConnectionInfoException("JAXB Not able to load persistence file, Thread interrupted", e);
 				}
 			}
 			persistenceUnits.addAll(getPersistenceUnitFromFile(fileContents));
@@ -82,18 +84,24 @@ public class PersistenceFileHandler implements FileContentsScanner, PackageConte
 	private Set<Persistence.PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile)
 	{
 		Set<Persistence.PersistenceUnit> units = new HashSet<>();
-		if (GuicedPersistenceBinding.getPersistenceContext() == null) {
-			try {
+		if (GuicedPersistenceBinding.getPersistenceContext() == null)
+		{
+			try
+			{
 				persistenceContextExecutorService.awaitTermination(5, TimeUnit.SECONDS);
-			} catch (InterruptedException e) {
+			}
+			catch (InterruptedException e)
+			{
 				log.log(Level.SEVERE, "Unable to get persistence context from the service. Timed Out while building", e);
+				throw new NoConnectionInfoException("Unable to get persistence context from service, Thread interrupted", e);
 			}
 		}
 		JAXBContext pContext = GuicedPersistenceBinding.getPersistenceContext();
 		String content = new String(persistenceFile);
 		try
 		{
-			Persistence p = (Persistence) pContext.createUnmarshaller().unmarshal(new StringReader(content));
+			Persistence p = (Persistence) pContext.createUnmarshaller()
+					                              .unmarshal(new StringReader(content));
 			for (Persistence.PersistenceUnit persistenceUnit : p.getPersistenceUnit())
 			{
 				units.add(persistenceUnit);
