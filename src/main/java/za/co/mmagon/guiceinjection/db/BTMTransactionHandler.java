@@ -54,7 +54,7 @@ public class BTMTransactionHandler implements MethodInterceptor
 			{
 				if (aClass.isAssignableFrom(T.getClass()))
 				{
-					log.log(Level.FINE, "Exception In Commit : ", T);
+					log.log(Level.FINE, "Exception In Commit Rolled Back from class [" + T.getClass() + "]: ", T);
 					ut.rollback();
 				}
 			}
