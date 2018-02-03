@@ -58,6 +58,7 @@ public class BTMTransactionHandler implements MethodInterceptor
 				}
 			}
 			log.log(Level.SEVERE, "General Exception In Commit", T);
+			throw T;
 		}
 		return returnable;
 	}
