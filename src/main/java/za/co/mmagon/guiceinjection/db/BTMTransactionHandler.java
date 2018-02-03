@@ -48,16 +48,17 @@ public class BTMTransactionHandler implements MethodInterceptor
 		}
 		catch (Throwable T)
 		{
-			Transactional t = invocation.getMethod().getAnnotation(Transactional.class);
+			Transactional t = invocation.getMethod()
+					                  .getAnnotation(Transactional.class);
 			for (Class<? extends Exception> aClass : t.rollbackOn())
 			{
 				if (aClass.isAssignableFrom(T.getClass()))
 				{
-					log.log(Level.FINE, "General Exception In Commit", T);
+					log.log(Level.FINE, "Exception In Commit : ", T);
 					ut.rollback();
 				}
 			}
-			log.log(Level.SEVERE, "General Exception In Commit", T);
+			log.log(Level.SEVERE, "Exception In Commit : " + T.getMessage());
 			throw T;
 		}
 		return returnable;
