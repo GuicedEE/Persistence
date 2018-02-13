@@ -93,7 +93,7 @@ public class JtaPoolDataSource implements Provider<DataSource>, CustomPoolDataSo
 		pds = new PoolingDataSource();
 		if (cbi.getTransactionIsolation() != null)
 		{
-			pds.setIsolationLevel(cbi.getTransactionIsolation());
+			pds.setIsolationLevel(cbi.getTransactionIsolation().replace("TRANSACTION_",""));
 		}
 		pds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
 		pds.setUniqueName(cbi.getJndiName());
