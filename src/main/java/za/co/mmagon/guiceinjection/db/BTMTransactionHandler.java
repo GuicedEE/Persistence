@@ -32,7 +32,7 @@ public class BTMTransactionHandler implements MethodInterceptor
 		}
 
 		Object returnable = null;
-		if (ut.getStatus() == Status.STATUS_NO_TRANSACTION || ut.getStatus() != Status.STATUS_ACTIVE)
+		if (ut.getStatus() != Status.STATUS_ACTIVE)
 		{
 			ut.begin();
 		}
@@ -44,7 +44,6 @@ public class BTMTransactionHandler implements MethodInterceptor
 		catch (IllegalStateException ise)
 		{
 			log.log(Level.FINEST, "Nothing to commit in transaction?", ise);
-			//Nothing to commit in this transaction
 		}
 		catch (Throwable T)
 		{

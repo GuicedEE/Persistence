@@ -1,11 +1,16 @@
-package za.co.mmagon.guiceinjection.db;
+package za.co.mmagon.guiceinjection.db.connectionbasebuilders;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
 import com.oracle.jaxb21.Persistence;
 import za.co.mmagon.guiceinjection.annotations.GuiceInjectorModuleMarker;
+import za.co.mmagon.guiceinjection.db.ConnectionBaseInfo;
+import za.co.mmagon.guiceinjection.db.JpaPersistPrivateModule;
+import za.co.mmagon.guiceinjection.db.JtaPoolDataSource;
+import za.co.mmagon.guiceinjection.db.PersistenceFileHandler;
 import za.co.mmagon.guiceinjection.exceptions.NoConnectionInfoException;
+import za.co.mmagon.logger.LogFactory;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
@@ -16,13 +21,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * An abstract implementation for persistence.exml
+ * An abstract implementation for persistence.xml
+ * <p>
+ * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
 @GuiceInjectorModuleMarker
-public abstract class AbstractDatabaseProviderModule
-		extends AbstractModule
+public abstract class AbstractDatabaseProviderModule extends AbstractModule
 {
-	private static final Logger log = Logger.getLogger("AbstractDatabaseProviderModule");
+	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
 
 	@SuppressWarnings("unchecked")
 	public AbstractDatabaseProviderModule()
@@ -49,7 +55,6 @@ public abstract class AbstractDatabaseProviderModule
 	@NotNull
 	protected abstract String getJndiMapping();
 
-
 	/**
 	 * The name found in persistence.xml
 	 *
@@ -69,7 +74,9 @@ public abstract class AbstractDatabaseProviderModule
 		Persistence.PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
 		{
-			log.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
+			log.severe(
+					"Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this " +
+							"" + "" + "" + "name was found.");
 			return;
 		}
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
@@ -77,7 +84,8 @@ public abstract class AbstractDatabaseProviderModule
 		final ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.setJndiName(getJndiMapping());
 
-		bind(getDataSourceKey()).toProvider(() -> provideDataSource(connectionBaseInfo)).in(Singleton.class);
+		bind(getDataSourceKey()).toProvider(() -> provideDataSource(connectionBaseInfo))
+				.in(Singleton.class);
 		log.config(getPersistenceUnitName() + " Finished Binding.");
 	}
 
@@ -138,6 +146,25 @@ public abstract class AbstractDatabaseProviderModule
 	}
 
 	/**
+	 * Returns the persistence unit associated with the supplied name
+	 *
+	 * @return
+	 */
+	protected Persistence.PersistenceUnit getPersistenceUnit()
+	{
+		for (Persistence.PersistenceUnit pu : PersistenceFileHandler.getPersistenceUnits())
+		{
+			if (pu.getName()
+					    .equals(getPersistenceUnitName()))
+			{
+				return pu;
+			}
+		}
+		log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]");
+		return null;
+	}
+
+	/**
 	 * Builds a property map from a persistence unit properties file
 	 *
 	 * @param pu
@@ -148,9 +175,11 @@ public abstract class AbstractDatabaseProviderModule
 		Properties sysProps = System.getProperties();
 		if (pu != null)
 		{
-			for (Persistence.PersistenceUnit.Properties.Property props : pu.getProperties().getProperty())
+			for (Persistence.PersistenceUnit.Properties.Property props : pu.getProperties()
+					                                                             .getProperty())
 			{
-				String checkProperty = props.getValue().replace("\\$", "");
+				String checkProperty = props.getValue()
+						                       .replace("\\$", "");
 				checkProperty = checkProperty.replaceAll("\\{", "");
 				checkProperty = checkProperty.replaceAll("}", "");
 				if (sysProps.containsKey(checkProperty))
@@ -163,23 +192,5 @@ public abstract class AbstractDatabaseProviderModule
 				}
 			}
 		}
-	}
-
-	/**
-	 * Returns the persistence unit associated with the supplied name
-	 *
-	 * @return
-	 */
-	protected Persistence.PersistenceUnit getPersistenceUnit()
-	{
-		for (Persistence.PersistenceUnit pu : PersistenceFileHandler.getPersistenceUnits())
-		{
-			if (pu.getName().equals(getPersistenceUnitName()))
-			{
-				return pu;
-			}
-		}
-		log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]");
-		return null;
 	}
 }

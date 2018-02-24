@@ -39,47 +39,37 @@ public class JtaPoolDataSource implements Provider<DataSource>, CustomPoolDataSo
 
 	private void processXs(ConnectionBaseInfo cbi)
 	{
-		pds = new PoolingDataSource();
-		if (cbi.getTransactionIsolation() != null)
-		{
-			pds.setIsolationLevel(cbi.getTransactionIsolation());
-			pds.setIsolationLevel("READ_UNCOMMITTED");
-		}
-
-		pds.setAllowLocalTransactions(true);
-		pds.setUniqueName(cbi.getJndiName());
-		pds.setClassName(cbi.getDriverClass());
-		pds.setMinPoolSize(5);
-		pds.setMaxPoolSize(200);
-		pds.setPreparedStatementCacheSize(50);
-
-		pds.setAcquireIncrement(5);
-		pds.setEnableJdbc4ConnectionTest(true);
-		pds.setShareTransactionConnections(true);
+		pds = cbi.toPooledDatasource();
 
 		if (cbi.getDatabaseName() != null)
 		{
-			pds.getDriverProperties().setProperty("DatabaseName", cbi.getDatabaseName());
+			pds.getDriverProperties()
+					.setProperty("DatabaseName", cbi.getDatabaseName());
 		}
 		if (cbi.getUsername() != null)
 		{
-			pds.getDriverProperties().setProperty("User", cbi.getUsername());
+			pds.getDriverProperties()
+					.setProperty("User", cbi.getUsername());
 		}
 		if (cbi.getPassword() != null)
 		{
-			pds.getDriverProperties().setProperty("Password", cbi.getPassword());
+			pds.getDriverProperties()
+					.setProperty("Password", cbi.getPassword());
 		}
 		if (cbi.getServerName() != null)
 		{
-			pds.getDriverProperties().setProperty("ServerName", cbi.getServerName());
+			pds.getDriverProperties()
+					.setProperty("ServerName", cbi.getServerName());
 		}
 		if (cbi.getPort() != null)
 		{
-			pds.getDriverProperties().setProperty("Port", cbi.getPort());
+			pds.getDriverProperties()
+					.setProperty("Port", cbi.getPort());
 		}
 		if (cbi.getInstanceName() != null)
 		{
-			pds.getDriverProperties().setProperty(cbi.getServerInstanceNameProperty(), cbi.getInstanceName());
+			pds.getDriverProperties()
+					.setProperty(cbi.getServerInstanceNameProperty(), cbi.getInstanceName());
 		}
 
 		pds.init();
@@ -90,38 +80,34 @@ public class JtaPoolDataSource implements Provider<DataSource>, CustomPoolDataSo
 
 	private void processNonXa(ConnectionBaseInfo cbi)
 	{
-		pds = new PoolingDataSource();
+		pds = cbi.toPooledDatasource();
 		if (cbi.getTransactionIsolation() != null)
 		{
-			pds.setIsolationLevel(cbi.getTransactionIsolation().replace("TRANSACTION_",""));
+			pds.setIsolationLevel(cbi.getTransactionIsolation()
+					                      .name());
 		}
 		pds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
-		pds.setUniqueName(cbi.getJndiName());
-		pds.setMinPoolSize(5);
-		pds.setMaxPoolSize(200);
-		pds.setPreparedStatementCacheSize(50);
-		pds.setAllowLocalTransactions(true);
-
-		pds.setAcquireIncrement(5);
-		pds.setEnableJdbc4ConnectionTest(true);
-		pds.setShareTransactionConnections(true);
-
 		if (cbi.getDriverClass() != null)
 		{
-			pds.getDriverProperties().setProperty("driverClassName", cbi.getDriverClass());
+			pds.getDriverProperties()
+					.setProperty("driverClassName", cbi.getDriverClass());
 		}
 		if (cbi.getUrl() != null)
 		{
-			pds.getDriverProperties().setProperty("url", cbi.getUrl());
+			pds.getDriverProperties()
+					.setProperty("url", cbi.getUrl());
 		}
 		if (cbi.getUsername() != null)
 		{
-			pds.getDriverProperties().setProperty("user", cbi.getUsername());
+			pds.getDriverProperties()
+					.setProperty("user", cbi.getUsername());
 		}
 		if (cbi.getPassword() != null)
 		{
-			pds.getDriverProperties().setProperty("password", cbi.getPassword());
+			pds.getDriverProperties()
+					.setProperty("password", cbi.getPassword());
 		}
+
 		pds.init();
 		providedDataSource = pds;
 	}

@@ -5,6 +5,7 @@ import io.github.lukehutch.fastclasspathscanner.matchprocessor.FileMatchContents
 import za.co.mmagon.guiceinjection.exceptions.NoConnectionInfoException;
 import za.co.mmagon.guiceinjection.scanners.FileContentsScanner;
 import za.co.mmagon.guiceinjection.scanners.PackageContentsScanner;
+import za.co.mmagon.logger.LogFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
 @SuppressWarnings("unused")
 public class PersistenceFileHandler implements FileContentsScanner, PackageContentsScanner
 {
-	private static final Logger log = Logger.getLogger("PersistenceFileHandler");
+	private static final Logger log = LogFactory.getLog("PersistenceFileHandler");
 	private static final Set<Persistence.PersistenceUnit> persistenceUnits = new HashSet<>();
 	private static ExecutorService persistenceContextExecutorService = Executors.newSingleThreadExecutor();
 
@@ -90,7 +91,7 @@ public class PersistenceFileHandler implements FileContentsScanner, PackageConte
 			{
 				persistenceContextExecutorService.awaitTermination(5, TimeUnit.SECONDS);
 			}
-			catch (InterruptedException e)
+			catch (Exception e)
 			{
 				log.log(Level.SEVERE, "Unable to get persistence context from the service. Timed Out while building", e);
 				throw new NoConnectionInfoException("Unable to get persistence context from service, Thread interrupted", e);

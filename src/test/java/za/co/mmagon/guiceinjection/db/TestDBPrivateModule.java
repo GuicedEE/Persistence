@@ -1,6 +1,7 @@
 package za.co.mmagon.guiceinjection.db;
 
 import com.oracle.jaxb21.Persistence;
+import za.co.mmagon.guiceinjection.db.connectionbasebuilders.AbstractDatabaseProviderModule;
 
 import java.lang.annotation.Annotation;
 import java.util.Properties;

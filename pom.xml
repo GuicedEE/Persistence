@@ -240,6 +240,12 @@
             <type>test-jar</type>
         </dependency>
 
+        <dependency>
+            <groupId>za.co.mmagon</groupId>
+            <artifactId>log-master</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
     <distributionManagement>
         <snapshotRepository>

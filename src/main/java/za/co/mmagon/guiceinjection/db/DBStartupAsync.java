@@ -3,14 +3,16 @@ package za.co.mmagon.guiceinjection.db;
 import com.google.inject.persist.PersistService;
 import za.co.mmagon.guiceinjection.annotations.DBStartup;
 import za.co.mmagon.guiceinjection.annotations.GuicePostStartup;
+import za.co.mmagon.logger.LogFactory;
 
 import javax.sql.DataSource;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @DBStartup
 public abstract class DBStartupAsync implements GuicePostStartup
 {
-	private static final Logger log = Logger.getLogger("DBStartupAsync");
+	private static final Logger log = LogFactory.getLog("DBStartupAsync");
 
 	/**
 	 * The given persistService
@@ -22,9 +24,11 @@ public abstract class DBStartupAsync implements GuicePostStartup
 	@SuppressWarnings("")
 	private DataSource dataSource;
 
-	protected DBStartupAsync() {
-		log.finer("Invalid DB Startup Call to blank constructor. Hopefully this is only being called from guice context!." +
-				"Make sure to super an injected data source and/or persistence service");
+	protected DBStartupAsync()
+	{
+		log.finer(
+				"Invalid DB Startup Call to blank constructor. Hopefully this is only being called from guice context!." + "Make sure to "
+						+ "super an injected data source and/or persistence service. super(ps,ds) or super(ds)");
 	}
 
 	/**
@@ -58,10 +62,20 @@ public abstract class DBStartupAsync implements GuicePostStartup
 	@Override
 	public void postLoad()
 	{
-		if (persistService != null) {
+		if (persistService != null)
+		{
 			log.config("Starting DB Startup [" + getClass() + "]");
-			persistService.start();
-		} else if (dataSource == null) {
+			try
+			{
+				persistService.start();
+			}
+			catch (IllegalStateException ise)
+			{
+				log.log(Level.FINER, "Persistence Unit started up externally", ise);
+			}
+		}
+		else if (dataSource == null)
+		{
 			log.severe("Invalid DB Startup. Persist Service and Data Source is null. This Service won't work");
 		}
 	}
