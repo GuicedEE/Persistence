@@ -13,7 +13,7 @@ public abstract class EclipseLinkDefaultConnectionBaseBuilder extends JPADefault
 	@Override
 	protected ConnectionBaseInfo getConnectionBaseInfo(Persistence.PersistenceUnit unit, Properties filteredProperties)
 	{
-		ConnectionBaseInfo cbi = new ConnectionBaseInfo();
+		ConnectionBaseInfo cbi = super.getConnectionBaseInfo(unit, filteredProperties);
 		for (String prop : filteredProperties.stringPropertyNames())
 		{
 			switch (prop)
