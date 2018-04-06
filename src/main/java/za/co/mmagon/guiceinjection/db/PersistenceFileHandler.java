@@ -14,37 +14,29 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @SuppressWarnings("unused")
-public class PersistenceFileHandler implements FileContentsScanner, PackageContentsScanner
+public class PersistenceFileHandler
+		implements FileContentsScanner, PackageContentsScanner
 {
 	private static final Logger log = LogFactory.getLog("PersistenceFileHandler");
 	private static final Set<Persistence.PersistenceUnit> persistenceUnits = new HashSet<>();
-	private static ExecutorService persistenceContextExecutorService = Executors.newSingleThreadExecutor();
 
 	public PersistenceFileHandler()
 	{
-		log.config("Loading JAXB JPA 2.1 Persistence Context");
-		Runnable loadAsync = () ->
-		{
-			try
-			{
-				GuicedPersistenceBinding.persistenceContext = JAXBContext.newInstance(Persistence.class);
-				log.config("Loaded Persistence JAXB Context");
-			}
-			catch (JAXBException e)
-			{
-				log.log(Level.SEVERE, "Unable to load Persistence Context JPA 2.1", e);
-				throw new NoConnectionInfoException("Persistence Unit Load Failed", e);
-			}
-		};
-		persistenceContextExecutorService.execute(loadAsync);
-		persistenceContextExecutorService.shutdown();
+		//No Config Required
+	}
+
+	/**
+	 * Returns all the persistence units that were found or loaded
+	 *
+	 * @return
+	 */
+	public static Set<Persistence.PersistenceUnit> getPersistenceUnits()
+	{
+		return persistenceUnits;
 	}
 
 	@Override
@@ -56,19 +48,6 @@ public class PersistenceFileHandler implements FileContentsScanner, PackageConte
 		FileMatchContentsProcessorWithContext processor = (classpathElt, relativePath, fileContents) ->
 		{
 			log.config("Found " + relativePath + " - " + classpathElt.getCanonicalPath());
-			if (!getPersistenceContextExecutorService().isShutdown())
-			{
-				getPersistenceContextExecutorService().shutdown();
-				try
-				{
-					getPersistenceContextExecutorService().awaitTermination(5, TimeUnit.SECONDS);
-				}
-				catch (InterruptedException e)
-				{
-					log.log(Level.SEVERE, "Unable to wait for persistence jaxb context to load..", e);
-					throw new NoConnectionInfoException("JAXB Not able to load persistence file, Thread interrupted", e);
-				}
-			}
 			persistenceUnits.addAll(getPersistenceUnitFromFile(fileContents));
 		};
 		map.put("persistence.xml", processor);
@@ -87,22 +66,14 @@ public class PersistenceFileHandler implements FileContentsScanner, PackageConte
 		Set<Persistence.PersistenceUnit> units = new HashSet<>();
 		if (GuicedPersistenceBinding.getPersistenceContext() == null)
 		{
-			try
-			{
-				persistenceContextExecutorService.awaitTermination(5, TimeUnit.SECONDS);
-			}
-			catch (Exception e)
-			{
-				log.log(Level.SEVERE, "Unable to get persistence context from the service. Timed Out while building", e);
-				throw new NoConnectionInfoException("Unable to get persistence context from service, Thread interrupted", e);
-			}
+			loadJPA22();
 		}
 		JAXBContext pContext = GuicedPersistenceBinding.getPersistenceContext();
 		String content = new String(persistenceFile);
 		try
 		{
 			Persistence p = (Persistence) pContext.createUnmarshaller()
-					                              .unmarshal(new StringReader(content));
+			                                      .unmarshal(new StringReader(content));
 			for (Persistence.PersistenceUnit persistenceUnit : p.getPersistenceUnit())
 			{
 				units.add(persistenceUnit);
@@ -115,24 +86,24 @@ public class PersistenceFileHandler implements FileContentsScanner, PackageConte
 		return units;
 	}
 
-	/**
-	 * Returns all the persistence units that were found or loaded
-	 *
-	 * @return
-	 */
-	public static Set<Persistence.PersistenceUnit> getPersistenceUnits()
+	private static void loadJPA22()
 	{
-		return persistenceUnits;
+		log.config("Loading JAXB JPA 2.1 Persistence Context");
+		try
+		{
+			GuicedPersistenceBinding.persistenceContext = JAXBContext.newInstance(Persistence.class);
+			log.config("Loaded Persistence JAXB Context");
+		}
+		catch (JAXBException e)
+		{
+			log.log(Level.SEVERE, "Unable to load Persistence Context JPA 2.1", e);
+			throw new NoConnectionInfoException("Persistence Unit Load Failed", e);
+		}
 	}
 
 	@Override
 	public Set<String> searchFor()
 	{
 		return new HashSet<>();
-	}
-
-	public static ExecutorService getPersistenceContextExecutorService()
-	{
-		return persistenceContextExecutorService;
 	}
 }
