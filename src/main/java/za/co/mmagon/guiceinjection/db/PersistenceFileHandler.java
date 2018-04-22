@@ -48,7 +48,7 @@ public class PersistenceFileHandler
 		FileMatchContentsProcessorWithContext processor = (classpathElt, relativePath, fileContents) ->
 		{
 			log.config("Found " + relativePath + " - " + classpathElt.getCanonicalPath());
-			persistenceUnits.addAll(getPersistenceUnitFromFile(fileContents));
+			persistenceUnits.addAll(getPersistenceUnitFromFile(fileContents, "Found " + relativePath + " - " + classpathElt.getCanonicalPath()));
 		};
 		map.put("persistence.xml", processor);
 		return map;
@@ -61,7 +61,7 @@ public class PersistenceFileHandler
 	 *
 	 * @return
 	 */
-	private Set<Persistence.PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile)
+	private Set<Persistence.PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile, String persistenceFileName)
 	{
 		Set<Persistence.PersistenceUnit> units = new HashSet<>();
 		if (GuicedPersistenceBinding.getPersistenceContext() == null)
@@ -81,7 +81,8 @@ public class PersistenceFileHandler
 		}
 		catch (Exception e)
 		{
-			log.log(Level.SEVERE, "Unable to get the persistence xsd object", e);
+			log.log(Level.WARNING, "Persistence File does not look like a JPA2.1 or higher - " + persistenceFileName);
+			log.log(Level.FINER, "Unable to get the persistence xsd object", e);
 		}
 		return units;
 	}
@@ -96,7 +97,8 @@ public class PersistenceFileHandler
 		}
 		catch (JAXBException e)
 		{
-			log.log(Level.SEVERE, "Unable to load Persistence Context JPA 2.1", e);
+			log.log(Level.WARNING, "JPA2.1 context unable to load. Check the header of the persistence.xml file", e);
+			log.log(Level.FINER, "Unable to load Persistence Context JPA 2.1", e);
 			throw new NoConnectionInfoException("Persistence Unit Load Failed", e);
 		}
 	}

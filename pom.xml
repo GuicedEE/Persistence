@@ -47,7 +47,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
 
-        <sonar.host.url>https://jwebswing.com/sonar</sonar.host.url>
+        <sonar.host.url>https://jwebmp.com/sonar</sonar.host.url>
         <sonar.exclusions>**bower_components</sonar.exclusions>
     </properties>
 
@@ -191,7 +191,6 @@
             <artifactId>hibernate-core</artifactId>
             <version>${maven.hibernate.version}</version>
             <type>jar</type>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -199,7 +198,6 @@
             <artifactId>hibernate-validator</artifactId>
             <version>${maven.hibernate.validator.version}</version>
             <type>jar</type>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -207,7 +205,6 @@
             <artifactId>hibernate-jpamodelgen</artifactId>
             <version>${maven.hibernate.version}</version>
             <type>jar</type>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -215,7 +212,6 @@
             <artifactId>hibernate-commons-annotations</artifactId>
             <version>${maven.hibernate.annotations.version}</version>
             <type>jar</type>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -223,21 +219,12 @@
             <artifactId>hibernate-jpa-2.1-api</artifactId>
             <version>1.0.0.Final</version>
             <type>jar</type>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.jwebmp</groupId>
             <artifactId>guice-injection</artifactId>
             <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jwebmp</groupId>
-            <artifactId>guice-injection</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-            <type>test-jar</type>
         </dependency>
 
         <dependency>
