@@ -13,9 +13,10 @@ import javax.validation.constraints.NotNull;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BTMTransactionHandler implements MethodInterceptor
+public class TransactionHandler
+		implements MethodInterceptor
 {
-	private static final Logger log = Logger.getLogger("BTMTransactionHandler");
+	private static final Logger log = Logger.getLogger("TransactionHandler");
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable
@@ -48,7 +49,7 @@ public class BTMTransactionHandler implements MethodInterceptor
 		catch (Throwable T)
 		{
 			Transactional t = invocation.getMethod()
-					                  .getAnnotation(Transactional.class);
+			                            .getAnnotation(Transactional.class);
 			for (Class<? extends Exception> aClass : t.rollbackOn())
 			{
 				if (aClass.isAssignableFrom(T.getClass()))

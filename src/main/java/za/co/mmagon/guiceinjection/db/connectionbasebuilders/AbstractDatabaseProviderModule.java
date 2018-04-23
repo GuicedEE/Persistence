@@ -26,7 +26,8 @@ import java.util.logging.Logger;
  * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
 @GuiceInjectorModuleMarker
-public abstract class AbstractDatabaseProviderModule extends AbstractModule
+public abstract class AbstractDatabaseProviderModule
+		extends AbstractModule
 {
 	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
 
@@ -66,6 +67,7 @@ public abstract class AbstractDatabaseProviderModule extends AbstractModule
 	/**
 	 * Configures the module with the bindings
 	 */
+	@Override
 	protected void configure()
 	{
 		log.config(getPersistenceUnitName() + " Is Binding");
@@ -74,18 +76,16 @@ public abstract class AbstractDatabaseProviderModule extends AbstractModule
 		Persistence.PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
 		{
-			log.severe(
-					"Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this " +
-							"" + "" + "" + "name was found.");
+			log.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this " + "" + "" + "" + "name was found.");
 			return;
 		}
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
 
-		final ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
+		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.setJndiName(getJndiMapping());
 
 		bind(getDataSourceKey()).toProvider(() -> provideDataSource(connectionBaseInfo))
-				.in(Singleton.class);
+		                        .in(Singleton.class);
 		log.config(getPersistenceUnitName() + " Finished Binding.");
 	}
 
@@ -155,7 +155,7 @@ public abstract class AbstractDatabaseProviderModule extends AbstractModule
 		for (Persistence.PersistenceUnit pu : PersistenceFileHandler.getPersistenceUnits())
 		{
 			if (pu.getName()
-					    .equals(getPersistenceUnitName()))
+			      .equals(getPersistenceUnitName()))
 			{
 				return pu;
 			}
@@ -176,10 +176,10 @@ public abstract class AbstractDatabaseProviderModule extends AbstractModule
 		if (pu != null)
 		{
 			for (Persistence.PersistenceUnit.Properties.Property props : pu.getProperties()
-					                                                             .getProperty())
+			                                                               .getProperty())
 			{
 				String checkProperty = props.getValue()
-						                       .replace("\\$", "");
+				                            .replace("\\$", "");
 				checkProperty = checkProperty.replaceAll("\\{", "");
 				checkProperty = checkProperty.replaceAll("}", "");
 				if (sysProps.containsKey(checkProperty))
