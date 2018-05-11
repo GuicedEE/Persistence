@@ -5,7 +5,8 @@ import za.co.mmagon.guiceinjection.db.ConnectionBaseInfo;
 
 import java.util.Properties;
 
-public abstract class JPADefaultConnectionBaseBuilder extends AbstractDatabaseProviderModule
+public abstract class JPADefaultConnectionBaseBuilder
+		extends AbstractDatabaseProviderModule
 {
 	@Override
 	protected ConnectionBaseInfo getConnectionBaseInfo(Persistence.PersistenceUnit unit, Properties filteredProperties)

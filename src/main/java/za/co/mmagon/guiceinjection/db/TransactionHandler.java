@@ -64,8 +64,15 @@ public class TransactionHandler
 		return returnable;
 	}
 
+	/**
+	 * Returns the current user transaction
+	 *
+	 * @return
+	 *
+	 * @throws NamingException
+	 */
 	@NotNull
-	private UserTransaction getUserTransaction() throws NamingException
+	public static UserTransaction getUserTransaction() throws NamingException
 	{
 		BitronixContext ic = new BitronixContext();
 		BitronixTransactionManager btm = null;
