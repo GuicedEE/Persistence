@@ -29,6 +29,7 @@ public class GuicedPersistenceBinding
 	public void onBind(GuiceInjectorModule module)
 	{
 		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), new TransactionHandler());
+		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(javax.transaction.Transactional.class), new TransactionHandler());
 		module.bind(PERSISTENCE_CONTEXT_KEY)
 		      .toInstance(persistenceContext);
 	}
