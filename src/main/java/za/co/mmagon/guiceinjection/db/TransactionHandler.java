@@ -1,11 +1,11 @@
 package za.co.mmagon.guiceinjection.db;
 
-import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.jndi.BitronixContext;
 import com.google.inject.persist.Transactional;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
+import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.transaction.Status;
 import javax.transaction.UserTransaction;
@@ -74,9 +74,16 @@ public class TransactionHandler
 	@NotNull
 	public static UserTransaction getUserTransaction() throws NamingException
 	{
-		BitronixContext ic = new BitronixContext();
-		BitronixTransactionManager btm = null;
-		btm = (BitronixTransactionManager) ic.lookup("java:comp/UserTransaction");
-		return btm;
+		UserTransaction ut = null;
+		try
+		{
+			InitialContext ic = new InitialContext();
+			return (UserTransaction) ic.lookup("java:comp/UserTransaction");
+		}
+		catch (Throwable T)
+		{
+			BitronixContext ic = new BitronixContext();
+			return (UserTransaction) ic.lookup("java:comp/UserTransaction");
+		}
 	}
 }
