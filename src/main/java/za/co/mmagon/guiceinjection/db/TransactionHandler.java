@@ -58,7 +58,7 @@ public class TransactionHandler
 					ut.rollback();
 				}
 			}
-			log.log(Level.SEVERE, "Exception In Commit : " + T.getMessage());
+			log.log(Level.SEVERE, "Exception In Commit : " + T.getMessage(), T);
 			throw T;
 		}
 		return returnable;
