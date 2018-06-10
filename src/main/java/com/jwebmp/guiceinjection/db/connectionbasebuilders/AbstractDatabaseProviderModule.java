@@ -152,15 +152,22 @@ public abstract class AbstractDatabaseProviderModule
 	 */
 	protected Persistence.PersistenceUnit getPersistenceUnit()
 	{
-		for (Persistence.PersistenceUnit pu : PersistenceFileHandler.getPersistenceUnits())
+		try
 		{
-			if (pu.getName()
-			      .equals(getPersistenceUnitName()))
+			for (Persistence.PersistenceUnit pu : PersistenceFileHandler.getPersistenceUnits())
 			{
-				return pu;
+				if (pu.getName()
+				      .equals(getPersistenceUnitName()))
+				{
+					return pu;
+				}
 			}
 		}
-		log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]");
+		catch (Throwable T)
+		{
+			log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]");
+		}
+		log.log(Level.WARNING, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]. Returning a Null Instance");
 		return null;
 	}
 

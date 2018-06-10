@@ -27,7 +27,7 @@
             <url>https://jwebmp.com/artifactory/libs-snapshot</url>
         </repository>
     </repositories>
-    
+
 
     <dependencies>
         <dependency>
@@ -106,8 +106,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
         </dependency>
 
     </dependencies>

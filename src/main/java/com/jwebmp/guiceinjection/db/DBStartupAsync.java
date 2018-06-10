@@ -73,7 +73,7 @@ public abstract class DBStartupAsync
 			{
 				log.log(Level.FINER, "Persistence Unit started up externally", ise);
 			}
-			catch (Exception ise)
+			catch (Throwable ise)
 			{
 				log.log(Level.SEVERE, "Persistence Unit started failed", ise);
 			}
