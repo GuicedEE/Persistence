@@ -38,7 +38,7 @@
 
         <dependency>
             <groupId>com.jwebmp</groupId>
-            <artifactId>log-master</artifactId>
+            <artifactId>guiced-log-master</artifactId>
             <version>${project.version}</version>
         </dependency>
 
