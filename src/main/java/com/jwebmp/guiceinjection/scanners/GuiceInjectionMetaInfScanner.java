@@ -3,7 +3,7 @@ package com.jwebmp.guiceinjection.scanners;
 import java.util.HashSet;
 import java.util.Set;
 
-public class GuiceInjectionPackageScanner
+public class GuiceInjectionMetaInfScanner
 		implements PackageContentsScanner
 {
 	@Override
