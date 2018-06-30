@@ -30,15 +30,21 @@
 
 
     <dependencies>
+
         <dependency>
             <groupId>com.jwebmp</groupId>
-            <artifactId>guice-injection</artifactId>
+            <artifactId>guiced-injection</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-persist</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.jwebmp</groupId>
-            <artifactId>guiced-log-master</artifactId>
+            <artifactId>jwebmp-log-master</artifactId>
             <version>${project.version}</version>
         </dependency>
 

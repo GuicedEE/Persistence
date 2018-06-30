@@ -11,7 +11,7 @@ import java.io.Serializable;
  * implementation
  */
 public class ConnectionBaseInfo
-		implements Serializable
+		implements Serializable, Cloneable
 {
 	private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,6 @@ public class ConnectionBaseInfo
 	private Integer maxLifeTime;
 	private Integer preparedStatementCacheSize;
 
-
 	private Boolean prefill = false;
 	private Boolean useStrictMin = false;
 
@@ -53,7 +52,6 @@ public class ConnectionBaseInfo
 	private Boolean shareTransactionConnections;
 
 	private String testQuery;
-
 
 	private String serverInstanceNameProperty;
 
@@ -894,6 +892,5 @@ public class ConnectionBaseInfo
 		this.maxLifeTime = maxLifeTime;
 		return this;
 	}
-
 
 }
