@@ -13,5 +13,6 @@ class GuicedPersistenceBindingTest
 	{
 		LogFactory.configureConsoleSingleLineOutput(Level.FINE);
 		GuiceContext.inject();
+
 	}
 }
