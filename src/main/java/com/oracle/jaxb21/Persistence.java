@@ -7,16 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-		"persistenceUnit"
-})
-@XmlRootElement(name = "persistence", namespace = "http://xmlns.jcp.org/xml/ns/persistence")
+@XmlType(name = "",
+		propOrder = {
+				"persistenceUnit"
+		})
+@XmlRootElement(name = "persistence",
+		namespace = "http://xmlns.jcp.org/xml/ns/persistence")
 public class Persistence
 {
 
-	@XmlElement(name = "persistence-unit", required = true)
+	@XmlElement(name = "persistence-unit",
+			required = true)
 	protected List<Persistence.PersistenceUnit> persistenceUnit;
-	@XmlAttribute(name = "version", required = true)
+	@XmlAttribute(name = "version",
+			required = true)
 	@XmlJavaTypeAdapter(CollapsedStringAdapter.class)
 	protected String version;
 
@@ -24,9 +28,9 @@ public class Persistence
 	{
 		if (persistenceUnit == null)
 		{
-			persistenceUnit = new ArrayList<Persistence.PersistenceUnit>();
+			persistenceUnit = new ArrayList<>();
 		}
-		return this.persistenceUnit;
+		return persistenceUnit;
 	}
 
 	public String getVersion()
@@ -43,24 +47,24 @@ public class Persistence
 
 	public void setVersion(String value)
 	{
-		this.version = value;
+		version = value;
 	}
 
-
 	@XmlAccessorType(XmlAccessType.FIELD)
-	@XmlType(name = "", propOrder = {
-			"description",
-			"provider",
-			"jtaDataSource",
-			"nonJtaDataSource",
-			"mappingFile",
-			"jarFile",
-			"clazz",
-			"excludeUnlistedClasses",
-			"sharedCacheMode",
-			"validationMode",
-			"properties"
-	})
+	@XmlType(name = "",
+			propOrder = {
+					"description",
+					"provider",
+					"jtaDataSource",
+					"nonJtaDataSource",
+					"mappingFile",
+					"jarFile",
+					"clazz",
+					"excludeUnlistedClasses",
+					"sharedCacheMode",
+					"validationMode",
+					"properties"
+			})
 	public static class PersistenceUnit
 	{
 
@@ -76,7 +80,8 @@ public class Persistence
 		protected List<String> jarFile;
 		@XmlElement(name = "class")
 		protected List<String> clazz;
-		@XmlElement(name = "exclude-unlisted-classes", defaultValue = "true")
+		@XmlElement(name = "exclude-unlisted-classes",
+				defaultValue = "true")
 		protected Boolean excludeUnlistedClasses;
 		@XmlElement(name = "shared-cache-mode")
 		@XmlSchemaType(name = "token")
@@ -85,7 +90,8 @@ public class Persistence
 		@XmlSchemaType(name = "token")
 		protected PersistenceUnitValidationModeType validationMode;
 		protected Persistence.PersistenceUnit.Properties properties;
-		@XmlAttribute(name = "name", required = true)
+		@XmlAttribute(name = "name",
+				required = true)
 		protected String name;
 		@XmlAttribute(name = "transaction-type")
 		protected PersistenceUnitTransactionType transactionType;
@@ -97,7 +103,7 @@ public class Persistence
 
 		public void setDescription(String value)
 		{
-			this.description = value;
+			description = value;
 		}
 
 		public String getProvider()
@@ -107,7 +113,7 @@ public class Persistence
 
 		public void setProvider(String value)
 		{
-			this.provider = value;
+			provider = value;
 		}
 
 		public String getJtaDataSource()
@@ -117,7 +123,7 @@ public class Persistence
 
 		public void setJtaDataSource(String value)
 		{
-			this.jtaDataSource = value;
+			jtaDataSource = value;
 		}
 
 		public String getNonJtaDataSource()
@@ -127,34 +133,34 @@ public class Persistence
 
 		public void setNonJtaDataSource(String value)
 		{
-			this.nonJtaDataSource = value;
+			nonJtaDataSource = value;
 		}
 
 		public List<String> getMappingFile()
 		{
 			if (mappingFile == null)
 			{
-				mappingFile = new ArrayList<String>();
+				mappingFile = new ArrayList<>();
 			}
-			return this.mappingFile;
+			return mappingFile;
 		}
 
 		public List<String> getJarFile()
 		{
 			if (jarFile == null)
 			{
-				jarFile = new ArrayList<String>();
+				jarFile = new ArrayList<>();
 			}
-			return this.jarFile;
+			return jarFile;
 		}
 
 		public List<String> getClazz()
 		{
 			if (clazz == null)
 			{
-				clazz = new ArrayList<String>();
+				clazz = new ArrayList<>();
 			}
-			return this.clazz;
+			return clazz;
 		}
 
 		public Boolean isExcludeUnlistedClasses()
@@ -164,7 +170,7 @@ public class Persistence
 
 		public void setExcludeUnlistedClasses(Boolean value)
 		{
-			this.excludeUnlistedClasses = value;
+			excludeUnlistedClasses = value;
 		}
 
 		public PersistenceUnitCachingType getSharedCacheMode()
@@ -174,7 +180,7 @@ public class Persistence
 
 		public void setSharedCacheMode(PersistenceUnitCachingType value)
 		{
-			this.sharedCacheMode = value;
+			sharedCacheMode = value;
 		}
 
 		public PersistenceUnitValidationModeType getValidationMode()
@@ -184,7 +190,7 @@ public class Persistence
 
 		public void setValidationMode(PersistenceUnitValidationModeType value)
 		{
-			this.validationMode = value;
+			validationMode = value;
 		}
 
 		public Persistence.PersistenceUnit.Properties getProperties()
@@ -194,7 +200,7 @@ public class Persistence
 
 		public void setProperties(Persistence.PersistenceUnit.Properties value)
 		{
-			this.properties = value;
+			properties = value;
 		}
 
 		public String getName()
@@ -204,7 +210,7 @@ public class Persistence
 
 		public void setName(String value)
 		{
-			this.name = value;
+			name = value;
 		}
 
 		public PersistenceUnitTransactionType getTransactionType()
@@ -214,13 +220,14 @@ public class Persistence
 
 		public void setTransactionType(PersistenceUnitTransactionType value)
 		{
-			this.transactionType = value;
+			transactionType = value;
 		}
 
 		@XmlAccessorType(XmlAccessType.FIELD)
-		@XmlType(name = "", propOrder = {
-				"property"
-		})
+		@XmlType(name = "",
+				propOrder = {
+						"property"
+				})
 		public static class Properties
 		{
 
@@ -230,9 +237,9 @@ public class Persistence
 			{
 				if (property == null)
 				{
-					property = new ArrayList<Persistence.PersistenceUnit.Properties.Property>();
+					property = new ArrayList<>();
 				}
-				return this.property;
+				return property;
 			}
 
 			@XmlAccessorType(XmlAccessType.FIELD)
@@ -240,9 +247,11 @@ public class Persistence
 			public static class Property
 			{
 
-				@XmlAttribute(name = "name", required = true)
+				@XmlAttribute(name = "name",
+						required = true)
 				protected String name;
-				@XmlAttribute(name = "value", required = true)
+				@XmlAttribute(name = "value",
+						required = true)
 				protected String value;
 
 				public String getName()
@@ -252,7 +261,7 @@ public class Persistence
 
 				public void setName(String value)
 				{
-					this.name = value;
+					name = value;
 				}
 
 				public String getValue()
