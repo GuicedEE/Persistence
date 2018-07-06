@@ -1,4 +1,4 @@
-package com.jwebmp.guicedpersistence.annotations;
+package com.jwebmp.guicedpersistence.db.annotations;
 
 import java.lang.annotation.*;
 

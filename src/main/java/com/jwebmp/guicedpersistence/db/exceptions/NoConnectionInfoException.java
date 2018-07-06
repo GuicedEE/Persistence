@@ -1,4 +1,4 @@
-package com.jwebmp.guicedpersistence.exceptions;
+package com.jwebmp.guicedpersistence.db.exceptions;
 
 /**
  * Generic exception to mark that no connection information was supplied

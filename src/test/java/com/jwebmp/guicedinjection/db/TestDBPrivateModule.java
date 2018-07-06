@@ -1,12 +1,30 @@
 package com.jwebmp.guicedinjection.db;
 
-import com.jwebmp.guicedpersistence.db.connectionbasebuilders.HibernateDefaultConnectionBaseBuilder;
+import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
+import com.jwebmp.guicedpersistence.db.connectionbasebuilders.AbstractDatabaseProviderModule;
+import com.oracle.jaxb21.PersistenceUnit;
 
+import javax.sql.DataSource;
+import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
+import java.util.Properties;
 
 public class TestDBPrivateModule
-		extends HibernateDefaultConnectionBaseBuilder
+		extends AbstractDatabaseProviderModule
 {
+
+	@Override
+	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties)
+	{
+		return new ConnectionBaseInfo()
+		{
+			@Override
+			public DataSource toPooledDatasource()
+			{
+				return null;
+			}
+		};
+	}
 
 	@Override
 	protected String getJndiMapping()

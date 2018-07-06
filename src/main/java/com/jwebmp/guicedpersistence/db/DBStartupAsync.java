@@ -2,7 +2,7 @@ package com.jwebmp.guicedpersistence.db;
 
 import com.google.inject.persist.PersistService;
 import com.jwebmp.guicedinjection.annotations.GuicePostStartup;
-import com.jwebmp.guicedpersistence.annotations.DBStartup;
+import com.jwebmp.guicedpersistence.db.annotations.DBStartup;
 import com.jwebmp.logger.LogFactory;
 
 import javax.sql.DataSource;

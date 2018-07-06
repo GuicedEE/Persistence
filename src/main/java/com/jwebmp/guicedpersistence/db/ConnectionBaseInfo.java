@@ -1,16 +1,18 @@
 package com.jwebmp.guicedpersistence.db;
 
-import bitronix.tm.resource.jdbc.PoolingDataSource;
-import com.jwebmp.guicedpersistence.db.enumerations.BTMTransactionIsolation;
+import com.oracle.jaxb21.PersistenceUnit;
 
+import javax.sql.DataSource;
 import java.io.Serializable;
+import java.util.Properties;
+import java.util.ServiceLoader;
 
 /**
  * This class is a basic container (mirror) for the database jtm builder string.
  * Exists to specify the default properties for connections that a jtm should implement should btm be switched for a different
  * implementation
  */
-public class ConnectionBaseInfo
+public abstract class ConnectionBaseInfo
 		implements Serializable, Cloneable
 {
 	private static final long serialVersionUID = 1L;
@@ -25,7 +27,7 @@ public class ConnectionBaseInfo
 	private String username;
 	private String password;
 
-	private BTMTransactionIsolation transactionIsolation;
+	private String transactionIsolation;
 
 	private String databaseName;
 	private String jndiName;
@@ -61,101 +63,29 @@ public class ConnectionBaseInfo
 		serverInstanceNameProperty = "Instance";
 	}
 
+	public ConnectionBaseInfo populateFromProperties(PersistenceUnit unit, Properties filteredProperties)
+	{
+		ServiceLoader<PropertiesConnectionInfoReader> connectionInfoReaders = ServiceLoader.load(PropertiesConnectionInfoReader.class);
+		for (PropertiesConnectionInfoReader connectionInfoReader : connectionInfoReaders)
+		{
+			connectionInfoReader.populateConnectionBaseInfo(unit, filteredProperties, this);
+		}
+		return this;
+	}
+
 	/**
 	 * Returns the BTM Pooling Data Source Configured
 	 *
 	 * @return
 	 */
-	protected PoolingDataSource toPooledDatasource()
-	{
-		PoolingDataSource pds = new PoolingDataSource();
-
-		if (getTransactionIsolation() != null)
-		{
-			pds.setIsolationLevel(getTransactionIsolation().name());
-		}
-		if (getMinPoolSize() != null)
-		{
-			pds.setMinPoolSize(getMinPoolSize());
-		}
-		if (getMaxPoolSize() != null)
-		{
-			pds.setMaxPoolSize(getMaxPoolSize());
-		}
-		if (getMaxIdleTime() != null)
-		{
-			pds.setMaxIdleTime(getMaxIdleTime());
-		}
-		if (getPreparedStatementCacheSize() != null)
-		{
-			pds.setPreparedStatementCacheSize(getPreparedStatementCacheSize());
-		}
-
-		if (getAcquireIncrement() != null)
-		{
-			pds.setAcquireIncrement(getAcquireIncrement());
-		}
-		if (getAcquisitionInterval() != null)
-		{
-			pds.setAcquisitionInterval(getAcquisitionInterval());
-		}
-		if (getAcquisitionTimeout() != null)
-		{
-			pds.setAcquisitionTimeout(getAcquisitionTimeout());
-		}
-
-		if (getAllowLocalTransactions() != null)
-		{
-			pds.setAllowLocalTransactions(getAllowLocalTransactions());
-		}
-		if (getApplyTransactionTimeout() != null)
-		{
-			pds.setApplyTransactionTimeout(getApplyTransactionTimeout());
-		}
-		if (getAutomaticEnlistingEnabled() != null)
-		{
-			pds.setAutomaticEnlistingEnabled(getAutomaticEnlistingEnabled());
-		}
-		if (getEnableJdbc4ConnectionTest() != null)
-		{
-			pds.setEnableJdbc4ConnectionTest(getEnableJdbc4ConnectionTest());
-		}
-		if (getIgnoreRecoveryFailures() != null)
-		{
-			pds.setIgnoreRecoveryFailures(getIgnoreRecoveryFailures());
-		}
-
-		if (getShareTransactionConnections() != null)
-		{
-			pds.setShareTransactionConnections(getShareTransactionConnections());
-		}
-
-		if (pds.getTestQuery() != null)
-		{
-			pds.setTestQuery(getTestQuery());
-		}
-
-		if (getJndiName() == null)
-		{
-			throw new UnsupportedOperationException(
-					"JTA requires JNDI name to be specified, when inheriting from AbstractDatabaseModule make sure to provide a valid " + "value for getJndiMapping()");
-		}
-		pds.setUniqueName(getJndiName());
-		if (getDriverClass() == null)
-		{
-			throw new UnsupportedOperationException("Please make sure to specify a driver class to use in the persistence.xml file or manually in this configuration " + "object.");
-		}
-		pds.setClassName(getDriverClass());
-
-		return pds;
-	}
+	public abstract DataSource toPooledDatasource();
 
 	/**
 	 * Gets the transaction isolation
 	 *
 	 * @return
 	 */
-	public BTMTransactionIsolation getTransactionIsolation()
+	public String getTransactionIsolation()
 	{
 		return transactionIsolation;
 	}
@@ -165,7 +95,7 @@ public class ConnectionBaseInfo
 	 *
 	 * @param transactionIsolation
 	 */
-	public ConnectionBaseInfo setTransactionIsolation(BTMTransactionIsolation transactionIsolation)
+	public ConnectionBaseInfo setTransactionIsolation(String transactionIsolation)
 	{
 		this.transactionIsolation = transactionIsolation;
 		return this;
@@ -251,6 +181,18 @@ public class ConnectionBaseInfo
 	public Integer getPreparedStatementCacheSize()
 	{
 		return preparedStatementCacheSize;
+	}
+
+	/**
+	 * Controls how many Prepared Statements are cached (per connection) by BTM. A value of 0 means that statement caching is disabled.
+	 * Default value: 0.
+	 *
+	 * @param preparedStatementCacheSize
+	 */
+	public ConnectionBaseInfo setPreparedStatementCacheSize(Integer preparedStatementCacheSize)
+	{
+		this.preparedStatementCacheSize = preparedStatementCacheSize;
+		return this;
 	}
 
 	/**
@@ -514,6 +456,20 @@ public class ConnectionBaseInfo
 	}
 
 	/**
+	 * This parameters sets the SQL statement that is used to test whether a connection is still alive before returning it from the
+	 * connection pool.
+	 *
+	 * @param testQuery
+	 *
+	 * @return
+	 */
+	public ConnectionBaseInfo setTestQuery(String testQuery)
+	{
+		this.testQuery = testQuery;
+		return this;
+	}
+
+	/**
 	 * Gets the jndi name
 	 *
 	 * @return
@@ -521,6 +477,17 @@ public class ConnectionBaseInfo
 	public String getJndiName()
 	{
 		return jndiName;
+	}
+
+	/**
+	 * Sets the jndi name
+	 *
+	 * @param jndiName
+	 */
+	public ConnectionBaseInfo setJndiName(String jndiName)
+	{
+		this.jndiName = jndiName;
+		return this;
 	}
 
 	/**
@@ -541,43 +508,6 @@ public class ConnectionBaseInfo
 	public ConnectionBaseInfo setDriverClass(String driverClass)
 	{
 		this.driverClass = driverClass;
-		return this;
-	}
-
-	/**
-	 * Sets the jndi name
-	 *
-	 * @param jndiName
-	 */
-	public ConnectionBaseInfo setJndiName(String jndiName)
-	{
-		this.jndiName = jndiName;
-		return this;
-	}
-
-	/**
-	 * This parameters sets the SQL statement that is used to test whether a connection is still alive before returning it from the
-	 * connection pool.
-	 *
-	 * @param testQuery
-	 *
-	 * @return
-	 */
-	public ConnectionBaseInfo setTestQuery(String testQuery)
-	{
-		this.testQuery = testQuery;
-		return this;
-	}
-
-	/**
-	 * Controls how many Prepared Statements are cached (per connection) by BTM. A value of 0 means that statement caching is disabled.
-	 * Default value: 0.
-	 *
-	 * @param preparedStatementCacheSize
-	 */
-	public ConnectionBaseInfo setPreparedStatementCacheSize(Integer preparedStatementCacheSize)
-	{
-		this.preparedStatementCacheSize = preparedStatementCacheSize;
 		return this;
 	}
 

@@ -3,20 +3,22 @@ package com.jwebmp.guicedpersistence.db.connectionbasebuilders;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
-import com.google.inject.persist.jpa.JpaPersistPrivateModule;
 import com.jwebmp.guicedinjection.annotations.GuiceInjectorModuleMarker;
 import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
-import com.jwebmp.guicedpersistence.db.JtaPoolDataSource;
 import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
-import com.jwebmp.guicedpersistence.exceptions.NoConnectionInfoException;
+import com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
+import com.jwebmp.guicedpersistence.db.exceptions.NoConnectionInfoException;
+import com.jwebmp.guicedpersistence.jpa.JpaPersistPrivateModule;
 import com.jwebmp.logger.LogFactory;
-import com.oracle.jaxb21.Persistence;
+import com.oracle.jaxb21.PersistenceUnit;
+import com.oracle.jaxb21.Property;
 
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,7 +48,7 @@ public abstract class AbstractDatabaseProviderModule
 	 * @return
 	 */
 	@NotNull
-	protected abstract ConnectionBaseInfo getConnectionBaseInfo(Persistence.PersistenceUnit unit, Properties filteredProperties);
+	protected abstract ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties);
 
 	/**
 	 * The name found in jta-data-source from the persistence.xml
@@ -71,19 +73,25 @@ public abstract class AbstractDatabaseProviderModule
 	protected void configure()
 	{
 		log.config(getPersistenceUnitName() + " Is Binding");
-		Properties jdbcProperties = null;
-		jdbcProperties = getJDBCPropertiesMap();
-		Persistence.PersistenceUnit pu = getPersistenceUnit();
+		Properties jdbcProperties = getJDBCPropertiesMap();
+		PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
 		{
 			log.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this " + "" + "" + "" + "name was found.");
 			return;
 		}
+		ServiceLoader<PropertiesEntityManagerReader> entityManagerReaders = ServiceLoader.load(PropertiesEntityManagerReader.class);
+		for (PropertiesEntityManagerReader entityManagerReader : entityManagerReaders)
+		{
+			jdbcProperties.putAll(entityManagerReader.processProperties());
+		}
+
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
 
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
-		connectionBaseInfo.setJndiName(getJndiMapping());
+		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
 
+		connectionBaseInfo.setJndiName(getJndiMapping());
 		bind(getDataSourceKey()).toProvider(() -> provideDataSource(connectionBaseInfo))
 		                        .in(Singleton.class);
 		log.config(getPersistenceUnitName() + " Finished Binding.");
@@ -98,7 +106,7 @@ public abstract class AbstractDatabaseProviderModule
 	private Properties getJDBCPropertiesMap()
 	{
 		Properties jdbcProperties = new Properties();
-		Persistence.PersistenceUnit pu = getPersistenceUnit();
+		PersistenceUnit pu = getPersistenceUnit();
 		configurePersistenceUnitProperties(pu, jdbcProperties);
 		return jdbcProperties;
 	}
@@ -140,9 +148,7 @@ public abstract class AbstractDatabaseProviderModule
 		{
 			throw new NoConnectionInfoException("Not point in trying to create a connection with no info.....");
 		}
-		JtaPoolDataSource dataSource = new JtaPoolDataSource();
-		dataSource.configure(cbi);
-		return dataSource.get();
+		return cbi.toPooledDatasource();
 	}
 
 	/**
@@ -150,11 +156,11 @@ public abstract class AbstractDatabaseProviderModule
 	 *
 	 * @return
 	 */
-	protected Persistence.PersistenceUnit getPersistenceUnit()
+	protected PersistenceUnit getPersistenceUnit()
 	{
 		try
 		{
-			for (Persistence.PersistenceUnit pu : PersistenceFileHandler.getPersistenceUnits())
+			for (PersistenceUnit pu : PersistenceFileHandler.getPersistenceUnits())
 			{
 				if (pu.getName()
 				      .equals(getPersistenceUnitName()))
@@ -177,13 +183,13 @@ public abstract class AbstractDatabaseProviderModule
 	 * @param pu
 	 * @param jdbcProperties
 	 */
-	private void configurePersistenceUnitProperties(Persistence.PersistenceUnit pu, Properties jdbcProperties)
+	private void configurePersistenceUnitProperties(PersistenceUnit pu, Properties jdbcProperties)
 	{
 		Properties sysProps = System.getProperties();
 		if (pu != null)
 		{
-			for (Persistence.PersistenceUnit.Properties.Property props : pu.getProperties()
-			                                                               .getProperty())
+			for (Property props : pu.getProperties()
+			                        .getProperty())
 			{
 				String checkProperty = props.getValue()
 				                            .replace("\\$", "");

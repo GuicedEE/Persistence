@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.inject.persist.jpa;
+package com.jwebmp.guicedpersistence.jpa;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -47,7 +47,7 @@ public class CustomJpaPersistService
 
 	@Inject
 	public CustomJpaPersistService(
-			@Jpa String persistenceUnitName, @Nullable @Jpa Map<?, ?> persistenceProperties)
+			@CustomJpa String persistenceUnitName, @Nullable @CustomJpa Map<?, ?> persistenceProperties)
 	{
 		this.persistenceUnitName = persistenceUnitName;
 		this.persistenceProperties = persistenceProperties;

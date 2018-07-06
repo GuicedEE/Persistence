@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.inject.persist.jpa;
+package com.jwebmp.guicedpersistence.jpa;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -61,7 +61,7 @@ public final class CustomJpaPersistModule
 	@Override
 	protected void configurePersistence()
 	{
-		bindConstant().annotatedWith(Jpa.class)
+		bindConstant().annotatedWith(CustomJpa.class)
 		              .to(jpaUnit);
 
 		bind(CustomJpaPersistService.class).in(Singleton.class);
@@ -72,7 +72,7 @@ public final class CustomJpaPersistModule
 		bind(EntityManagerFactory.class)
 				.toProvider(CustomJpaPersistService.EntityManagerFactoryProvider.class);
 
-		transactionInterceptor = new JpaLocalTxnInterceptor();
+		transactionInterceptor = new CustomJpaLocalTxnInterceptor();
 		requestInjection(transactionInterceptor);
 
 		// Bind dynamic finders.
@@ -99,7 +99,7 @@ public final class CustomJpaPersistModule
 				new InvocationHandler()
 				{
 					@Inject
-					JpaFinderProxy finderProxy;
+					CustomJpaFinderProxy finderProxy;
 
 					@Override
 					public Object invoke(Object thisObject, Method method, Object[] args)
@@ -191,7 +191,7 @@ public final class CustomJpaPersistModule
 	}
 
 	@Provides
-	@Jpa
+	@CustomJpa
 	Map<?, ?> provideProperties()
 	{
 		return properties;

@@ -2,15 +2,11 @@ package com.jwebmp.guicedpersistence.db;
 
 import com.jwebmp.guicedinjection.scanners.FileContentsScanner;
 import com.jwebmp.guicedinjection.scanners.PackageContentsScanner;
-import com.jwebmp.guicedpersistence.GuicedPersistenceBinding;
-import com.jwebmp.guicedpersistence.exceptions.NoConnectionInfoException;
 import com.jwebmp.logger.LogFactory;
-import com.oracle.jaxb21.Persistence;
+import com.oracle.jaxb21.*;
+import com.thoughtworks.xstream.XStream;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.FileMatchContentsProcessorWithContext;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,7 +19,7 @@ public class PersistenceFileHandler
 		implements FileContentsScanner, PackageContentsScanner
 {
 	private static final Logger log = LogFactory.getLog("PersistenceFileHandler");
-	private static final Set<Persistence.PersistenceUnit> persistenceUnits = new HashSet<>();
+	private static final Set<PersistenceUnit> persistenceUnits = new HashSet<>();
 
 	public PersistenceFileHandler()
 	{
@@ -35,7 +31,7 @@ public class PersistenceFileHandler
 	 *
 	 * @return
 	 */
-	public static Set<Persistence.PersistenceUnit> getPersistenceUnits()
+	public static Set<PersistenceUnit> getPersistenceUnits()
 	{
 		return persistenceUnits;
 	}
@@ -62,46 +58,49 @@ public class PersistenceFileHandler
 	 *
 	 * @return
 	 */
-	private Set<Persistence.PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile, String persistenceFileName)
+	private Set<PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile, String persistenceFileName)
 	{
-		Set<Persistence.PersistenceUnit> units = new HashSet<>();
-		if (GuicedPersistenceBinding.getPersistenceContext() == null)
-		{
-			loadJPA22();
-		}
-		JAXBContext pContext = GuicedPersistenceBinding.getPersistenceContext();
-		String content = new String(persistenceFile);
+		Set<PersistenceUnit> units = new HashSet<>();
+
+		XStream xml = new XStream();
+		xml.alias("persistence", Persistence.class);
+
+		xml.aliasField("persistence-unit", Persistence.class, "persistenceUnit");
+		xml.addImplicitCollection(Persistence.class, "persistenceUnit", PersistenceUnit.class);
+
+		xml.useAttributeFor(PersistenceUnit.class, "name");
+		xml.useAttributeFor(PersistenceUnit.class, "transactionType");
+		xml.aliasField("transaction-type", PersistenceUnitTransactionType.class, "transactionType");
+
+		xml.aliasField("jta-data-source", PersistenceUnit.class, "jtaDataSource");
+		xml.aliasField("nonjta-data-source", PersistenceUnit.class, "nonJtaDataSource");
+		xml.aliasField("exclude-unlisted-classes", PersistenceUnit.class, "excludeUnlistedClasses");
+		xml.aliasField("jar-file", PersistenceUnit.class, "jarFile");
+		xml.addImplicitCollection(PersistenceUnit.class, "jarFile", String.class);
+		xml.aliasField("mapping-file", PersistenceUnit.class, "mappingFile");
+		xml.addImplicitCollection(PersistenceUnit.class, "mappingFile", String.class);
+
+		xml.aliasField("class", PersistenceUnit.class, "clazz");
+		xml.addImplicitCollection(PersistenceUnit.class, "clazz", String.class);
+
+		xml.useAttributeFor(Property.class, "name");
+		xml.useAttributeFor(Property.class, "value");
+
+		xml.alias("properties", Properties.class);
+		xml.addImplicitCollection(Properties.class, "property", Property.class);
 		try
 		{
-			Persistence p = (Persistence) pContext.createUnmarshaller()
-			                                      .unmarshal(new StringReader(content));
-			for (Persistence.PersistenceUnit persistenceUnit : p.getPersistenceUnit())
+			Persistence p = (Persistence) xml.fromXML(new String(persistenceFile));
+			for (PersistenceUnit persistenceUnit : p.getPersistenceUnit())
 			{
 				units.add(persistenceUnit);
 			}
 		}
-		catch (Exception e)
+		catch (Throwable t)
 		{
-			log.log(Level.WARNING, "Persistence File does not look like a JPA2.1 or higher - " + persistenceFileName);
-			log.log(Level.FINER, "Unable to get the persistence xsd object", e);
+			log.log(Level.SEVERE, "Error streaming", t);
 		}
 		return units;
-	}
-
-	private static void loadJPA22()
-	{
-		log.config("Loading JAXB JPA 2.1 Persistence Context");
-		try
-		{
-			GuicedPersistenceBinding.setPersistenceContext(JAXBContext.newInstance(Persistence.class));
-			log.config("Loaded Persistence JAXB Context");
-		}
-		catch (JAXBException e)
-		{
-			log.log(Level.WARNING, "JPA2.1 context unable to load. Check the header of the persistence.xml file", e);
-			log.log(Level.FINER, "Unable to load Persistence Context JPA 2.1", e);
-			throw new NoConnectionInfoException("Persistence Unit Load Failed", e);
-		}
 	}
 
 	@Override

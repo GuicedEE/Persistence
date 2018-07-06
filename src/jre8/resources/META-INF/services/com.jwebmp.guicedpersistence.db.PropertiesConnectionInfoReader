@@ -1,0 +1,3 @@
+com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder
+com.jwebmp.guicedpersistence.db.intercepters.EclipseLinkDefaultConnectionBaseBuilder
+com.jwebmp.guicedpersistence.db.intercepters.HibernateDefaultConnectionBaseBuilder
