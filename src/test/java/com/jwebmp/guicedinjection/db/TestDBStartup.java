@@ -10,9 +10,9 @@ public class TestDBStartup
 		extends DBStartupAsync
 {
 	@Inject
-	public TestDBStartup(@TestCustomPersistenceLoader PersistService ps, @TestCustomPersistenceLoader DataSource ds)
+	public TestDBStartup(@TestCustomPersistenceLoader PersistService ps)
 	{
-		super(ps, ds);
+		super(ps);
 		ps.start();
 	}
 

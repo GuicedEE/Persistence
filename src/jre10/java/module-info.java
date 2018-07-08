@@ -9,11 +9,13 @@ module com.jwebmp.guicedpersistence {
 	requires com.google.guice.extensions.persist;
 	requires com.jwebmp.guicedinjection;
 	requires com.jwebmp.logmaster;
+
 	requires io.github.lukehutch.fastclasspathscanner;
 	requires java.logging;
 	requires com.google.guice;
 
 	requires java.sql;
+	requires java.transaction;
 	requires java.naming;
 	requires aopalliance;
 
@@ -27,7 +29,7 @@ module com.jwebmp.guicedpersistence {
 	requires com.fasterxml.jackson.databind;
 
 	requires java.persistence;
-	requires xstream;
+	requires json;
 
 	uses com.jwebmp.guicedpersistence.db.PropertiesConnectionInfoReader;
 	uses com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
