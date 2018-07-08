@@ -94,8 +94,7 @@ public abstract class AbstractDatabaseProviderModule
 		DataSource ds = provideDataSource(connectionBaseInfo);
 		if (ds != null)
 		{
-			bind(getDataSourceKey()).toProvider(() -> ds)
-			                        .in(Singleton.class);
+			bind(getDataSourceKey()).toInstance(ds);
 		}
 
 		log.config(getPersistenceUnitName() + " Finished Binding.");
