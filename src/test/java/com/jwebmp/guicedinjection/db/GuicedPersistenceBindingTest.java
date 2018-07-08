@@ -2,6 +2,7 @@ package com.jwebmp.guicedinjection.db;
 
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.logger.LogFactory;
+import io.github.lukehutch.fastclasspathscanner.scanner.ScanResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.logging.Level;
@@ -12,7 +13,8 @@ class GuicedPersistenceBindingTest
 	public void testMe()
 	{
 		LogFactory.configureConsoleSingleLineOutput(Level.FINE);
+		ScanResult sr = GuiceContext.instance()
+		                            .getScanResult();
 		GuiceContext.inject();
-
 	}
 }

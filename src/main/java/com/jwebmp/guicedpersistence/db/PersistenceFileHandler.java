@@ -1,12 +1,18 @@
 package com.jwebmp.guicedpersistence.db;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jwebmp.guicedinjection.scanners.FileContentsScanner;
 import com.jwebmp.guicedinjection.scanners.PackageContentsScanner;
 import com.jwebmp.logger.LogFactory;
-import com.oracle.jaxb21.*;
-import com.thoughtworks.xstream.XStream;
+import com.oracle.jaxb21.Persistence;
+import com.oracle.jaxb21.PersistenceContainer;
+import com.oracle.jaxb21.PersistenceUnit;
 import io.github.lukehutch.fastclasspathscanner.matchprocessor.FileMatchContentsProcessorWithContext;
+import org.json.JSONObject;
+import org.json.XML;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,39 +64,23 @@ public class PersistenceFileHandler
 	 *
 	 * @return
 	 */
-	private Set<PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile, String persistenceFileName)
+	private Set<PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile, String persistenceFileName) throws IOException
 	{
 		Set<PersistenceUnit> units = new HashSet<>();
+		String xml = new String(persistenceFile);
 
-		XStream xml = new XStream();
-		xml.alias("persistence", Persistence.class);
+		JSONObject jsonObj = XML.toJSONObject(new String(persistenceFile));
+		String json = String.valueOf(jsonObj);
+		xml = replaceNameSpaceAttributes(xml);
+		jsonObj = XML.toJSONObject(xml);
 
-		xml.aliasField("persistence-unit", Persistence.class, "persistenceUnit");
-		xml.addImplicitCollection(Persistence.class, "persistenceUnit", PersistenceUnit.class);
+		ObjectMapper om = new ObjectMapper();
+		om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+		PersistenceContainer pp = om.readValue(jsonObj.toString(), PersistenceContainer.class);
 
-		xml.useAttributeFor(PersistenceUnit.class, "name");
-		xml.useAttributeFor(PersistenceUnit.class, "transactionType");
-		xml.aliasField("transaction-type", PersistenceUnitTransactionType.class, "transactionType");
-
-		xml.aliasField("jta-data-source", PersistenceUnit.class, "jtaDataSource");
-		xml.aliasField("nonjta-data-source", PersistenceUnit.class, "nonJtaDataSource");
-		xml.aliasField("exclude-unlisted-classes", PersistenceUnit.class, "excludeUnlistedClasses");
-		xml.aliasField("jar-file", PersistenceUnit.class, "jarFile");
-		xml.addImplicitCollection(PersistenceUnit.class, "jarFile", String.class);
-		xml.aliasField("mapping-file", PersistenceUnit.class, "mappingFile");
-		xml.addImplicitCollection(PersistenceUnit.class, "mappingFile", String.class);
-
-		xml.aliasField("class", PersistenceUnit.class, "clazz");
-		xml.addImplicitCollection(PersistenceUnit.class, "clazz", String.class);
-
-		xml.useAttributeFor(Property.class, "name");
-		xml.useAttributeFor(Property.class, "value");
-
-		xml.alias("properties", Properties.class);
-		xml.addImplicitCollection(Properties.class, "property", Property.class);
 		try
 		{
-			Persistence p = (Persistence) xml.fromXML(new String(persistenceFile));
+			Persistence p = pp.getPersistence();
 			for (PersistenceUnit persistenceUnit : p.getPersistenceUnit())
 			{
 				units.add(persistenceUnit);
@@ -101,6 +91,16 @@ public class PersistenceFileHandler
 			log.log(Level.SEVERE, "Error streaming", t);
 		}
 		return units;
+	}
+
+	private String replaceNameSpaceAttributes(String xml)
+	{
+		String replaced = xml;
+		replaced = replaced.replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
+		replaced = replaced.replace("xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"", "");
+		replaced = replaced.replace("xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/persistence", "");
+		replaced = replaced.replace("http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd\"", "");
+		return replaced;
 	}
 
 	@Override

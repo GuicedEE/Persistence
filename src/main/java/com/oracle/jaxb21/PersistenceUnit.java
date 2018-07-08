@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +16,6 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
 		setterVisibility = NONE)
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Data
-@Accessors(chain = true)
 public class PersistenceUnit
 {
 	@JsonProperty("description")
@@ -69,6 +65,11 @@ public class PersistenceUnit
 		return mappingFile;
 	}
 
+	public void setMappingFile(List<String> mappingFile)
+	{
+		this.mappingFile = mappingFile;
+	}
+
 	public List<String> getJarFile()
 	{
 		if (jarFile == null)
@@ -78,6 +79,11 @@ public class PersistenceUnit
 		return jarFile;
 	}
 
+	public void setJarFile(List<String> jarFile)
+	{
+		this.jarFile = jarFile;
+	}
+
 	public List<String> getClazz()
 	{
 		if (clazz == null)
@@ -85,5 +91,110 @@ public class PersistenceUnit
 			clazz = new ArrayList<>();
 		}
 		return clazz;
+	}
+
+	public void setClazz(List<String> clazz)
+	{
+		this.clazz = clazz;
+	}
+
+	public String getDescription()
+	{
+		return description;
+	}
+
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+
+	public String getProvider()
+	{
+		return provider;
+	}
+
+	public void setProvider(String provider)
+	{
+		this.provider = provider;
+	}
+
+	public String getJtaDataSource()
+	{
+		return jtaDataSource;
+	}
+
+	public void setJtaDataSource(String jtaDataSource)
+	{
+		this.jtaDataSource = jtaDataSource;
+	}
+
+	public String getNonJtaDataSource()
+	{
+		return nonJtaDataSource;
+	}
+
+	public void setNonJtaDataSource(String nonJtaDataSource)
+	{
+		this.nonJtaDataSource = nonJtaDataSource;
+	}
+
+	public Boolean getExcludeUnlistedClasses()
+	{
+		return excludeUnlistedClasses;
+	}
+
+	public void setExcludeUnlistedClasses(Boolean excludeUnlistedClasses)
+	{
+		this.excludeUnlistedClasses = excludeUnlistedClasses;
+	}
+
+	public PersistenceUnitCachingType getSharedCacheMode()
+	{
+		return sharedCacheMode;
+	}
+
+	public void setSharedCacheMode(PersistenceUnitCachingType sharedCacheMode)
+	{
+		this.sharedCacheMode = sharedCacheMode;
+	}
+
+	public PersistenceUnitValidationModeType getValidationMode()
+	{
+		return validationMode;
+	}
+
+	public void setValidationMode(PersistenceUnitValidationModeType validationMode)
+	{
+		this.validationMode = validationMode;
+	}
+
+	public Properties getProperties()
+	{
+		return properties;
+	}
+
+	public void setProperties(Properties properties)
+	{
+		this.properties = properties;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
+	public PersistenceUnitTransactionType getTransactionType()
+	{
+		return transactionType;
+	}
+
+	public void setTransactionType(PersistenceUnitTransactionType transactionType)
+	{
+		this.transactionType = transactionType;
 	}
 }

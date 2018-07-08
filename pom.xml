@@ -73,13 +73,18 @@
         </dependency>
 
         <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
         </dependency>
 
     </dependencies>
@@ -102,10 +107,7 @@
         <profile>
             <id>jdk8</id>
             <dependencies>
-                <dependency>
-                    <groupId>javax.persistence</groupId>
-                    <artifactId>javax.persistence-api</artifactId>
-                </dependency>
+
                 <dependency>
                     <groupId>javax.validation</groupId>
                     <artifactId>validation-api</artifactId>

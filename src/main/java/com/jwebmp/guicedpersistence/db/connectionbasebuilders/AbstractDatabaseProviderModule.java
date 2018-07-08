@@ -77,7 +77,7 @@ public abstract class AbstractDatabaseProviderModule
 		PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
 		{
-			log.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this " + "" + "" + "" + "name was found.");
+			log.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
 			return;
 		}
 		ServiceLoader<PropertiesEntityManagerReader> entityManagerReaders = ServiceLoader.load(PropertiesEntityManagerReader.class);
@@ -86,14 +86,18 @@ public abstract class AbstractDatabaseProviderModule
 			jdbcProperties.putAll(entityManagerReader.processProperties());
 		}
 
-		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
-
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
-
 		connectionBaseInfo.setJndiName(getJndiMapping());
-		bind(getDataSourceKey()).toProvider(() -> provideDataSource(connectionBaseInfo))
-		                        .in(Singleton.class);
+
+		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
+		DataSource ds = provideDataSource(connectionBaseInfo);
+		if (ds != null)
+		{
+			bind(getDataSourceKey()).toProvider(() -> ds)
+			                        .in(Singleton.class);
+		}
+
 		log.config(getPersistenceUnitName() + " Finished Binding.");
 	}
 
@@ -141,7 +145,13 @@ public abstract class AbstractDatabaseProviderModule
 	@NotNull
 	protected abstract Class<? extends Annotation> getBindingAnnotation();
 
-	@NotNull
+	/**
+	 * Provides the given data source
+	 *
+	 * @param cbi
+	 *
+	 * @return
+	 */
 	private DataSource provideDataSource(ConnectionBaseInfo cbi)
 	{
 		if (cbi == null)

@@ -16,8 +16,17 @@ public abstract class ConnectionBaseInfo
 		implements Serializable, Cloneable
 {
 	private static final long serialVersionUID = 1L;
-
+	/**
+	 * The persistence unit name applied to this cbi
+	 */
+	private String persistenceUnitName;
+	/**
+	 * If this is running in XA mode
+	 */
 	private boolean xa;
+	/**
+	 * The URL to connect to
+	 */
 	private String url;
 	private String serverName;
 	private String port;
@@ -823,4 +832,14 @@ public abstract class ConnectionBaseInfo
 		return this;
 	}
 
+	public String getPersistenceUnitName()
+	{
+		return persistenceUnitName;
+	}
+
+	public ConnectionBaseInfo setPersistenceUnitName(String persistenceUnitName)
+	{
+		this.persistenceUnitName = persistenceUnitName;
+		return this;
+	}
 }

@@ -59,6 +59,18 @@ public abstract class DBStartupAsync
 	}
 
 	/**
+	 * Starts up the database with the given persist service and initializes the BTM datasource,
+	 * The Datasource must initialize before the persist service is started, so it must be injected into this class
+	 * <p>
+	 * <p>
+	 * <p>
+	 */
+	protected DBStartupAsync(PersistService persistService)
+	{
+		this.persistService = persistService;
+	}
+
+	/**
 	 * Starts the persistence service, should be threaded if the sort orders are properly applied
 	 */
 	@Override
