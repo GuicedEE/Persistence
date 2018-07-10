@@ -1,6 +1,7 @@
 package com.jwebmp.guicedpersistence.db;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Manages properties passed into the entity manager factory
@@ -13,5 +14,5 @@ public interface PropertiesEntityManagerReader
 	 * <p>
 	 * return properties
 	 */
-	Map<String, String> processProperties();
+	Map<String, String> processProperties(Properties incomingProperties);
 }
