@@ -82,7 +82,7 @@
 
         <dependency>
             <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-agroal</artifactId>
+            <artifactId>hibernate-core</artifactId>
             <scope>test</scope>
         </dependency>
 

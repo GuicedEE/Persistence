@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
@@ -83,7 +84,11 @@ public abstract class AbstractDatabaseProviderModule
 		ServiceLoader<PropertiesEntityManagerReader> entityManagerReaders = ServiceLoader.load(PropertiesEntityManagerReader.class);
 		for (PropertiesEntityManagerReader entityManagerReader : entityManagerReaders)
 		{
-			jdbcProperties.putAll(entityManagerReader.processProperties(jdbcProperties));
+			Map<String, String> output = entityManagerReader.processProperties(jdbcProperties);
+			if (output != null && !output.isEmpty())
+			{
+				jdbcProperties.putAll(output);
+			}
 		}
 
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
