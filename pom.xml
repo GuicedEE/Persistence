@@ -34,6 +34,7 @@
             <groupId>com.jwebmp</groupId>
             <artifactId>guiced-injection</artifactId>
             <version>${project.version}</version>
+            <classifier>${jwebmp.runtime.classifier}</classifier>
         </dependency>
 
 
@@ -41,6 +42,7 @@
             <groupId>com.jwebmp</groupId>
             <artifactId>jwebmp-log-master</artifactId>
             <version>${project.version}</version>
+            <classifier>${jwebmp.runtime.classifier}</classifier>
         </dependency>
 
 
