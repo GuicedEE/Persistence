@@ -47,7 +47,7 @@ public class CustomJpaPersistService
 
 	@Inject
 	public CustomJpaPersistService(
-			@CustomJpa String persistenceUnitName, @Nullable @CustomJpa Map<?, ?> persistenceProperties)
+			@CustomJpa String persistenceUnitName, @CustomJpa Map<?, ?> persistenceProperties)
 	{
 		this.persistenceUnitName = persistenceUnitName;
 		this.persistenceProperties = persistenceProperties;
