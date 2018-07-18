@@ -5,6 +5,8 @@ module com.jwebmp.guicedpersistence {
 
 	exports com.jwebmp.guicedpersistence.db.intercepters to com.jwebmp.guicedinjection;
 	exports com.jwebmp.guicedpersistence.scanners to com.jwebmp.guicedinjection, io.github.lukehutch.fastclasspathscanner;
+	exports com.jwebmp.guicedpersistence.db.connectionbasebuilders;
+	exports com.oracle.jaxb21;
 
 	requires com.google.guice.extensions.persist;
 	requires com.jwebmp.guicedinjection;
