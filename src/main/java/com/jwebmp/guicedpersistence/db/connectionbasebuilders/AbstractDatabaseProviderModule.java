@@ -83,7 +83,7 @@ public abstract class AbstractDatabaseProviderModule
 		ServiceLoader<PropertiesEntityManagerReader> entityManagerReaders = ServiceLoader.load(PropertiesEntityManagerReader.class);
 		for (PropertiesEntityManagerReader entityManagerReader : entityManagerReaders)
 		{
-			Map<String, String> output = entityManagerReader.processProperties(jdbcProperties);
+			Map<String, String> output = entityManagerReader.processProperties(pu, jdbcProperties);
 			if (output != null && !output.isEmpty())
 			{
 				jdbcProperties.putAll(output);

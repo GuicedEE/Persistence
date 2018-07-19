@@ -1,5 +1,7 @@
 package com.jwebmp.guicedpersistence.db;
 
+import com.oracle.jaxb21.PersistenceUnit;
+
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,5 +16,5 @@ public interface PropertiesEntityManagerReader
 	 * <p>
 	 * return properties
 	 */
-	Map<String, String> processProperties(Properties incomingProperties);
+	Map<String, String> processProperties(PersistenceUnit persistenceUnit, Properties incomingProperties);
 }

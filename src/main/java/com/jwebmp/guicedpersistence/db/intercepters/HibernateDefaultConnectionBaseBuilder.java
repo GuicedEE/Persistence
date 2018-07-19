@@ -9,38 +9,6 @@ import java.util.Properties;
 public class HibernateDefaultConnectionBaseBuilder
 		implements PropertiesConnectionInfoReader
 {
-	/**
-	 * Specifies the maximum fetch depth
-	 * <p>
-	 * default min value
-	 */
-	private static int maxFetchDepth = Integer.MIN_VALUE;
-	/**
-	 * If it should be possible to lazy fetch outside of transactions,
-	 * <p>
-	 * default true
-	 */
-	private static boolean enableFetchOutsizeLadyLoad = false;
-
-	public static int getMaxFetchDepth()
-	{
-		return maxFetchDepth;
-	}
-
-	public static void setMaxFetchDepth(int maxFetchDepth)
-	{
-		HibernateDefaultConnectionBaseBuilder.maxFetchDepth = maxFetchDepth;
-	}
-
-	public static boolean isEnableFetchOutsizeLadyLoad()
-	{
-		return enableFetchOutsizeLadyLoad;
-	}
-
-	public static void setEnableFetchOutsizeLadyLoad(boolean enableFetchOutsizeLadyLoad)
-	{
-		HibernateDefaultConnectionBaseBuilder.enableFetchOutsizeLadyLoad = enableFetchOutsizeLadyLoad;
-	}
 
 	@Override
 	public ConnectionBaseInfo populateConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties, ConnectionBaseInfo cbi)
@@ -69,14 +37,6 @@ public class HibernateDefaultConnectionBaseBuilder
 					break;
 				}
 			}
-		}
-		if (enableFetchOutsizeLadyLoad)
-		{
-			filteredProperties.put("ibernate.enable_lazy_load_no_trans", Boolean.toString(true));
-		}
-		if (maxFetchDepth != Integer.MIN_VALUE)
-		{
-			filteredProperties.put("ibernate.max_fetch_depth", Integer.toString(maxFetchDepth));
 		}
 
 		return cbi;
