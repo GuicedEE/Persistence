@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jwebmp.guicedpersistence.jpa;
+package com.jwebmp.guicedpersistence.injectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;

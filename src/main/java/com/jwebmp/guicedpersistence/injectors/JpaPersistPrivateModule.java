@@ -1,4 +1,4 @@
-package com.jwebmp.guicedpersistence.jpa;
+package com.jwebmp.guicedpersistence.injectors;
 
 import com.google.inject.PrivateModule;
 import com.google.inject.persist.PersistService;

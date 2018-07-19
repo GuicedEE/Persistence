@@ -50,8 +50,9 @@ public class PersistenceFileHandler
 		log.config("Persistence Units Loading... ");
 		FileMatchContentsProcessorWithContext processor = (classpathElt, relativePath, fileContents) ->
 		{
-			log.config("Found " + relativePath + " - " + classpathElt.getCanonicalPath());
-			persistenceUnits.addAll(getPersistenceUnitFromFile(fileContents, "Found " + relativePath + " - " + classpathElt.getCanonicalPath()));
+
+			log.config("Found " + relativePath);
+			persistenceUnits.addAll(getPersistenceUnitFromFile(fileContents, "Found " + relativePath));
 		};
 		map.put("persistence.xml", processor);
 		return map;

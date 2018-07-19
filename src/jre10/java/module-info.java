@@ -1,3 +1,5 @@
+import com.jwebmp.guicedpersistence.services.ITransactionHandler;
+
 module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.db;
 	exports com.jwebmp.guicedpersistence.db.annotations;
@@ -7,6 +9,7 @@ module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.scanners to com.jwebmp.guicedinjection, io.github.lukehutch.fastclasspathscanner;
 	exports com.jwebmp.guicedpersistence.db.connectionbasebuilders;
 	exports com.oracle.jaxb21;
+	exports com.jwebmp.guicedpersistence.services;
 
 	requires com.google.guice.extensions.persist;
 	requires com.jwebmp.guicedinjection;
@@ -16,8 +19,6 @@ module com.jwebmp.guicedpersistence {
 	requires java.logging;
 	requires com.google.guice;
 
-	requires java.sql;
-	requires java.transaction;
 	requires java.naming;
 	requires aopalliance;
 
@@ -32,9 +33,11 @@ module com.jwebmp.guicedpersistence {
 
 	requires java.persistence;
 	requires json;
+	requires java.sql;
 
 	uses com.jwebmp.guicedpersistence.db.PropertiesConnectionInfoReader;
 	uses com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
+	uses ITransactionHandler;
 
 	provides com.jwebmp.guicedinjection.scanners.PackageContentsScanner with com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
 	provides com.jwebmp.guicedinjection.scanners.FileContentsScanner with com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
@@ -42,4 +45,8 @@ module com.jwebmp.guicedpersistence {
 	provides com.jwebmp.guicedpersistence.db.PropertiesConnectionInfoReader with com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder,
 			                                                                        com.jwebmp.guicedpersistence.db.intercepters.HibernateDefaultConnectionBaseBuilder,
 			                                                                        com.jwebmp.guicedpersistence.db.intercepters.EclipseLinkDefaultConnectionBaseBuilder;
+
+	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
+
+	opens com.jwebmp.guicedpersistence.injectors to com.google.guice;
 }

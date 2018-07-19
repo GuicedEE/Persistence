@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jwebmp.guicedpersistence.jpa;
+package com.jwebmp.guicedpersistence.injectors;
 
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
