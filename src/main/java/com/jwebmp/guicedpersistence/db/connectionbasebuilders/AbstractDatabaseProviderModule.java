@@ -2,7 +2,6 @@ package com.jwebmp.guicedpersistence.db.connectionbasebuilders;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
-import com.jwebmp.guicedinjection.annotations.GuiceInjectorModuleMarker;
 import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
 import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
@@ -27,7 +26,6 @@ import java.util.logging.Logger;
  * <p>
  * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
-@GuiceInjectorModuleMarker
 public abstract class AbstractDatabaseProviderModule
 		extends AbstractModule
 {

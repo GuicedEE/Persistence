@@ -1,4 +1,12 @@
+import com.jwebmp.guicedinjection.interfaces.IFileContentsScanner;
+import com.jwebmp.guicedinjection.interfaces.IGuiceConfigurator;
+import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
+import com.jwebmp.guicedinjection.interfaces.IPackageContentsScanner;
+import com.jwebmp.guicedpersistence.db.DBStartupAsyncPostStartup;
+import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.db.services.HibernateEntityManagerProperties;
+import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
+import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
 import com.jwebmp.guicedpersistence.services.ITransactionHandler;
 
 module com.jwebmp.guicedpersistence {
@@ -41,9 +49,12 @@ module com.jwebmp.guicedpersistence {
 	uses com.jwebmp.guicedpersistence.db.PropertiesConnectionInfoReader;
 	uses com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
 	uses ITransactionHandler;
+	uses com.jwebmp.guicedpersistence.services.IDBStartup;
 
-	provides com.jwebmp.guicedinjection.scanners.PackageContentsScanner with com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
-	provides com.jwebmp.guicedinjection.scanners.FileContentsScanner with com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
+	provides IPackageContentsScanner with GuiceInjectionMetaInfScanner;
+	provides IFileContentsScanner with PersistenceFileHandler;
+	provides IGuiceConfigurator with PersistenceGuiceConfigurator;
+	provides IGuicePostStartup with DBStartupAsyncPostStartup;
 
 	provides com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader with HibernateEntityManagerProperties;
 

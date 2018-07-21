@@ -2,8 +2,8 @@ package com.jwebmp.guicedpersistence.db;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jwebmp.guicedinjection.scanners.FileContentsScanner;
-import com.jwebmp.guicedinjection.scanners.PackageContentsScanner;
+import com.google.common.base.Strings;
+import com.jwebmp.guicedinjection.interfaces.IFileContentsScanner;
 import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.Persistence;
 import com.oracle.jaxb21.PersistenceContainer;
@@ -12,7 +12,6 @@ import io.github.lukehutch.fastclasspathscanner.matchprocessor.FileMatchContents
 import org.json.JSONObject;
 import org.json.XML;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,9 +21,10 @@ import java.util.logging.Logger;
 
 @SuppressWarnings("unused")
 public class PersistenceFileHandler
-		implements FileContentsScanner, PackageContentsScanner
+		implements IFileContentsScanner
 {
 	private static final Logger log = LogFactory.getLog("PersistenceFileHandler");
+	private static final String ignorePersistenceUnitProperty = "guicedpersistence.ignore";
 	private static final Set<PersistenceUnit> persistenceUnits = new HashSet<>();
 
 	public PersistenceFileHandler()
@@ -47,12 +47,21 @@ public class PersistenceFileHandler
 	{
 		Map<String, FileMatchContentsProcessorWithContext> map = new HashMap<>();
 
-		log.config("Persistence Units Loading... ");
+		log.info("Loading Persistence Units");
 		FileMatchContentsProcessorWithContext processor = (classpathElt, relativePath, fileContents) ->
 		{
-
-			log.config("Found " + relativePath);
-			persistenceUnits.addAll(getPersistenceUnitFromFile(fileContents, "Found " + relativePath));
+			Set<PersistenceUnit> units = getPersistenceUnitFromFile(fileContents, relativePath);
+			units.forEach(unit -> unit.getProperties()
+			                          .getProperty()
+			                          .removeIf(a -> a.getName()
+			                                          .equals(ignorePersistenceUnitProperty) &&
+			                                         a.getValue()
+			                                          .equals("true")));
+			for (PersistenceUnit unit : units)
+			{
+				log.config("Found Persistence Unit " + unit.getName() + " - JTA (" + Strings.isNullOrEmpty(unit.getJtaDataSource()) + ")");
+				persistenceUnits.add(unit);
+			}
 		};
 		map.put("persistence.xml", processor);
 		return map;
@@ -65,22 +74,21 @@ public class PersistenceFileHandler
 	 *
 	 * @return
 	 */
-	private Set<PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile, String persistenceFileName) throws IOException
+	private Set<PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile, String persistenceFileName)
 	{
 		Set<PersistenceUnit> units = new HashSet<>();
-		String xml = new String(persistenceFile);
-
-		JSONObject jsonObj = XML.toJSONObject(new String(persistenceFile));
-		String json = String.valueOf(jsonObj);
-		xml = replaceNameSpaceAttributes(xml);
-		jsonObj = XML.toJSONObject(xml);
-
-		ObjectMapper om = new ObjectMapper();
-		om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-		PersistenceContainer pp = om.readValue(jsonObj.toString(), PersistenceContainer.class);
-
 		try
 		{
+			String xml = new String(persistenceFile);
+			JSONObject jsonObj = XML.toJSONObject(new String(persistenceFile));
+			String json = String.valueOf(jsonObj);
+			xml = replaceNameSpaceAttributes(xml);
+			jsonObj = XML.toJSONObject(xml);
+
+			ObjectMapper om = new ObjectMapper();
+			om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+			PersistenceContainer pp = om.readValue(jsonObj.toString(), PersistenceContainer.class);
+
 			Persistence p = pp.getPersistence();
 			for (PersistenceUnit persistenceUnit : p.getPersistenceUnit())
 			{
@@ -102,11 +110,5 @@ public class PersistenceFileHandler
 		replaced = replaced.replace("xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/persistence", "");
 		replaced = replaced.replace("http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd\"", "");
 		return replaced;
-	}
-
-	@Override
-	public Set<String> searchFor()
-	{
-		return new HashSet<>();
 	}
 }
