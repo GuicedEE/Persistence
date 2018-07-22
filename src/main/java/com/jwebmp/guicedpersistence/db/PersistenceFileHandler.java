@@ -111,4 +111,25 @@ public class PersistenceFileHandler
 		replaced = replaced.replace("http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd\"", "");
 		return replaced;
 	}
+
+	@Override
+	public int hashCode()
+	{
+		return super.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (obj == null)
+		{
+			return false;
+		}
+		if (obj.getClass()
+		       .equals(getClass()))
+		{
+			return true;
+		}
+		return false;
+	}
 }

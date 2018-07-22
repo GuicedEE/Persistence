@@ -3,11 +3,14 @@ package com.jwebmp.guicedpersistence.injectors;
 import com.google.inject.PrivateModule;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
+import com.jwebmp.logger.LogFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.lang.annotation.Annotation;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Provides jar scoped persistence private modules, and exposes them to the ear level
@@ -17,6 +20,7 @@ import java.util.Properties;
 public class JpaPersistPrivateModule
 		extends PrivateModule
 {
+	private static final Logger log = LogFactory.getLog("JpaPersistPrivateModule");
 
 	protected final String persistenceUnitName;
 	protected final Properties props;
@@ -41,6 +45,10 @@ public class JpaPersistPrivateModule
 	protected void configure()
 	{
 		install(new CustomJpaPersistModule(persistenceUnitName).properties(props));
+		log.log(Level.FINE, "Bound EntityManagerFactory.class with @" + qualifier.getSimpleName());
+		log.log(Level.FINE, "Bound EntityManager.class with @" + qualifier.getSimpleName());
+		log.log(Level.FINE, "Bound PersistService.class with @" + qualifier.getSimpleName());
+		log.log(Level.FINE, "Bound UnitOfWork.class with @" + qualifier.getSimpleName());
 		rebind(qualifier, EntityManagerFactory.class, EntityManager.class, PersistService.class, UnitOfWork.class);
 		doConfigure();
 	}

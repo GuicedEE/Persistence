@@ -1,5 +1,6 @@
 package com.jwebmp.guicedpersistence.db;
 
+import com.google.common.base.Strings;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import javax.sql.DataSource;
@@ -841,5 +842,44 @@ public abstract class ConnectionBaseInfo
 	{
 		this.persistenceUnitName = persistenceUnitName;
 		return this;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "ConnectionBaseInfo{" +
+		       "persistenceUnitName='" + persistenceUnitName + '\'' +
+		       ", xa=" + xa +
+		       ", url='" + url + '\'' +
+		       ", serverName='" + serverName + '\'' +
+		       ", port='" + port + '\'' +
+		       ", instanceName='" + instanceName + '\'' +
+		       ", driver='" + driver + '\'' +
+		       ", driverClass='" + driverClass + '\'' +
+		       ", username='" + username + '\'' +
+		       ", password='" + (Strings.isNullOrEmpty(password) ? "" : "notempty") + '\'' +
+		       ", transactionIsolation='" + transactionIsolation + '\'' +
+		       ", databaseName='" + databaseName + '\'' +
+		       ", jndiName='" + jndiName + '\'' +
+		       ", jdbcIdentifier='" + jdbcIdentifier + '\'' +
+		       ", minPoolSize=" + minPoolSize +
+		       ", maxPoolSize=" + maxPoolSize +
+		       ", maxIdleTime=" + maxIdleTime +
+		       ", maxLifeTime=" + maxLifeTime +
+		       ", preparedStatementCacheSize=" + preparedStatementCacheSize +
+		       ", prefill=" + prefill +
+		       ", useStrictMin=" + useStrictMin +
+		       ", acquireIncrement=" + acquireIncrement +
+		       ", acquisitionInterval=" + acquisitionInterval +
+		       ", acquisitionTimeout=" + acquisitionTimeout +
+		       ", allowLocalTransactions=" + allowLocalTransactions +
+		       ", applyTransactionTimeout=" + applyTransactionTimeout +
+		       ", automaticEnlistingEnabled=" + automaticEnlistingEnabled +
+		       ", enableJdbc4ConnectionTest=" + enableJdbc4ConnectionTest +
+		       ", ignoreRecoveryFailures=" + ignoreRecoveryFailures +
+		       ", shareTransactionConnections=" + shareTransactionConnections +
+		       ", testQuery='" + testQuery + '\'' +
+		       ", serverInstanceNameProperty='" + serverInstanceNameProperty + '\'' +
+		       '}';
 	}
 }

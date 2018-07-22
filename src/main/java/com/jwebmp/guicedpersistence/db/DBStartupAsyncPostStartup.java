@@ -60,7 +60,7 @@ public final class DBStartupAsyncPostStartup
 			loadAsync.shutdown();
 			try
 			{
-				loadAsync.awaitTermination(5, TimeUnit.SECONDS);
+				loadAsync.awaitTermination(1, TimeUnit.SECONDS);
 			}
 			catch (InterruptedException e)
 			{

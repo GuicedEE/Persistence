@@ -2,6 +2,7 @@ package com.jwebmp.guicedpersistence.db.connectionbasebuilders;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
+import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
 import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
 import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
@@ -28,6 +29,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractDatabaseProviderModule
 		extends AbstractModule
+		implements IGuiceModule
 {
 	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
 
@@ -70,7 +72,7 @@ public abstract class AbstractDatabaseProviderModule
 	@Override
 	protected void configure()
 	{
-		log.config(getPersistenceUnitName() + " Is Binding");
+		log.config("Loading Database Module - " + getClass().getCanonicalName() + " - " + getPersistenceUnitName());
 		Properties jdbcProperties = getJDBCPropertiesMap();
 		PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
@@ -91,15 +93,17 @@ public abstract class AbstractDatabaseProviderModule
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
 		connectionBaseInfo.setJndiName(getJndiMapping());
+		log.fine("Connection Base Info Final - " + connectionBaseInfo);
 
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
 		DataSource ds = provideDataSource(connectionBaseInfo);
 		if (ds != null)
 		{
+			log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
 			bind(getDataSourceKey()).toInstance(ds);
 		}
-
-		log.config(getPersistenceUnitName() + " Finished Binding.");
+		log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
+		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
 	}
 
 	/**
