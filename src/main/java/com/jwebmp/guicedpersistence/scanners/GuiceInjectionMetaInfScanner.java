@@ -13,7 +13,6 @@ public class GuiceInjectionMetaInfScanner
 	{
 		Set<String> strings = new HashSet<>();
 		strings.add("META-INF");
-		strings.add("com.jwebmp.guicedpersistence");
 		return strings;
 	}
 }
