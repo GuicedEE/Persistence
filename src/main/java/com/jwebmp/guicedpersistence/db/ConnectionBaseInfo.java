@@ -1,18 +1,30 @@
 package com.jwebmp.guicedpersistence.db;
 
-import com.google.common.base.Strings;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import java.util.logging.Level;
+
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
 
 /**
  * This class is a basic container (mirror) for the database jtm builder string.
  * Exists to specify the default properties for connections that a jtm should implement should btm be switched for a different
  * implementation
  */
+@JsonAutoDetect(fieldVisibility = ANY,
+		getterVisibility = NONE,
+		setterVisibility = NONE)
+@JsonInclude(NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ConnectionBaseInfo
 		implements Serializable, Cloneable
 {
@@ -35,6 +47,7 @@ public abstract class ConnectionBaseInfo
 	private String driver;
 	private String driverClass;
 	private String username;
+	@JsonIgnore
 	private String password;
 
 	private String transactionIsolation;
@@ -844,42 +857,24 @@ public abstract class ConnectionBaseInfo
 		return this;
 	}
 
+	@JsonProperty("password")
+	private String passwordProperty()
+	{
+		return this.password == null ? "NotSet" : "Set";
+	}
+
 	@Override
 	public String toString()
 	{
-		return "ConnectionBaseInfo{" +
-		       "persistenceUnitName='" + persistenceUnitName + '\'' +
-		       ", xa=" + xa +
-		       ", url='" + url + '\'' +
-		       ", serverName='" + serverName + '\'' +
-		       ", port='" + port + '\'' +
-		       ", instanceName='" + instanceName + '\'' +
-		       ", driver='" + driver + '\'' +
-		       ", driverClass='" + driverClass + '\'' +
-		       ", username='" + username + '\'' +
-		       ", password='" + (Strings.isNullOrEmpty(password) ? "" : "notempty") + '\'' +
-		       ", transactionIsolation='" + transactionIsolation + '\'' +
-		       ", databaseName='" + databaseName + '\'' +
-		       ", jndiName='" + jndiName + '\'' +
-		       ", jdbcIdentifier='" + jdbcIdentifier + '\'' +
-		       ", minPoolSize=" + minPoolSize +
-		       ", maxPoolSize=" + maxPoolSize +
-		       ", maxIdleTime=" + maxIdleTime +
-		       ", maxLifeTime=" + maxLifeTime +
-		       ", preparedStatementCacheSize=" + preparedStatementCacheSize +
-		       ", prefill=" + prefill +
-		       ", useStrictMin=" + useStrictMin +
-		       ", acquireIncrement=" + acquireIncrement +
-		       ", acquisitionInterval=" + acquisitionInterval +
-		       ", acquisitionTimeout=" + acquisitionTimeout +
-		       ", allowLocalTransactions=" + allowLocalTransactions +
-		       ", applyTransactionTimeout=" + applyTransactionTimeout +
-		       ", automaticEnlistingEnabled=" + automaticEnlistingEnabled +
-		       ", enableJdbc4ConnectionTest=" + enableJdbc4ConnectionTest +
-		       ", ignoreRecoveryFailures=" + ignoreRecoveryFailures +
-		       ", shareTransactionConnections=" + shareTransactionConnections +
-		       ", testQuery='" + testQuery + '\'' +
-		       ", serverInstanceNameProperty='" + serverInstanceNameProperty + '\'' +
-		       '}';
+		try
+		{
+			return new ObjectMapper().writeValueAsString(this);
+		}
+		catch (JsonProcessingException e)
+		{
+			LogFactory.getLog("ConnectionBaseInfo")
+			          .log(Level.SEVERE, "Cannot render ConnectionBaseInfo", e);
+			return "Unable to render";
+		}
 	}
 }
