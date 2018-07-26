@@ -88,11 +88,19 @@ public class PersistenceFileHandler
 			ObjectMapper om = new ObjectMapper();
 			om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 			PersistenceContainer pp = om.readValue(jsonObj.toString(), PersistenceContainer.class);
-
-			Persistence p = pp.getPersistence();
-			for (PersistenceUnit persistenceUnit : p.getPersistenceUnit())
+			Double version = Double.parseDouble(pp.getPersistence()
+			                                      .getVersion());
+			if (version < 2.1)
 			{
-				units.add(persistenceUnit);
+				log.warning("Ignoring Persistence File - Version is less than 2.1.");
+			}
+			else
+			{
+				Persistence p = pp.getPersistence();
+				for (PersistenceUnit persistenceUnit : p.getPersistenceUnit())
+				{
+					units.add(persistenceUnit);
+				}
 			}
 		}
 		catch (Throwable t)
@@ -105,11 +113,21 @@ public class PersistenceFileHandler
 	private String replaceNameSpaceAttributes(String xml)
 	{
 		String replaced = xml;
+		replaced = removeAllXmlNamespace(replaced);
+		replaced = replaced.replace(
+				"xmlns=\"http://java.sun.com/xml/ns/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd\"",
+				"");
 		replaced = replaced.replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
 		replaced = replaced.replace("xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"", "");
 		replaced = replaced.replace("xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/persistence", "");
 		replaced = replaced.replace("http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd\"", "");
 		return replaced;
+	}
+
+	private static String removeAllXmlNamespace(String xmlData)
+	{
+		String xmlnsPattern = "\\s+xmlns\\s*(:\\w)?\\s*=\\s*\\\"(?<url>[^\\\"]*)\\\"";
+		return xmlData.replaceAll(xmlnsPattern, "");
 	}
 
 	@Override

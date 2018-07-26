@@ -63,7 +63,7 @@ module com.jwebmp.guicedpersistence {
 			                                                                        com.jwebmp.guicedpersistence.db.intercepters.EclipseLinkDefaultConnectionBaseBuilder;
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
-
+	opens com.jwebmp.guicedpersistence.db to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.injectors to com.google.guice;
 	exports com.jwebmp.guicedpersistence.db.services;
 }

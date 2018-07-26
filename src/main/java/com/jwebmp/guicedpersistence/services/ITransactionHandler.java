@@ -17,7 +17,7 @@ public interface ITransactionHandler
 	 * @param entityManager
 	 * 		The entity manager associated
 	 */
-	void beginTransacation(boolean createNew, boolean transactionExists, EntityManager entityManager);
+	void beginTransacation(boolean createNew, EntityManager entityManager);
 
 	/**
 	 * What to do when committing a transaction, always called
@@ -29,7 +29,15 @@ public interface ITransactionHandler
 	 * @param entityManager
 	 * 		The entity manager associated
 	 */
-	void commitTransacation(boolean createNew, boolean transactionExists, EntityManager entityManager);
+	void commitTransacation(boolean createNew, EntityManager entityManager);
+
+	/**
+	 * Returns the value denoting if the transaction exists or not
+	 *
+	 * @param entityManager The given entity manager
+	 * @return
+	 */
+	boolean transactionExists(EntityManager entityManager);
 
 	/**
 	 * If this handler is active or not
