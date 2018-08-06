@@ -96,10 +96,7 @@ public class PersistenceFileHandler
 			else
 			{
 				Persistence p = pp.getPersistence();
-				for (PersistenceUnit persistenceUnit : p.getPersistenceUnit())
-				{
-					units.add(persistenceUnit);
-				}
+				units.addAll(p.getPersistenceUnit());
 			}
 		}
 		catch (Throwable t)

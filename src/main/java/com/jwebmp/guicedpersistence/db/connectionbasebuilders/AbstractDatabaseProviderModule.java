@@ -102,6 +102,7 @@ public abstract class AbstractDatabaseProviderModule
 			log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
 			bind(getDataSourceKey()).toInstance(ds);
 		}
+
 		log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
 	}
