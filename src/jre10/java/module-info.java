@@ -1,10 +1,12 @@
-import com.jwebmp.guicedinjection.interfaces.*;
+import com.jwebmp.guicedinjection.interfaces.IFileContentsScanner;
+import com.jwebmp.guicedinjection.interfaces.IGuiceConfigurator;
+import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
+import com.jwebmp.guicedinjection.interfaces.IPathContentsScanner;
 import com.jwebmp.guicedpersistence.db.DBStartupAsyncPostStartup;
 import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.db.services.HibernateEntityManagerProperties;
 import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
-import com.jwebmp.guicedpersistence.services.ITransactionHandler;
 
 module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.db;
@@ -45,7 +47,7 @@ module com.jwebmp.guicedpersistence {
 
 	uses com.jwebmp.guicedpersistence.db.PropertiesConnectionInfoReader;
 	uses com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
-	uses ITransactionHandler;
+	uses com.jwebmp.guicedpersistence.services.ITransactionHandler;
 	uses com.jwebmp.guicedpersistence.services.IDBStartup;
 
 	provides IPathContentsScanner with GuiceInjectionMetaInfScanner;
