@@ -20,6 +20,8 @@ public final class DBStartupAsyncPostStartup
 		implements IGuicePostStartup
 {
 	private static final Logger log = LogFactory.getLog("DBStartupAsyncPostStartup");
+	private static final ExecutorService dbAutoStartupExecutors = Executors.newFixedThreadPool(Runtime.getRuntime()
+	                                                                                                  .availableProcessors());
 
 	public DBStartupAsyncPostStartup()
 	{
@@ -39,33 +41,25 @@ public final class DBStartupAsyncPostStartup
 		Iterator<IDBStartup> iterator = loader.iterator();
 		if (iterator.hasNext())
 		{
-			ExecutorService loadAsync = Executors.newFixedThreadPool(Runtime.getRuntime()
-			                                                                .availableProcessors());
+
 			for (IDBStartup startup : loader)
 			{
 				log.config("Scheduling IDBStartup - " + startup.getClass());
-				loadAsync.execute(() ->
-				                  {
-					                  log.config("Loading IDBStartup - " + startup.getClass());
-					                  try
-					                  {
-						                  GuiceContext.getInstance(startup.getClass());
-					                  }
-					                  catch (Throwable T)
-					                  {
-						                  log.log(Level.SEVERE, "Unable to inject " + startup.getClass(), T);
-					                  }
-				                  });
+				dbAutoStartupExecutors.execute(() ->
+				                               {
+					                               log.config("Loading IDBStartup - " + startup.getClass());
+					                               try
+					                               {
+						                               GuiceContext.getInstance(startup.getClass());
+						                               log.config("Started IDBStartup - " + startup.getClass());
+					                               }
+					                               catch (Throwable T)
+					                               {
+						                               log.log(Level.SEVERE, "Unable to inject " + startup.getClass(), T);
+					                               }
+				                               });
 			}
-			loadAsync.shutdown();
-			try
-			{
-				loadAsync.awaitTermination(1, TimeUnit.MILLISECONDS);
-			}
-			catch (InterruptedException e)
-			{
-				log.log(Level.SEVERE, "Timeout starting databases in executor service");
-			}
+			dbAutoStartupExecutors.shutdown();
 		}
 	}
 
