@@ -2,7 +2,7 @@ package com.jwebmp.guicedinjection.db;
 
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.logger.LogFactory;
-import io.github.lukehutch.fastclasspathscanner.scanner.ScanResult;
+import io.github.classgraph.ScanResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.logging.Level;

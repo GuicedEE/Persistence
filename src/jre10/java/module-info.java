@@ -1,7 +1,4 @@
-import com.jwebmp.guicedinjection.interfaces.IFileContentsScanner;
-import com.jwebmp.guicedinjection.interfaces.IGuiceConfigurator;
-import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
-import com.jwebmp.guicedinjection.interfaces.IPackageContentsScanner;
+import com.jwebmp.guicedinjection.interfaces.*;
 import com.jwebmp.guicedpersistence.db.DBStartupAsyncPostStartup;
 import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.db.services.HibernateEntityManagerProperties;
@@ -24,7 +21,7 @@ module com.jwebmp.guicedpersistence {
 	requires com.jwebmp.guicedinjection;
 	requires com.jwebmp.logmaster;
 
-	requires io.github.lukehutch.fastclasspathscanner;
+	requires io.github.classgraph;
 	requires java.logging;
 	requires com.google.guice;
 
@@ -51,7 +48,7 @@ module com.jwebmp.guicedpersistence {
 	uses ITransactionHandler;
 	uses com.jwebmp.guicedpersistence.services.IDBStartup;
 
-	provides IPackageContentsScanner with GuiceInjectionMetaInfScanner;
+	provides IPathContentsScanner with GuiceInjectionMetaInfScanner;
 	provides IFileContentsScanner with PersistenceFileHandler;
 	provides IGuiceConfigurator with PersistenceGuiceConfigurator;
 	provides IGuicePostStartup with DBStartupAsyncPostStartup;
@@ -65,5 +62,6 @@ module com.jwebmp.guicedpersistence {
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.db to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.injectors to com.google.guice;
+
 	exports com.jwebmp.guicedpersistence.db.services;
 }

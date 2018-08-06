@@ -8,7 +8,7 @@ import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.Persistence;
 import com.oracle.jaxb21.PersistenceContainer;
 import com.oracle.jaxb21.PersistenceUnit;
-import io.github.lukehutch.fastclasspathscanner.matchprocessor.FileMatchContentsProcessorWithContext;
+import io.github.classgraph.ResourceList;
 import org.json.JSONObject;
 import org.json.XML;
 
@@ -43,14 +43,13 @@ public class PersistenceFileHandler
 	}
 
 	@Override
-	public Map<String, FileMatchContentsProcessorWithContext> onMatch()
+	public Map<String, ResourceList.ByteArrayConsumer> onMatch()
 	{
-		Map<String, FileMatchContentsProcessorWithContext> map = new HashMap<>();
-
+		Map<String, ResourceList.ByteArrayConsumer> map = new HashMap<>();
 		log.info("Loading Persistence Units");
-		FileMatchContentsProcessorWithContext processor = (classpathElt, relativePath, fileContents) ->
+		ResourceList.ByteArrayConsumer processor = (resource,bytes) ->
 		{
-			Set<PersistenceUnit> units = getPersistenceUnitFromFile(fileContents, relativePath);
+			Set<PersistenceUnit> units = getPersistenceUnitFromFile(bytes, resource.getPathRelativeToClasspathElement());
 			units.forEach(unit -> unit.getProperties()
 			                          .getProperty()
 			                          .removeIf(a -> a.getName()
