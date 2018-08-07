@@ -31,7 +31,7 @@ public interface ITransactionHandler
 	 * Returns the value denoting if the transaction exists or not
 	 *
 	 * @param entityManager The given entity manager
-	 * @return
+	 * @return if the transaction exists or not
 	 */
 	boolean transactionExists(EntityManager entityManager);
 
