@@ -12,8 +12,6 @@ public interface ITransactionHandler
 	 *
 	 * @param createNew
 	 * 		If create new was specified
-	 * @param transactionExists
-	 * 		If the transaction already exists
 	 * @param entityManager
 	 * 		The entity manager associated
 	 */
@@ -23,8 +21,6 @@ public interface ITransactionHandler
 	 * What to do when committing a transaction, always called
 	 *
 	 * @param createNew
-	 * 		If create new was specified
-	 * @param transactionExists
 	 * 		If the transaction already exists
 	 * @param entityManager
 	 * 		The entity manager associated
