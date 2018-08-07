@@ -42,7 +42,6 @@ module com.jwebmp.guicedpersistence {
 	requires java.persistence;
 	requires json;
 	requires java.sql;
-	requires org.hibernate.orm.jcache;
 	requires org.hibernate.validator;
 
 	uses com.jwebmp.guicedpersistence.db.PropertiesConnectionInfoReader;
