@@ -1,8 +1,7 @@
 package com.jwebmp.guicedinjection.db;
 
+import com.jwebmp.guicedpersistence.db.AbstractDatabaseProviderModule;
 import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
-import com.jwebmp.guicedpersistence.db.connectionbasebuilders.AbstractDatabaseProviderModule;
-import com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import javax.sql.DataSource;

@@ -1,11 +1,8 @@
-package com.jwebmp.guicedpersistence.db.connectionbasebuilders;
+package com.jwebmp.guicedpersistence.db;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
-import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
-import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
-import com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
 import com.jwebmp.guicedpersistence.db.exceptions.NoConnectionInfoException;
 import com.jwebmp.guicedpersistence.injectors.JpaPersistPrivateModule;
 import com.jwebmp.logger.LogFactory;
@@ -27,15 +24,23 @@ import java.util.logging.Logger;
  * <p>
  * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
+@SuppressWarnings("NullableProblems")
 public abstract class AbstractDatabaseProviderModule
 		extends AbstractModule
 		implements IGuiceModule
 {
+	/**
+	 * Field log
+	 */
 	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
 
+	/**
+	 * Constructor AbstractDatabaseProviderModule creates a new AbstractDatabaseProviderModule instance.
+	 */
 	@SuppressWarnings("unchecked")
 	public AbstractDatabaseProviderModule()
 	{
+		//Config required
 	}
 
 	/**
@@ -43,9 +48,9 @@ public abstract class AbstractDatabaseProviderModule
 	 * <p>
 	 * Use with the utility methods e.g.
 	 *
-	 * @param unit
+	 * @param unit The physical persistence unit, changes have no effect the persistence ready
 	 *
-	 * @return
+	 * @return The new connetion base info
 	 */
 	@NotNull
 	protected abstract ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties);
@@ -110,7 +115,7 @@ public abstract class AbstractDatabaseProviderModule
 	/**
 	 * A properties map of the properties from the file
 	 *
-	 * @return
+	 * @return A properties map of the given persistence units properties
 	 */
 	@NotNull
 	private Properties getJDBCPropertiesMap()
@@ -122,56 +127,11 @@ public abstract class AbstractDatabaseProviderModule
 	}
 
 	/**
-	 * Returns the generated key for the data source
-	 *
-	 * @return
-	 */
-	@NotNull
-	protected Key<DataSource> getDataSourceKey()
-	{
-		return Key.get(DataSource.class, getBindingAnnotation());
-	}
-
-	/**
-	 * Returns the key used for the entity manager
-	 *
-	 * @return
-	 */
-	@NotNull
-	protected Key<EntityManager> getEntityManagerKey()
-	{
-		return Key.get(EntityManager.class, getBindingAnnotation());
-	}
-
-	/**
-	 * The annotation which will identify this guy
-	 *
-	 * @return
-	 */
-	@NotNull
-	protected abstract Class<? extends Annotation> getBindingAnnotation();
-
-	/**
-	 * Provides the given data source
-	 *
-	 * @param cbi
-	 *
-	 * @return
-	 */
-	private DataSource provideDataSource(ConnectionBaseInfo cbi)
-	{
-		if (cbi == null)
-		{
-			throw new NoConnectionInfoException("Not point in trying to create a connection with no info.....");
-		}
-		return cbi.toPooledDatasource();
-	}
-
-	/**
 	 * Returns the persistence unit associated with the supplied name
 	 *
-	 * @return
+	 * @return The given persistence unit
 	 */
+	@SuppressWarnings("WeakerAccess")
 	protected PersistenceUnit getPersistenceUnit()
 	{
 		try
@@ -196,8 +156,10 @@ public abstract class AbstractDatabaseProviderModule
 	/**
 	 * Builds a property map from a persistence unit properties file
 	 *
-	 * @param pu
-	 * @param jdbcProperties
+	 * Overwrites ${} items with system properties
+	 *
+	 * @param pu The persistence unit
+	 * @param jdbcProperties  The final properties map
 	 */
 	private void configurePersistenceUnitProperties(PersistenceUnit pu, Properties jdbcProperties)
 	{
@@ -221,5 +183,54 @@ public abstract class AbstractDatabaseProviderModule
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns the generated key for the data source
+	 *
+	 * @return The key of the annotation and data source
+	 */
+	@SuppressWarnings("WeakerAccess")
+	@NotNull
+	protected Key<DataSource> getDataSourceKey()
+	{
+		return Key.get(DataSource.class, getBindingAnnotation());
+	}
+
+	/**
+	 * The annotation which will identify this guy
+	 *
+	 * @return The annotation that will identify the given databsae
+	 */
+	@NotNull
+	protected abstract Class<? extends Annotation> getBindingAnnotation();
+
+	/**
+	 * Returns the key used for the entity manager
+	 *
+	 * @return The key for the entity manager and the annotation
+	 */
+	@SuppressWarnings("unused")
+	@NotNull
+	protected Key<EntityManager> getEntityManagerKey()
+	{
+		return Key.get(EntityManager.class, getBindingAnnotation());
+	}
+
+	/**
+	 * Provides the given data source
+	 *
+	 * @param cbi
+	 * 		The connection base info required to generate a datasource
+	 *
+	 * @return The given data source or a NoConnectionInfo Exceptions
+	 */
+	private DataSource provideDataSource(ConnectionBaseInfo cbi)
+	{
+		if (cbi == null)
+		{
+			throw new NoConnectionInfoException("Not point in trying to create a connection with no info.....");
+		}
+		return cbi.toPooledDatasource();
 	}
 }

@@ -1,1 +1,1 @@
-com.jwebmp.guicedpersistence.db.DBStartupAsyncPostStartup
+com.jwebmp.guicedpersistence.db.AsyncPostStartup

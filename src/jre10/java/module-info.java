@@ -1,23 +1,20 @@
-import com.jwebmp.guicedinjection.interfaces.IFileContentsScanner;
-import com.jwebmp.guicedinjection.interfaces.IGuiceConfigurator;
-import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
-import com.jwebmp.guicedinjection.interfaces.IPathContentsScanner;
-import com.jwebmp.guicedpersistence.db.DBStartupAsyncPostStartup;
+import com.jwebmp.guicedinjection.interfaces.*;
+import com.jwebmp.guicedpersistence.db.AsyncPostStartup;
 import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.db.services.HibernateEntityManagerProperties;
 import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
+import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
 
 module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.db;
 	exports com.jwebmp.guicedpersistence.db.annotations;
 	exports com.jwebmp.guicedpersistence.db.exceptions;
-
-	exports com.jwebmp.guicedpersistence.db.intercepters to com.jwebmp.guicedinjection;
-	exports com.jwebmp.guicedpersistence.scanners to com.jwebmp.guicedinjection, io.github.lukehutch.fastclasspathscanner;
-	exports com.jwebmp.guicedpersistence.db.connectionbasebuilders;
-	exports com.oracle.jaxb21;
+	exports com.jwebmp.guicedpersistence.db.intercepters;
 	exports com.jwebmp.guicedpersistence.services;
+
+	exports com.jwebmp.guicedpersistence.scanners to com.jwebmp.guicedinjection, io.github.classgraph;
+	exports com.oracle.jaxb21;
 
 	requires com.google.guice.extensions.persist;
 	requires com.jwebmp.guicedinjection;
@@ -47,12 +44,13 @@ module com.jwebmp.guicedpersistence {
 	uses com.jwebmp.guicedpersistence.db.PropertiesConnectionInfoReader;
 	uses com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
 	uses com.jwebmp.guicedpersistence.services.ITransactionHandler;
-	uses com.jwebmp.guicedpersistence.services.IDBStartup;
+	uses com.jwebmp.guicedpersistence.services.IAsyncStartup;
 
 	provides IPathContentsScanner with GuiceInjectionMetaInfScanner;
+	provides IPathContentsBlacklistScanner with GuiceInjectionMetaInfScannerExclusions;
 	provides IFileContentsScanner with PersistenceFileHandler;
 	provides IGuiceConfigurator with PersistenceGuiceConfigurator;
-	provides IGuicePostStartup with DBStartupAsyncPostStartup;
+	provides IGuicePostStartup with AsyncPostStartup;
 
 	provides com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader with HibernateEntityManagerProperties;
 

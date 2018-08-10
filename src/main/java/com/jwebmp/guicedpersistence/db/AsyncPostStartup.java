@@ -2,28 +2,27 @@ package com.jwebmp.guicedpersistence.db;
 
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
-import com.jwebmp.guicedpersistence.services.IDBStartup;
+import com.jwebmp.guicedpersistence.services.IAsyncStartup;
 import com.jwebmp.logger.LogFactory;
 
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
  * This class uses the
  */
-public final class DBStartupAsyncPostStartup
+public final class AsyncPostStartup
 		implements IGuicePostStartup
 {
-	private static final Logger log = LogFactory.getLog("DBStartupAsyncPostStartup");
+	private static final Logger log = LogFactory.getLog("AsyncPostStartup");
 	private static final ExecutorService dbAutoStartupExecutors = Executors.newFixedThreadPool(Runtime.getRuntime()
 	                                                                                                  .availableProcessors());
 
-	public DBStartupAsyncPostStartup()
+	public AsyncPostStartup()
 	{
 		//No Config
 	}
@@ -34,24 +33,24 @@ public final class DBStartupAsyncPostStartup
 	@Override
 	public void postLoad()
 	{
-		log.config("Loading DBStartupAsyncPostStartup - " + Runtime.getRuntime()
-		                                                           .availableProcessors() + " threads");
-		ServiceLoader<IDBStartup> loader = ServiceLoader.load(IDBStartup.class);
+		log.config("Loading AsyncPostStartup - " + Runtime.getRuntime()
+		                                                  .availableProcessors() + " threads");
+		ServiceLoader<IAsyncStartup> loader = ServiceLoader.load(IAsyncStartup.class);
 		//Backwards compat - switch to loader.findFirst()
-		Iterator<IDBStartup> iterator = loader.iterator();
+		Iterator<IAsyncStartup> iterator = loader.iterator();
 		if (iterator.hasNext())
 		{
 
-			for (IDBStartup startup : loader)
+			for (IAsyncStartup startup : loader)
 			{
-				log.config("Scheduling IDBStartup - " + startup.getClass());
+				log.config("Scheduling IAsyncStartup - " + startup.getClass());
 				dbAutoStartupExecutors.execute(() ->
 				                               {
-					                               log.config("Loading IDBStartup - " + startup.getClass());
+					                               log.config("Loading IAsyncStartup - " + startup.getClass());
 					                               try
 					                               {
 						                               GuiceContext.getInstance(startup.getClass());
-						                               log.config("Started IDBStartup - " + startup.getClass());
+						                               log.config("Started IAsyncStartup - " + startup.getClass());
 					                               }
 					                               catch (Throwable T)
 					                               {
