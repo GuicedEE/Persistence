@@ -5,6 +5,7 @@ import com.google.inject.Key;
 import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
 import com.jwebmp.guicedpersistence.db.exceptions.NoConnectionInfoException;
 import com.jwebmp.guicedpersistence.injectors.JpaPersistPrivateModule;
+import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
 import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 import com.oracle.jaxb21.Property;

@@ -1,4 +1,4 @@
-package com.jwebmp.guicedpersistence.db;
+package com.jwebmp.guicedpersistence.scanners;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,14 +8,12 @@ import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.Persistence;
 import com.oracle.jaxb21.PersistenceContainer;
 import com.oracle.jaxb21.PersistenceUnit;
+import com.oracle.jaxb21.Property;
 import io.github.classgraph.ResourceList;
 import org.json.JSONObject;
 import org.json.XML;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -50,12 +48,21 @@ public class PersistenceFileHandler
 		ResourceList.ByteArrayConsumer processor = (resource,bytes) ->
 		{
 			Set<PersistenceUnit> units = getPersistenceUnitFromFile(bytes, resource.getPathRelativeToClasspathElement());
-			units.forEach(unit -> unit.getProperties()
-			                          .getProperty()
-			                          .removeIf(a -> a.getName()
-			                                          .equals(ignorePersistenceUnitProperty) &&
-			                                         a.getValue()
-			                                          .equals("true")));
+			for (Iterator<PersistenceUnit> iterator = units.iterator(); iterator.hasNext(); )
+			{
+				PersistenceUnit unit = iterator.next();
+				for (Property property : unit.getProperties()
+				                             .getProperty())
+				{
+					if (property.getName()
+					            .equals(ignorePersistenceUnitProperty) &&
+					    property.getValue()
+					            .equalsIgnoreCase("true"))
+					{
+						iterator.remove();
+					}
+				}
+			}
 			for (PersistenceUnit unit : units)
 			{
 				log.config("Found Persistence Unit " + unit.getName() + " - JTA (" + Strings.isNullOrEmpty(unit.getJtaDataSource()) + ")");

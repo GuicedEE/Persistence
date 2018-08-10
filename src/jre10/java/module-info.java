@@ -1,10 +1,10 @@
 import com.jwebmp.guicedinjection.interfaces.*;
 import com.jwebmp.guicedpersistence.db.AsyncPostStartup;
-import com.jwebmp.guicedpersistence.db.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.db.services.HibernateEntityManagerProperties;
 import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
+import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
 
 module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.db;
