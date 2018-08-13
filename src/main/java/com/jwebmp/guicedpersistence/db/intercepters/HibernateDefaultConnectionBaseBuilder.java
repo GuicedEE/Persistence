@@ -19,17 +19,26 @@ public class HibernateDefaultConnectionBaseBuilder
 			{
 				case "hibernate.connection.url":
 				{
-					cbi.setUrl(filteredProperties.getProperty(prop));
+					if (cbi.getUrl() == null)
+					{
+						cbi.setUrl(filteredProperties.getProperty(prop));
+					}
 					break;
 				}
 				case "hibernate.connection.user":
 				{
-					cbi.setUsername(filteredProperties.getProperty(prop));
+					if (cbi.getUsername() == null)
+					{
+						cbi.setUsername(filteredProperties.getProperty(prop));
+					}
 					break;
 				}
 				case "hibernate.connection.driver_class":
 				{
-					cbi.setDriverClass(filteredProperties.getProperty(prop));
+					if (cbi.getDriverClass() == null)
+					{
+						cbi.setDriverClass(filteredProperties.getProperty(prop));
+					}
 					break;
 				}
 				default:

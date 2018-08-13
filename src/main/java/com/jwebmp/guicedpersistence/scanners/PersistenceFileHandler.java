@@ -37,15 +37,15 @@ public class PersistenceFileHandler
 	 */
 	public static Set<PersistenceUnit> getPersistenceUnits()
 	{
-		return persistenceUnits;
+		return PersistenceFileHandler.persistenceUnits;
 	}
 
 	@Override
 	public Map<String, ResourceList.ByteArrayConsumer> onMatch()
 	{
 		Map<String, ResourceList.ByteArrayConsumer> map = new HashMap<>();
-		log.info("Loading Persistence Units");
-		ResourceList.ByteArrayConsumer processor = (resource,bytes) ->
+		PersistenceFileHandler.log.info("Loading Persistence Units");
+		ResourceList.ByteArrayConsumer processor = (resource, bytes) ->
 		{
 			Set<PersistenceUnit> units = getPersistenceUnitFromFile(bytes, resource.getPathRelativeToClasspathElement());
 			for (Iterator<PersistenceUnit> iterator = units.iterator(); iterator.hasNext(); )
@@ -55,7 +55,7 @@ public class PersistenceFileHandler
 				                             .getProperty())
 				{
 					if (property.getName()
-					            .equals(ignorePersistenceUnitProperty) &&
+					            .equals(PersistenceFileHandler.ignorePersistenceUnitProperty) &&
 					    property.getValue()
 					            .equalsIgnoreCase("true"))
 					{
@@ -65,8 +65,8 @@ public class PersistenceFileHandler
 			}
 			for (PersistenceUnit unit : units)
 			{
-				log.config("Found Persistence Unit " + unit.getName() + " - JTA (" + Strings.isNullOrEmpty(unit.getJtaDataSource()) + ")");
-				persistenceUnits.add(unit);
+				PersistenceFileHandler.log.config("Found Persistence Unit " + unit.getName() + " - JTA (" + Strings.isNullOrEmpty(unit.getJtaDataSource()) + ")");
+				PersistenceFileHandler.persistenceUnits.add(unit);
 			}
 		};
 		map.put("persistence.xml", processor);
@@ -94,21 +94,13 @@ public class PersistenceFileHandler
 			ObjectMapper om = new ObjectMapper();
 			om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 			PersistenceContainer pp = om.readValue(jsonObj.toString(), PersistenceContainer.class);
-			Double version = Double.parseDouble(pp.getPersistence()
-			                                      .getVersion());
-			if (version < 2.1)
-			{
-				log.warning("Ignoring Persistence File - Version is less than 2.1.");
-			}
-			else
-			{
-				Persistence p = pp.getPersistence();
-				units.addAll(p.getPersistenceUnit());
-			}
+
+			Persistence p = pp.getPersistence();
+			units.addAll(p.getPersistenceUnit());
 		}
 		catch (Throwable t)
 		{
-			log.log(Level.SEVERE, "Error streaming", t);
+			PersistenceFileHandler.log.log(Level.SEVERE, "Error streaming", t);
 		}
 		return units;
 	}
@@ -116,7 +108,7 @@ public class PersistenceFileHandler
 	private String replaceNameSpaceAttributes(String xml)
 	{
 		String replaced = xml;
-		replaced = removeAllXmlNamespace(replaced);
+		replaced = PersistenceFileHandler.removeAllXmlNamespace(replaced);
 		replaced = replaced.replace(
 				"xmlns=\"http://java.sun.com/xml/ns/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd\"",
 				"");

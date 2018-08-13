@@ -5,6 +5,7 @@ import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
 import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
+import com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 
 module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.db;
@@ -51,6 +52,7 @@ module com.jwebmp.guicedpersistence {
 	provides IFileContentsScanner with PersistenceFileHandler;
 	provides IGuiceConfigurator with PersistenceGuiceConfigurator;
 	provides IGuicePostStartup with AsyncPostStartup;
+	provides IGuiceDefaultBinder with PersistenceServiceLoadersBinder;
 
 	provides com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader with HibernateEntityManagerProperties;
 

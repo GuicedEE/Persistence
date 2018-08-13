@@ -29,6 +29,7 @@ public abstract class ConnectionBaseInfo
 		implements Serializable, Cloneable
 {
 	private static final long serialVersionUID = 1L;
+	private static final ServiceLoader<PropertiesConnectionInfoReader> serviceLoader = ServiceLoader.load(PropertiesConnectionInfoReader.class);
 	/**
 	 * The persistence unit name applied to this cbi
 	 */
@@ -88,8 +89,7 @@ public abstract class ConnectionBaseInfo
 
 	public ConnectionBaseInfo populateFromProperties(PersistenceUnit unit, Properties filteredProperties)
 	{
-		ServiceLoader<PropertiesConnectionInfoReader> connectionInfoReaders = ServiceLoader.load(PropertiesConnectionInfoReader.class);
-		for (PropertiesConnectionInfoReader connectionInfoReader : connectionInfoReaders)
+		for (PropertiesConnectionInfoReader connectionInfoReader : ConnectionBaseInfo.serviceLoader)
 		{
 			connectionInfoReader.populateConnectionBaseInfo(unit, filteredProperties, this);
 		}

@@ -34,6 +34,7 @@ public abstract class AbstractDatabaseProviderModule
 	 * Field log
 	 */
 	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
+	private static final ServiceLoader<PropertiesEntityManagerReader> propsLoader = ServiceLoader.load(PropertiesEntityManagerReader.class);
 
 	/**
 	 * Constructor AbstractDatabaseProviderModule creates a new AbstractDatabaseProviderModule instance.
@@ -45,49 +46,21 @@ public abstract class AbstractDatabaseProviderModule
 	}
 
 	/**
-	 * Builds up connection base data info from a persistence unit.
-	 * <p>
-	 * Use with the utility methods e.g.
-	 *
-	 * @param unit The physical persistence unit, changes have no effect the persistence ready
-	 *
-	 * @return The new connetion base info
-	 */
-	@NotNull
-	protected abstract ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties);
-
-	/**
-	 * The name found in jta-data-source from the persistence.xml
-	 *
-	 * @return
-	 */
-	@NotNull
-	protected abstract String getJndiMapping();
-
-	/**
-	 * The name found in persistence.xml
-	 *
-	 * @return
-	 */
-	@NotNull
-	protected abstract String getPersistenceUnitName();
-
-	/**
 	 * Configures the module with the bindings
 	 */
 	@Override
 	protected void configure()
 	{
-		log.config("Loading Database Module - " + getClass().getCanonicalName() + " - " + getPersistenceUnitName());
+		AbstractDatabaseProviderModule.log.config("Loading Database Module - " + getClass().getCanonicalName() + " - " + getPersistenceUnitName());
 		Properties jdbcProperties = getJDBCPropertiesMap();
 		PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
 		{
-			log.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
+			AbstractDatabaseProviderModule.log.severe(
+					"Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
 			return;
 		}
-		ServiceLoader<PropertiesEntityManagerReader> entityManagerReaders = ServiceLoader.load(PropertiesEntityManagerReader.class);
-		for (PropertiesEntityManagerReader entityManagerReader : entityManagerReaders)
+		for (PropertiesEntityManagerReader entityManagerReader : AbstractDatabaseProviderModule.propsLoader)
 		{
 			Map<String, String> output = entityManagerReader.processProperties(pu, jdbcProperties);
 			if (output != null && !output.isEmpty())
@@ -99,33 +72,27 @@ public abstract class AbstractDatabaseProviderModule
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
 		connectionBaseInfo.setJndiName(getJndiMapping());
-		log.fine("Connection Base Info Final - " + connectionBaseInfo);
+		AbstractDatabaseProviderModule.log.fine("Connection Base Info Final - " + connectionBaseInfo);
 
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
 		DataSource ds = provideDataSource(connectionBaseInfo);
 		if (ds != null)
 		{
-			log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
+			AbstractDatabaseProviderModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
 			bind(getDataSourceKey()).toInstance(ds);
 		}
 
-		log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
+		AbstractDatabaseProviderModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
 	}
 
 	/**
-	 * A properties map of the properties from the file
+	 * The name found in persistence.xml
 	 *
-	 * @return A properties map of the given persistence units properties
+	 * @return The persistence unit name to sear h
 	 */
 	@NotNull
-	private Properties getJDBCPropertiesMap()
-	{
-		Properties jdbcProperties = new Properties();
-		PersistenceUnit pu = getPersistenceUnit();
-		configurePersistenceUnitProperties(pu, jdbcProperties);
-		return jdbcProperties;
-	}
+	protected abstract String getPersistenceUnitName();
 
 	/**
 	 * Returns the persistence unit associated with the supplied name
@@ -148,21 +115,91 @@ public abstract class AbstractDatabaseProviderModule
 		}
 		catch (Throwable T)
 		{
-			log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]");
+			AbstractDatabaseProviderModule.log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]");
 		}
-		log.log(Level.WARNING, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]. Returning a Null Instance");
+		AbstractDatabaseProviderModule.log.log(Level.WARNING, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]. Returning a Null Instance");
 		return null;
 	}
 
 	/**
-	 * Builds a property map from a persistence unit properties file
+	 * Builds up connection base data info from a persistence unit.
+	 * <p>
+	 * Use with the utility methods e.g.
 	 *
+	 * @param unit
+	 * 		The physical persistence unit, changes have no effect the persistence ready
+	 *
+	 * @return The new connetion base info
+	 */
+	@NotNull
+	protected abstract ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties);
+
+	/**
+	 * A properties map of the properties from the file
+	 *
+	 * @return A properties map of the given persistence units properties
+	 */
+	@NotNull
+	private Properties getJDBCPropertiesMap()
+	{
+		Properties jdbcProperties = new Properties();
+		PersistenceUnit pu = getPersistenceUnit();
+		configurePersistenceUnitProperties(pu, jdbcProperties);
+		return jdbcProperties;
+	}
+
+	/**
+	 * The name found in jta-data-source from the persistence.xml
+	 *
+	 * @return The JNDI mapping name to use
+	 */
+	@NotNull
+	protected abstract String getJndiMapping();
+
+	/**
+	 * Returns the generated key for the data source
+	 *
+	 * @return The key of the annotation and data source
+	 */
+	@SuppressWarnings("WeakerAccess")
+	@NotNull
+	protected Key<DataSource> getDataSourceKey()
+	{
+		return Key.get(DataSource.class, getBindingAnnotation());
+	}
+
+	/**
+	 * Returns the key used for the entity manager
+	 *
+	 * @return The key for the entity manager and the annotation
+	 */
+	@SuppressWarnings("unused")
+	@NotNull
+	protected Key<EntityManager> getEntityManagerKey()
+	{
+		return Key.get(EntityManager.class, getBindingAnnotation());
+	}
+
+	/**
+	 * The annotation which will identify this guy
+	 *
+	 * @return The annotation that will identify the given databsae
+	 */
+	@NotNull
+	protected abstract Class<? extends Annotation> getBindingAnnotation();
+
+	/**
+	 * Builds a property map from a persistence unit properties file
+	 * <p>
 	 * Overwrites ${} items with system properties
 	 *
-	 * @param pu The persistence unit
-	 * @param jdbcProperties  The final properties map
+	 * @param pu
+	 * 		The persistence unit
+	 * @param jdbcProperties
+	 * 		The final properties map
 	 */
-	private void configurePersistenceUnitProperties(PersistenceUnit pu, Properties jdbcProperties)
+	@SuppressWarnings("WeakerAccess")
+	protected void configurePersistenceUnitProperties(PersistenceUnit pu, Properties jdbcProperties)
 	{
 		Properties sysProps = System.getProperties();
 		if (pu != null)
@@ -184,38 +221,6 @@ public abstract class AbstractDatabaseProviderModule
 				}
 			}
 		}
-	}
-
-	/**
-	 * Returns the generated key for the data source
-	 *
-	 * @return The key of the annotation and data source
-	 */
-	@SuppressWarnings("WeakerAccess")
-	@NotNull
-	protected Key<DataSource> getDataSourceKey()
-	{
-		return Key.get(DataSource.class, getBindingAnnotation());
-	}
-
-	/**
-	 * The annotation which will identify this guy
-	 *
-	 * @return The annotation that will identify the given databsae
-	 */
-	@NotNull
-	protected abstract Class<? extends Annotation> getBindingAnnotation();
-
-	/**
-	 * Returns the key used for the entity manager
-	 *
-	 * @return The key for the entity manager and the annotation
-	 */
-	@SuppressWarnings("unused")
-	@NotNull
-	protected Key<EntityManager> getEntityManagerKey()
-	{
-		return Key.get(EntityManager.class, getBindingAnnotation());
 	}
 
 	/**

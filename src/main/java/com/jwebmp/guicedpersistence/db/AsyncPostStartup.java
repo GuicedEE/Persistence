@@ -21,6 +21,7 @@ public final class AsyncPostStartup
 	private static final Logger log = LogFactory.getLog("AsyncPostStartup");
 	private static final ExecutorService dbAutoStartupExecutors = Executors.newFixedThreadPool(Runtime.getRuntime()
 	                                                                                                  .availableProcessors());
+	private static final ServiceLoader<IAsyncStartup> loader = ServiceLoader.load(IAsyncStartup.class);
 
 	public AsyncPostStartup()
 	{
@@ -33,32 +34,29 @@ public final class AsyncPostStartup
 	@Override
 	public void postLoad()
 	{
-		log.config("Loading AsyncPostStartup - " + Runtime.getRuntime()
-		                                                  .availableProcessors() + " threads");
-		ServiceLoader<IAsyncStartup> loader = ServiceLoader.load(IAsyncStartup.class);
-		//Backwards compat - switch to loader.findFirst()
-		Iterator<IAsyncStartup> iterator = loader.iterator();
+		Iterator<IAsyncStartup> iterator = AsyncPostStartup.loader.iterator();
 		if (iterator.hasNext())
 		{
-
-			for (IAsyncStartup startup : loader)
+			AsyncPostStartup.log.config("Loading AsyncPostStartup - " + Runtime.getRuntime()
+			                                                                   .availableProcessors() + " threads");
+			for (IAsyncStartup startup : AsyncPostStartup.loader)
 			{
-				log.config("Scheduling IAsyncStartup - " + startup.getClass());
-				dbAutoStartupExecutors.execute(() ->
-				                               {
-					                               log.config("Loading IAsyncStartup - " + startup.getClass());
-					                               try
-					                               {
-						                               GuiceContext.getInstance(startup.getClass());
-						                               log.config("Started IAsyncStartup - " + startup.getClass());
-					                               }
-					                               catch (Throwable T)
-					                               {
-						                               log.log(Level.SEVERE, "Unable to inject " + startup.getClass(), T);
-					                               }
-				                               });
+				AsyncPostStartup.log.config("Scheduling IAsyncStartup - " + startup.getClass());
+				AsyncPostStartup.dbAutoStartupExecutors.execute(() ->
+				                                                {
+					                                                AsyncPostStartup.log.fine("Loading IAsyncStartup - " + startup.getClass());
+					                                                try
+					                                                {
+						                                                GuiceContext.getInstance(startup.getClass());
+						                                                AsyncPostStartup.log.fine("Started IAsyncStartup - " + startup.getClass());
+					                                                }
+					                                                catch (Throwable T)
+					                                                {
+						                                                AsyncPostStartup.log.log(Level.SEVERE, "Unable to inject " + startup.getClass(), T);
+					                                                }
+				                                                });
 			}
-			dbAutoStartupExecutors.shutdown();
+			AsyncPostStartup.dbAutoStartupExecutors.shutdown();
 		}
 	}
 
