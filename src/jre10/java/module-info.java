@@ -38,7 +38,7 @@ module com.jwebmp.guicedpersistence {
 	requires com.fasterxml.jackson.databind;
 
 	requires java.persistence;
-	requires json;
+	requires org.json;
 	requires java.sql;
 	requires org.hibernate.validator;
 
