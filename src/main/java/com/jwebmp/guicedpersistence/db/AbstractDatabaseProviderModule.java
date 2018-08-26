@@ -6,6 +6,7 @@ import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
 import com.jwebmp.guicedpersistence.db.exceptions.NoConnectionInfoException;
 import com.jwebmp.guicedpersistence.injectors.JpaPersistPrivateModule;
 import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
+import com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
 import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 import com.oracle.jaxb21.Property;
@@ -14,9 +15,7 @@ import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +34,7 @@ public abstract class AbstractDatabaseProviderModule
 	 */
 	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
 	private static final ServiceLoader<PropertiesEntityManagerReader> propsLoader = ServiceLoader.load(PropertiesEntityManagerReader.class);
+	private static final Set<Class<? extends Annotation>> boundAnnotations = new HashSet<>();
 
 	/**
 	 * Constructor AbstractDatabaseProviderModule creates a new AbstractDatabaseProviderModule instance.
@@ -46,12 +46,22 @@ public abstract class AbstractDatabaseProviderModule
 	}
 
 	/**
+	 * Returns a full list of all annotations that have bindings
+	 *
+	 * @return The set of all annotations that have bindings
+	 */
+	public static Set<Class<? extends Annotation>> getBoundAnnotations()
+	{
+		return AbstractDatabaseProviderModule.boundAnnotations;
+	}
+
+	/**
 	 * Configures the module with the bindings
 	 */
 	@Override
 	protected void configure()
 	{
-		AbstractDatabaseProviderModule.log.config("Loading Database Module - " + getClass().getCanonicalName() + " - " + getPersistenceUnitName());
+		AbstractDatabaseProviderModule.log.config("Loading Database Module - " + getClass().getName() + " - " + getPersistenceUnitName());
 		Properties jdbcProperties = getJDBCPropertiesMap();
 		PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
@@ -72,7 +82,7 @@ public abstract class AbstractDatabaseProviderModule
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
 		connectionBaseInfo.setJndiName(getJndiMapping());
-		AbstractDatabaseProviderModule.log.fine("Connection Base Info Final - " + connectionBaseInfo);
+		AbstractDatabaseProviderModule.log.fine(getPersistenceUnitName() + " - Connection Base Info Final - " + connectionBaseInfo);
 
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
 		DataSource ds = provideDataSource(connectionBaseInfo);
@@ -84,6 +94,7 @@ public abstract class AbstractDatabaseProviderModule
 
 		AbstractDatabaseProviderModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
+		AbstractDatabaseProviderModule.boundAnnotations.add(getBindingAnnotation());
 	}
 
 	/**

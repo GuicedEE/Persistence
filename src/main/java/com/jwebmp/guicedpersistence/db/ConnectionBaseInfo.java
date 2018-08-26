@@ -3,6 +3,7 @@ package com.jwebmp.guicedpersistence.db;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
 import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 

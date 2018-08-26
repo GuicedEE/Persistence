@@ -17,6 +17,7 @@ import java.util.logging.Logger;
  *
  * @author GedMarc
  */
+@SuppressWarnings("MissingClassJavaDoc")
 public class JpaPersistPrivateModule
 		extends PrivateModule
 {
@@ -45,10 +46,10 @@ public class JpaPersistPrivateModule
 	protected void configure()
 	{
 		install(new CustomJpaPersistModule(persistenceUnitName).properties(props));
-		log.log(Level.FINE, "Bound EntityManagerFactory.class with @" + qualifier.getSimpleName());
-		log.log(Level.FINE, "Bound EntityManager.class with @" + qualifier.getSimpleName());
-		log.log(Level.FINE, "Bound PersistService.class with @" + qualifier.getSimpleName());
-		log.log(Level.FINE, "Bound UnitOfWork.class with @" + qualifier.getSimpleName());
+		JpaPersistPrivateModule.log.log(Level.FINE, "Bound EntityManagerFactory.class with @" + qualifier.getSimpleName());
+		JpaPersistPrivateModule.log.log(Level.FINE, "Bound EntityManager.class with @" + qualifier.getSimpleName());
+		JpaPersistPrivateModule.log.log(Level.FINE, "Bound PersistService.class with @" + qualifier.getSimpleName());
+		JpaPersistPrivateModule.log.log(Level.FINE, "Bound UnitOfWork.class with @" + qualifier.getSimpleName());
 		rebind(qualifier, EntityManagerFactory.class, EntityManager.class, PersistService.class, UnitOfWork.class);
 		doConfigure();
 	}

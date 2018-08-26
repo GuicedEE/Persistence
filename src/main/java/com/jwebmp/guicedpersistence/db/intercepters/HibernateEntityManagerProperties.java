@@ -1,8 +1,9 @@
-package com.jwebmp.guicedpersistence.db.services;
+package com.jwebmp.guicedpersistence.db.intercepters;
 
-import com.jwebmp.guicedpersistence.db.PropertiesEntityManagerReader;
+import com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
 import com.oracle.jaxb21.PersistenceUnit;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -10,8 +11,21 @@ import java.util.Properties;
 public class HibernateEntityManagerProperties
 		implements PropertiesEntityManagerReader
 {
+	/**
+	 * A map of properties specific to a persistence unit
+	 */
+	private static final Map<Class<? extends Annotation>, HibernateEntityManagerProperties> persistenceUnitSpecificMappings = new HashMap();
+	/**
+	 * Whether to set show sql true or not
+	 */
 	private static boolean showSql;
+	/**
+	 * Whether to format the output sql
+	 */
 	private static boolean formatSql;
+	/**
+	 * Whether or not to use sql comments
+	 */
 	private static boolean useSqlComments;
 
 	/**
@@ -29,7 +43,7 @@ public class HibernateEntityManagerProperties
 
 	public static int getMaxFetchDepth()
 	{
-		return maxFetchDepth;
+		return HibernateEntityManagerProperties.maxFetchDepth;
 	}
 
 	public static void setMaxFetchDepth(int maxFetchDepth)
@@ -39,7 +53,7 @@ public class HibernateEntityManagerProperties
 
 	public static boolean isEnableFetchOutsizeLadyLoad()
 	{
-		return enableFetchOutsizeLadyLoad;
+		return HibernateEntityManagerProperties.enableFetchOutsizeLadyLoad;
 	}
 
 	public static void setEnableFetchOutsizeLadyLoad(boolean enableFetchOutsizeLadyLoad)
@@ -49,7 +63,7 @@ public class HibernateEntityManagerProperties
 
 	public static boolean isShowSql()
 	{
-		return showSql;
+		return HibernateEntityManagerProperties.showSql;
 	}
 
 	public static void setShowSql(boolean showSql)
@@ -59,7 +73,7 @@ public class HibernateEntityManagerProperties
 
 	public static boolean isFormatSql()
 	{
-		return formatSql;
+		return HibernateEntityManagerProperties.formatSql;
 	}
 
 	public static void setFormatSql(boolean formatSql)
@@ -69,7 +83,7 @@ public class HibernateEntityManagerProperties
 
 	public static boolean isUseSqlComments()
 	{
-		return useSqlComments;
+		return HibernateEntityManagerProperties.useSqlComments;
 	}
 
 	public static void setUseSqlComments(boolean useSqlComments)
@@ -81,26 +95,27 @@ public class HibernateEntityManagerProperties
 	public Map<String, String> processProperties(PersistenceUnit persistenceUnit, Properties incomingProperties)
 	{
 		Map<String, String> props = new HashMap<>();
-		if (enableFetchOutsizeLadyLoad)
+		if (HibernateEntityManagerProperties.enableFetchOutsizeLadyLoad)
 		{
 			incomingProperties.put("hibernate.enable_lazy_load_no_trans", Boolean.toString(true));
 		}
-		if (maxFetchDepth != Integer.MIN_VALUE)
+		if (HibernateEntityManagerProperties.maxFetchDepth != Integer.MIN_VALUE)
 		{
-			incomingProperties.put("hibernate.max_fetch_depth", Integer.toString(maxFetchDepth));
+			incomingProperties.put("hibernate.max_fetch_depth", Integer.toString(HibernateEntityManagerProperties.maxFetchDepth));
 		}
-		if (showSql)
+		if (HibernateEntityManagerProperties.showSql)
 		{
 			incomingProperties.put("hibernate.show_sql", "true");
 		}
-		if (formatSql)
+		if (HibernateEntityManagerProperties.formatSql)
 		{
 			incomingProperties.put("hibernate.format_sql", "true");
 		}
-		if (useSqlComments)
+		if (HibernateEntityManagerProperties.useSqlComments)
 		{
 			incomingProperties.put("hibernate.use_sql_comments", "true");
 		}
 		return props;
 	}
+
 }

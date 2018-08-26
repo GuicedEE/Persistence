@@ -1,7 +1,7 @@
 package com.jwebmp.guicedpersistence.db.intercepters;
 
 import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
-import com.jwebmp.guicedpersistence.db.PropertiesConnectionInfoReader;
+import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import java.util.Properties;

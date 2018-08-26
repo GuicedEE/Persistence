@@ -1,11 +1,14 @@
 package com.jwebmp.guicedpersistence.services;
 
 import javax.persistence.EntityManager;
+import javax.validation.constraints.NotNull;
+import java.util.Comparator;
 
 /**
  * A service for managing Entity Manager Transactions automagic like
  */
 public interface ITransactionHandler
+		extends Comparable<ITransactionHandler>, Comparator<ITransactionHandler>
 {
 	/**
 	 * What to do when beginning a transaction, always called
@@ -30,7 +33,9 @@ public interface ITransactionHandler
 	/**
 	 * Returns the value denoting if the transaction exists or not
 	 *
-	 * @param entityManager The given entity manager
+	 * @param entityManager
+	 * 		The given entity manager
+	 *
 	 * @return if the transaction exists or not
 	 */
 	boolean transactionExists(EntityManager entityManager);
@@ -43,5 +48,32 @@ public interface ITransactionHandler
 	default boolean active()
 	{
 		return false;
+	}
+
+	@Override
+	default int compare(ITransactionHandler o1, ITransactionHandler o2)
+	{
+		if (o1 == null || o2 == null)
+		{
+			return -1;
+		}
+		return o1.sortOrder()
+		         .compareTo(o2.sortOrder());
+	}
+
+	default Integer sortOrder()
+	{
+		return 100;
+	}
+
+	@Override
+	default int compareTo(@NotNull ITransactionHandler o)
+	{
+		int sort = sortOrder().compareTo(o.sortOrder());
+		if (sort == 0)
+		{
+			return -1;
+		}
+		return sort;
 	}
 }

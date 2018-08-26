@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
-class CustomJpaLocalTxnInterceptor
+public class CustomJpaLocalTxnInterceptor
 		implements MethodInterceptor
 {
 

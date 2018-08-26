@@ -83,6 +83,10 @@ public class CustomJpaPersistService
 				null == entityManager.get(),
 				"Work already begun on this thread. Looks like you have called UnitOfWork.begin() twice"
 				+ " without a balancing call to end() in between.");
+		if (emFactory == null)
+		{
+			start();
+		}
 
 		entityManager.set(emFactory.createEntityManager());
 	}
@@ -108,17 +112,13 @@ public class CustomJpaPersistService
 		}
 	}
 
-	@VisibleForTesting
-	synchronized void start(EntityManagerFactory emFactory)
-	{
-		this.emFactory = emFactory;
-	}
-
 	@Override
 	public synchronized void start()
 	{
-		Preconditions.checkState(null == emFactory, "Persistence service was already initialized.");
-
+		if (emFactory != null)
+		{
+			return;
+		}
 		try
 		{
 			if (null != persistenceProperties)
@@ -141,8 +141,17 @@ public class CustomJpaPersistService
 	@Override
 	public synchronized void stop()
 	{
-		Preconditions.checkState(emFactory.isOpen(), "Persistence service was already shut down.");
+		if (emFactory == null || !emFactory.isOpen())
+		{
+			return;
+		}
 		emFactory.close();
+	}
+
+	@VisibleForTesting
+	synchronized void start(EntityManagerFactory emFactory)
+	{
+		this.emFactory = emFactory;
 	}
 
 	@Documented
