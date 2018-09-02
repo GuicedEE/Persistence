@@ -14,6 +14,7 @@ public class GuiceInjectionMetaInfScannerExclusions
 		Set<String> strings = new HashSet<>();
 		strings.add("META-INF/resources");
 		strings.add("META-INF/services");
+		strings.add("META-INF/maven");
 		return strings;
 	}
 }

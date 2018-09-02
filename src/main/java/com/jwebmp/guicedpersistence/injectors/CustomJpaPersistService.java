@@ -31,6 +31,7 @@ import javax.persistence.Persistence;
 import java.lang.annotation.*;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
@@ -39,6 +40,7 @@ import java.util.logging.Level;
 public class CustomJpaPersistService
 		implements Provider<EntityManager>, UnitOfWork, PersistService
 {
+	private static final Logger log = LogFactory.getLog("PersistService");
 	private final ThreadLocal<EntityManager> entityManager = new ThreadLocal<>();
 
 	private final String persistenceUnitName;
@@ -121,6 +123,7 @@ public class CustomJpaPersistService
 		}
 		try
 		{
+			CustomJpaPersistService.log.finer("Starting up Persist Service - " + this.persistenceUnitName);
 			if (null != persistenceProperties)
 			{
 				emFactory =
@@ -130,11 +133,11 @@ public class CustomJpaPersistService
 			{
 				emFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 			}
+			CustomJpaPersistService.log.finer("Persist Service Started - " + this.persistenceUnitName);
 		}
 		catch (Throwable T)
 		{
-			LogFactory.getLog("CustomJpaPersistService")
-			          .log(Level.SEVERE, "Unable to get entity factory : " + T.getMessage(), T);
+			CustomJpaPersistService.log.log(Level.SEVERE, "Unable to get entity factory : " + T.getMessage(), T);
 		}
 	}
 
