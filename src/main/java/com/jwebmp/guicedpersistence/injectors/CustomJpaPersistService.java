@@ -45,15 +45,20 @@ public class CustomJpaPersistService
 	private final ThreadLocal<EntityManager> entityManager = new ThreadLocal<>();
 
 	private final String persistenceUnitName;
+
 	private final Map<?, ?> persistenceProperties;
+
+	private final Class<? extends Annotation> annotation;
+
 	private volatile EntityManagerFactory emFactory;
 
 	@Inject
 	public CustomJpaPersistService(
-			@CustomJpa String persistenceUnitName, @CustomJpa Map<?, ?> persistenceProperties)
+			@CustomJpa String persistenceUnitName, @CustomJpa Map<?, ?> persistenceProperties, @CustomJpa Class<? extends Annotation> annotation)
 	{
 		this.persistenceUnitName = persistenceUnitName;
 		this.persistenceProperties = persistenceProperties;
+		this.annotation = annotation;
 	}
 
 	@Override
@@ -82,15 +87,19 @@ public class CustomJpaPersistService
 	@Override
 	public void begin()
 	{
-		Preconditions.checkState(
-				null == entityManager.get(),
-				"Work already begun on this thread. Looks like you have called UnitOfWork.begin() twice"
-				+ " without a balancing call to end() in between.");
+		if (entityManager.get() != null)
+		{
+			log.warning("Work already begun on this thread. Looks like you have called UnitOfWork.begin() twice"
+			            + " without a balancing call to end() in between.");
+		}
 		if (emFactory == null)
 		{
 			start();
 		}
-
+		else if (!emFactory.isOpen())
+		{
+			start();
+		}
 		entityManager.set(emFactory.createEntityManager());
 	}
 
@@ -118,7 +127,7 @@ public class CustomJpaPersistService
 	@Override
 	public synchronized void start()
 	{
-		if (emFactory != null)
+		if (emFactory != null && !emFactory.isOpen())
 		{
 			return;
 		}
@@ -150,6 +159,7 @@ public class CustomJpaPersistService
 			return;
 		}
 		emFactory.close();
+		log.finer("Entity Manager Factory for " + persistenceUnitName + " has been closed on the current thread");
 	}
 
 	@VisibleForTesting

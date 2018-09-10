@@ -40,6 +40,11 @@ public final class AsyncPostStartup
 		//No Config
 	}
 
+	public static ExecutorService getDbAutoStartupExecutors()
+	{
+		return dbAutoStartupExecutors;
+	}
+
 	/**
 	 * Starts the persistence service, should be threaded if the sort orders are properly applied
 	 *

@@ -45,7 +45,7 @@ public class JpaPersistPrivateModule
 	@Override
 	protected void configure()
 	{
-		install(new CustomJpaPersistModule(persistenceUnitName).properties(props));
+		install(new CustomJpaPersistModule(persistenceUnitName, qualifier).properties(props));
 		JpaPersistPrivateModule.log.log(Level.FINE, "Bound EntityManagerFactory.class with @" + qualifier.getSimpleName());
 		JpaPersistPrivateModule.log.log(Level.FINE, "Bound EntityManager.class with @" + qualifier.getSimpleName());
 		JpaPersistPrivateModule.log.log(Level.FINE, "Bound PersistService.class with @" + qualifier.getSimpleName());

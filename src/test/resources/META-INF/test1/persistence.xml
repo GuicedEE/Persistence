@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.0" xmlns="http://java.sun.com/xml/ns/persistence"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence">
+
+
+    <persistence-unit name="SystemPropertiesPreLoadedTest" transaction-type="JTA">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <jta-data-source>java:jboss/datasources/testLargeDSProperties</jta-data-source>
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2008Dialect"/>
+
+            <!-- <property name="hibernate.hbm2ddl.auto" value="update" /> -->
+
+            <property name="hibernate.show_sql" value="${system.hazelcast.show_sql}"/>
+            <property name="hibernate.format_sql" value="${system.hibernate.format_sql}"/>
+            <property name="hibernate.use_sql_comments" value="${system.hibernate.use_sql_comments}"/>
+
+            <property name="hibernate.cache.use_second_level_cache" value="true"/>
+            <property name="hibernate.cache.use_query_cache" value="true"/>
+
+            <property name="jboss.entity.manager.factory.jndi.name" value="java:/testMeEntityManagerFactory"/>
+            <property name="hibernate.cache.provider_class" value="org.hibernate.cache.EhCacheProvider"/>
+            <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+            <property name="hibernate.jdbc.lob.non_contextual_creation" value="true"/>
+            <property name="hibernate.jdbc.use_get_generated_keys" value="true"/>
+            <property name="hibernate.integration.envers.enabled" value="false"/>
+
+            <property name="hibernate.cache.hazelcast.use_native_client" value="true"/>
+            <property name="hibernate.cache.hazelcast.native_client_hosts" value="${system.hazelcast.address}"/>
+            <property name="hibernate.cache.hazelcast.native_client_address" value="${system.hazelcast.address}"/>
+            <property name="hibernate.cache.hazelcast.native_client_group" value="${system.hazelcast.groupname}"/>
+            <property name="hibernate.cache.hazelcast.native_client_password" value="${system.hazelcast.grouppass}"/>
+            <property name="hibernate.cache.hazelcast.instance_name" value="${system.hazelcast.instance_name}"/>
+            <property name="hibernate.cache.use_minimal_puts" value="true"/>
+
+        </properties>
+    </persistence-unit>
+
+</persistence>
+

@@ -7,6 +7,10 @@ import com.jwebmp.guicedpersistence.services.IAsyncStartup;
 public class TestDBStartupPostStartup
 		implements IAsyncStartup
 {
+	public TestDBStartupPostStartup()
+	{
+	}
+
 	@Inject
 	public TestDBStartupPostStartup(@TestCustomPersistenceLoader PersistService ps)
 	{

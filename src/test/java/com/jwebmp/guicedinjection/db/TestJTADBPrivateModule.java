@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.util.Properties;
 
-public class TestDBPrivateModule
+public class TestJTADBPrivateModule
 		extends AbstractDatabaseProviderModule
 		implements IGuiceModule
 {

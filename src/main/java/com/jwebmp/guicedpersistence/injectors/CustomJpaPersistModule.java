@@ -21,6 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.persist.PersistModule;
 import com.google.inject.persist.PersistService;
@@ -33,6 +34,7 @@ import org.aopalliance.intercept.MethodInvocation;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -66,16 +68,19 @@ public final class CustomJpaPersistModule
 	 */
 	private MethodInterceptor transactionInterceptor;
 
+	private Class<? extends Annotation> annotation;
+
 	/**
 	 * Constructor CustomJpaPersistModule creates a new CustomJpaPersistModule instance.
 	 *
 	 * @param jpaUnit
 	 * 		of type String
+	 * @param annotation
 	 */
-	public CustomJpaPersistModule(String jpaUnit)
+	public CustomJpaPersistModule(String jpaUnit, Class<? extends Annotation> annotation)
 	{
-		Preconditions.checkArgument(
-				null != jpaUnit && jpaUnit.length() > 0, "JPA unit name must be a non-empty string.");
+		this.annotation = annotation;
+		Preconditions.checkArgument(null != jpaUnit && jpaUnit.length() > 0, "JPA unit name must be a non-empty string.");
 		this.jpaUnit = jpaUnit;
 	}
 
@@ -87,6 +92,9 @@ public final class CustomJpaPersistModule
 	{
 		bindConstant().annotatedWith(CustomJpa.class)
 		              .to(jpaUnit);
+
+		bind(new TypeLiteral<Class<? extends Annotation>>() {}).annotatedWith(CustomJpa.class)
+		                                                       .toInstance(annotation);
 
 		bind(CustomJpaPersistService.class).in(Singleton.class);
 

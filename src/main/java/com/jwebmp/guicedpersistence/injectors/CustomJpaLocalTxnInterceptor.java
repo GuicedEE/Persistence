@@ -36,6 +36,7 @@ public class CustomJpaLocalTxnInterceptor
 	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
 	@Inject
 	private CustomJpaPersistService emProvider = null;
+
 	@Inject
 	private UnitOfWork unitOfWork = null;
 

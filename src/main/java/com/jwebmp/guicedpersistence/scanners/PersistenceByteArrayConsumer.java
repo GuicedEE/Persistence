@@ -67,12 +67,9 @@ public class PersistenceByteArrayConsumer
 
 					iterator.remove();
 				}
-				else
-				{
-					PersistenceFileHandler.getPersistenceUnits()
-					                      .add(unit);
-				}
 			}
+			PersistenceFileHandler.getPersistenceUnits()
+			                      .add(unit);
 		}
 	}
 
