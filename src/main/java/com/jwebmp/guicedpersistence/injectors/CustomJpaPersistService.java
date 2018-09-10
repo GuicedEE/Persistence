@@ -41,6 +41,7 @@ public class CustomJpaPersistService
 		implements Provider<EntityManager>, UnitOfWork, PersistService
 {
 	private static final Logger log = LogFactory.getLog("PersistService");
+
 	private final ThreadLocal<EntityManager> entityManager = new ThreadLocal<>();
 
 	private final String persistenceUnitName;

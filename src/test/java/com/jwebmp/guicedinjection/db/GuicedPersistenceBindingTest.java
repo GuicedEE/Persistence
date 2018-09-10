@@ -16,5 +16,6 @@ class GuicedPersistenceBindingTest
 		ScanResult sr = GuiceContext.instance()
 		                            .getScanResult();
 		GuiceContext.inject();
+
 	}
 }

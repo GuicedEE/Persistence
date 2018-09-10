@@ -37,6 +37,9 @@ public class PersistenceByteArrayConsumer
 	static
 	{
 		om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+		om.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	}
 
 	/**
