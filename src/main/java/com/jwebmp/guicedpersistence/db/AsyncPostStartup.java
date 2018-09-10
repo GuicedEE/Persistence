@@ -18,11 +18,23 @@ import java.util.logging.Logger;
 public final class AsyncPostStartup
 		implements IGuicePostStartup
 {
+	/**
+	 * This logger
+	 */
 	private static final Logger log = LogFactory.getLog("AsyncPostStartup");
+	/**
+	 * The execution service
+	 */
 	private static final ExecutorService dbAutoStartupExecutors = Executors.newFixedThreadPool(Runtime.getRuntime()
 	                                                                                                  .availableProcessors());
+	/**
+	 * The list of items to startup asynchronously
+	 */
 	private static final ServiceLoader<IAsyncStartup> loader = ServiceLoader.load(IAsyncStartup.class);
 
+	/**
+	 * Default constructor for async post startup
+	 */
 	public AsyncPostStartup()
 	{
 		//No Config
@@ -30,6 +42,8 @@ public final class AsyncPostStartup
 
 	/**
 	 * Starts the persistence service, should be threaded if the sort orders are properly applied
+	 *
+	 * @see com.jwebmp.guicedinjection.interfaces.IGuicePostStartup#postLoad()
 	 */
 	@Override
 	public void postLoad()
@@ -60,6 +74,11 @@ public final class AsyncPostStartup
 		}
 	}
 
+	/**
+	 * Sets the order in which this must run, default 50.
+	 *
+	 * @return the sort order to return
+	 */
 	@Override
 	public Integer sortOrder()
 	{

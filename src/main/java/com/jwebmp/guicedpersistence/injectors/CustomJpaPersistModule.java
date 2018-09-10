@@ -45,15 +45,33 @@ import java.util.Map;
  *
  * @author dhanji@gmail.com (Dhanji R. Prasanna)
  */
-@SuppressWarnings("MissingClassJavaDoc")
+@SuppressWarnings({"MissingClassJavaDoc", "WeakerAccess"})
 public final class CustomJpaPersistModule
 		extends PersistModule
 {
+	/**
+	 * Field jpaUnit
+	 */
 	private final String jpaUnit;
+	/**
+	 * Field dynamicFinders
+	 */
 	private final List<Class<?>> dynamicFinders = Lists.newArrayList();
+	/**
+	 * Field properties
+	 */
 	private Map<?, ?> properties;
+	/**
+	 * Field transactionInterceptor
+	 */
 	private MethodInterceptor transactionInterceptor;
 
+	/**
+	 * Constructor CustomJpaPersistModule creates a new CustomJpaPersistModule instance.
+	 *
+	 * @param jpaUnit
+	 * 		of type String
+	 */
 	public CustomJpaPersistModule(String jpaUnit)
 	{
 		Preconditions.checkArgument(
@@ -61,6 +79,9 @@ public final class CustomJpaPersistModule
 		this.jpaUnit = jpaUnit;
 	}
 
+	/**
+	 * Method configurePersistence ...
+	 */
 	@Override
 	protected void configurePersistence()
 	{
@@ -78,21 +99,29 @@ public final class CustomJpaPersistModule
 		transactionInterceptor = new CustomJpaLocalTxnInterceptor();
 		bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), transactionInterceptor);
 
-		//requestInjection(transactionInterceptor);
-
-		// Bind dynamic finders.
 		for (Class<?> finder : dynamicFinders)
 		{
 			bindFinder(finder);
 		}
 	}
 
+	/**
+	 * Method getTransactionInterceptor returns the transactionInterceptor of this CustomJpaPersistModule object.
+	 *
+	 * @return the transactionInterceptor (type MethodInterceptor) of this CustomJpaPersistModule object.
+	 */
 	@Override
 	protected MethodInterceptor getTransactionInterceptor()
 	{
 		return transactionInterceptor;
 	}
 
+	/**
+	 * Method bindFinder ...
+	 *
+	 * @param iface
+	 * 		of type Class<T>
+	 */
 	private <T> void bindFinder(Class<T> iface)
 	{
 		if (!isDynamicFinderValid(iface))
@@ -103,9 +132,19 @@ public final class CustomJpaPersistModule
 		InvocationHandler finderInvoker =
 				new InvocationHandler()
 				{
+					/** Field finderProxy  */
 					@Inject
 					CustomJpaFinderProxy finderProxy;
 
+					/**
+					 * Method invoke ...
+					 *
+					 * @param thisObject of type Object
+					 * @param method of type Method
+					 * @param args of type Object[]
+					 * @return Object
+					 * @throws Throwable when
+					 */
 					@Override
 					public Object invoke(Object thisObject, Method method, Object[] args)
 							throws Throwable
@@ -122,24 +161,50 @@ public final class CustomJpaPersistModule
 						return finderProxy.invoke(
 								new MethodInvocation()
 								{
+									/**
+									 * Method getMethod returns the method of this ${CLASS} object.
+									 *
+									 *
+									 *
+									 * @return the method (type Method) of this ${CLASS} object.
+									 */
 									@Override
 									public Method getMethod()
 									{
 										return method;
 									}
 
+									/**
+									 * Method getArguments returns the arguments of this ${CLASS} object.
+									 *
+									 *
+									 *
+									 * @return the arguments (type Object[]) of this ${CLASS} object.
+									 */
 									@Override
 									public Object[] getArguments()
 									{
 										return null == args ? new Object[0] : args;
 									}
 
+									/**
+									 * Method proceed ...
+									 * @return Object
+									 * @throws Throwable when
+									 */
 									@Override
 									public Object proceed() throws Throwable
 									{
 										return method.invoke(thisObject, args);
 									}
 
+									/**
+									 * Method getThis returns the this of this ${CLASS} object.
+									 *
+									 *
+									 *
+									 * @return the this (type Object) of this ${CLASS} object.
+									 */
 									@Override
 									public Object getThis()
 									{
@@ -147,6 +212,13 @@ public final class CustomJpaPersistModule
 												"Bottomless proxies don't expose a this.");
 									}
 
+									/**
+									 * Method getStaticPart returns the staticPart of this ${CLASS} object.
+									 *
+									 *
+									 *
+									 * @return the staticPart (type AccessibleObject) of this ${CLASS} object.
+									 */
 									@Override
 									public AccessibleObject getStaticPart()
 									{
@@ -169,6 +241,14 @@ public final class CustomJpaPersistModule
 		bind(iface).toInstance(proxy);
 	}
 
+	/**
+	 * Method isDynamicFinderValid ...
+	 *
+	 * @param iface
+	 * 		of type Class<?>
+	 *
+	 * @return boolean
+	 */
 	private boolean isDynamicFinderValid(Class<?> iface)
 	{
 		boolean valid = true;
@@ -195,6 +275,13 @@ public final class CustomJpaPersistModule
 		return valid;
 	}
 
+	/**
+	 * Method provideProperties ...
+	 *
+	 * @return Map<?
+                                               *               	       	       ,
+                                               *               	       	       ?>
+	 */
 	@Provides
 	@CustomJpa
 	Map<?, ?> provideProperties()
@@ -223,6 +310,7 @@ public final class CustomJpaPersistModule
 	 * @param iface
 	 * 		Any interface type whose methods are all dynamic finders.
 	 */
+	@SuppressWarnings("unused")
 	public <T> CustomJpaPersistModule addFinder(Class<T> iface)
 	{
 		dynamicFinders.add(iface);

@@ -7,7 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-@SuppressWarnings("unused")
+/**
+ * Assigns entity manager properties based on progammatic changes
+ */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class HibernateEntityManagerProperties
 		implements PropertiesEntityManagerReader
 {
@@ -110,19 +113,6 @@ public class HibernateEntityManagerProperties
 	}
 
 	/**
-	 * Method setMaxFetchDepth sets the maxFetchDepth of this HibernateEntityManagerProperties object.
-	 * <p>
-	 * Specifies the maximum fetch depth
-	 *
-	 * @param maxFetchDepth
-	 * 		the maxFetchDepth of this HibernateEntityManagerProperties object.
-	 */
-	public void setMaxFetchDepth(int maxFetchDepth)
-	{
-		maxFetchDepth = maxFetchDepth;
-	}
-
-	/**
 	 * Method isEnableFetchOutsizeLadyLoad returns the enableFetchOutsizeLadyLoad of this HibernateEntityManagerProperties object.
 	 * <p>
 	 * If it should be possible to lazy fetch outside of transactions,
@@ -132,19 +122,6 @@ public class HibernateEntityManagerProperties
 	public boolean isEnableFetchOutsizeLadyLoad()
 	{
 		return enableFetchOutsizeLadyLoad;
-	}
-
-	/**
-	 * Method setEnableFetchOutsizeLadyLoad sets the enableFetchOutsizeLadyLoad of this HibernateEntityManagerProperties object.
-	 * <p>
-	 * If it should be possible to lazy fetch outside of transactions,
-	 *
-	 * @param enableFetchOutsizeLadyLoad
-	 * 		the enableFetchOutsizeLadyLoad of this HibernateEntityManagerProperties object.
-	 */
-	public void setEnableFetchOutsizeLadyLoad(boolean enableFetchOutsizeLadyLoad)
-	{
-		enableFetchOutsizeLadyLoad = enableFetchOutsizeLadyLoad;
 	}
 
 	/**
@@ -160,19 +137,6 @@ public class HibernateEntityManagerProperties
 	}
 
 	/**
-	 * Method setShowSql sets the showSql of this HibernateEntityManagerProperties object.
-	 * <p>
-	 * Whether to set show sql true or not
-	 *
-	 * @param showSql
-	 * 		the showSql of this HibernateEntityManagerProperties object.
-	 */
-	public void setShowSql(boolean showSql)
-	{
-		showSql = showSql;
-	}
-
-	/**
 	 * Method isFormatSql returns the formatSql of this HibernateEntityManagerProperties object.
 	 * <p>
 	 * Whether to format the output sql
@@ -182,19 +146,6 @@ public class HibernateEntityManagerProperties
 	public boolean isFormatSql()
 	{
 		return formatSql;
-	}
-
-	/**
-	 * Method setFormatSql sets the formatSql of this HibernateEntityManagerProperties object.
-	 * <p>
-	 * Whether to format the output sql
-	 *
-	 * @param formatSql
-	 * 		the formatSql of this HibernateEntityManagerProperties object.
-	 */
-	public void setFormatSql(boolean formatSql)
-	{
-		formatSql = formatSql;
 	}
 
 	/**
@@ -210,18 +161,17 @@ public class HibernateEntityManagerProperties
 	}
 
 	/**
-	 * Method setUseSqlComments sets the useSqlComments of this HibernateEntityManagerProperties object.
-	 * <p>
-	 * Whether or not to use sql comments
+	 * Goes through the defaults then applies per annotated unit
 	 *
-	 * @param useSqlComments
-	 * 		the useSqlComments of this HibernateEntityManagerProperties object.
+	 * @param persistenceUnit
+	 * 		The unit
+	 * @param incomingProperties
+	 * 		The properties
+	 *
+	 * @return The string,string map to apply
+	 *
+	 * @see com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader#processProperties(PersistenceUnit, Properties)
 	 */
-	public void setUseSqlComments(boolean useSqlComments)
-	{
-		useSqlComments = useSqlComments;
-	}
-
 	@Override
 	public Map<String, String> processProperties(PersistenceUnit persistenceUnit, Properties incomingProperties)
 	{
@@ -246,9 +196,7 @@ public class HibernateEntityManagerProperties
 	 * @param incomingProperties
 	 * 		of type Properties
 	 *
-	 * @return Map<String
-                       *       	   	   ,
-                       *       	   	   String>
+	 * @return Map String   ,       String
 	 */
 	public Map<String, String> process(PersistenceUnit persistenceUnit, Properties incomingProperties)
 	{

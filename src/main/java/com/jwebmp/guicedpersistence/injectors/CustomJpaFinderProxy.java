@@ -47,16 +47,36 @@ import java.util.Map;
 class CustomJpaFinderProxy
 		implements MethodInterceptor
 {
+	/**
+	 * Field finderCache
+	 */
 	private final Map<Method, FinderDescriptor> finderCache = new MapMaker().weakKeys()
 	                                                                        .makeMap();
+	/**
+	 * Field emProvider
+	 */
 	private final Provider<EntityManager> emProvider;
 
+	/**
+	 * Constructor CustomJpaFinderProxy creates a new CustomJpaFinderProxy instance.
+	 *
+	 * @param emProvider
+	 * 		of type Provider<EntityManager>
+	 */
 	@Inject
 	public CustomJpaFinderProxy(Provider<EntityManager> emProvider)
 	{
 		this.emProvider = emProvider;
 	}
 
+	/**
+	 * Method invoke ...
+	 *
+	 * @param methodInvocation
+	 * 		of type MethodInvocation
+	 *
+	 * @return Object
+	 */
 	@Override
 	public Object invoke(MethodInvocation methodInvocation)
 	{
@@ -96,6 +116,14 @@ class CustomJpaFinderProxy
 		return result;
 	}
 
+	/**
+	 * Method getFinderDescriptor ...
+	 *
+	 * @param invocation
+	 * 		of type MethodInvocation
+	 *
+	 * @return FinderDescriptor
+	 */
 	private FinderDescriptor getFinderDescriptor(MethodInvocation invocation)
 	{
 		Method method = invocation.getMethod();
@@ -144,16 +172,11 @@ class CustomJpaFinderProxy
 					finderDescriptor.isBindAsRawParameters = false;
 					breaker = true;
 				}
-				else if (FirstResult.class.equals(annotationType))
+				else if (FirstResult.class.equals(annotationType) || MaxResults.class.equals(annotationType))
 				{
 					discoveredAnnotations[i] = annotation;
 					breaker = true;
 				}
-				else if (MaxResults.class.equals(annotationType))
-				{
-					discoveredAnnotations[i] = annotation;
-					breaker = true;
-				} //leave as null for no binding
 				if (breaker)
 				{
 					break;
@@ -190,6 +213,16 @@ class CustomJpaFinderProxy
 		return finderDescriptor;
 	}
 
+	/**
+	 * Method bindQueryRawParameters ...
+	 *
+	 * @param jpaQuery
+	 * 		of type Query
+	 * @param descriptor
+	 * 		of type FinderDescriptor
+	 * @param arguments
+	 * 		of type Object[]
+	 */
 	private void bindQueryRawParameters(
 			Query jpaQuery, FinderDescriptor descriptor, Object[] arguments)
 	{
@@ -215,6 +248,16 @@ class CustomJpaFinderProxy
 		}
 	}
 
+	/**
+	 * Method bindQueryNamedParameters ...
+	 *
+	 * @param jpaQuery
+	 * 		of type Query
+	 * @param descriptor
+	 * 		of type FinderDescriptor
+	 * @param arguments
+	 * 		of type Object[]
+	 */
 	private void bindQueryNamedParameters(
 			Query jpaQuery, FinderDescriptor descriptor, Object[] arguments)
 	{
@@ -226,6 +269,7 @@ class CustomJpaFinderProxy
 			if (null == annotation)
 			//noinspection UnnecessaryContinue
 			{
+				//noinspection UnnecessaryContinue
 				continue; //skip param as it's not bindable
 			}
 			else if (annotation instanceof Named)
@@ -249,6 +293,16 @@ class CustomJpaFinderProxy
 		}
 	}
 
+	/**
+	 * Method getAsCollection ...
+	 *
+	 * @param finderDescriptor
+	 * 		of type FinderDescriptor
+	 * @param results
+	 * 		of type List
+	 *
+	 * @return Object
+	 */
 	private Object getAsCollection(FinderDescriptor finderDescriptor, List results)
 	{
 		Collection<?> collection;
@@ -278,10 +332,19 @@ class CustomJpaFinderProxy
 					e);
 		}
 
+		//noinspection unchecked
 		collection.addAll(results);
 		return collection;
 	}
 
+	/**
+	 * Method determineReturnType ...
+	 *
+	 * @param returnClass
+	 * 		of type Class<?>
+	 *
+	 * @return ReturnType
+	 */
 	private ReturnType determineReturnType(Class<?> returnClass)
 	{
 		if (Collection.class.isAssignableFrom(returnClass))
@@ -310,10 +373,22 @@ class CustomJpaFinderProxy
 		finderCache.put(method, finderDescriptor);
 	}
 
+	/**
+	 * The return type to apply
+	 */
 	private enum ReturnType
 	{
+		/**
+		 * Field PLAIN
+		 */
 		PLAIN,
+		/**
+		 * Field COLLECTION
+		 */
 		COLLECTION,
+		/**
+		 * Field ARRAY
+		 */
 		ARRAY
 	}
 
@@ -322,34 +397,89 @@ class CustomJpaFinderProxy
 	 */
 	private static class FinderDescriptor
 	{
+		/**
+		 * Field isBindAsRawParameters
+		 */
 		volatile boolean isBindAsRawParameters = true;
 		//should we treat the query as having ? instead of :named params
+		/**
+		 * Field returnType
+		 */
 		volatile ReturnType returnType;
+		/**
+		 * Field returnClass
+		 */
 		volatile Class<?> returnClass;
+		/**
+		 * Field returnCollectionType
+		 */
 		volatile Class<? extends Collection> returnCollectionType;
+		/**
+		 * Field returnCollectionTypeConstructor
+		 */
 		volatile Constructor returnCollectionTypeConstructor;
+		/**
+		 * Field parameterAnnotations
+		 */
 		volatile Object[] parameterAnnotations;
+		/**
+		 * Field isKeyedQuery
+		 */
 		private volatile boolean isKeyedQuery = false;
 		//contract is: null = no bind, @Named = param, @FirstResult/@MaxResults for paging
+		/**
+		 * Field query
+		 */
 		private String query;
+		/**
+		 * Field name
+		 */
 		private String name;
 
+		/**
+		 * Method setQuery sets the query of this FinderDescriptor object.
+		 * <p>
+		 * Field query
+		 *
+		 * @param query
+		 * 		the query of this FinderDescriptor object.
+		 */
 		void setQuery(String query)
 		{
 			this.query = query;
 		}
 
+		/**
+		 * Method setNamedQuery sets the namedQuery of this FinderDescriptor object.
+		 *
+		 * @param name
+		 * 		the namedQuery of this FinderDescriptor object.
+		 */
 		void setNamedQuery(String name)
 		{
 			this.name = name;
 			isKeyedQuery = true;
 		}
 
+		/**
+		 * Method isKeyedQuery returns the keyedQuery of this FinderDescriptor object.
+		 *
+		 * @return the keyedQuery (type boolean) of this FinderDescriptor object.
+		 */
+		@SuppressWarnings("unused")
 		public boolean isKeyedQuery()
 		{
 			return isKeyedQuery;
 		}
 
+		/**
+		 * Method createQuery ...
+		 *
+		 * @param em
+		 * 		of type EntityManager
+		 *
+		 * @return Query
+		 */
 		Query createQuery(EntityManager em)
 		{
 			return isKeyedQuery ? em.createNamedQuery(name) : em.createQuery(query);

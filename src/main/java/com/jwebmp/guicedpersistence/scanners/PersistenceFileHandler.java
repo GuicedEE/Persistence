@@ -2,7 +2,6 @@ package com.jwebmp.guicedpersistence.scanners;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import com.jwebmp.guicedinjection.interfaces.IFileContentsScanner;
 import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.Persistence;
@@ -17,14 +16,29 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Loads persistence units from persistence files as found on the registered classpath
+ */
 @SuppressWarnings("unused")
 public class PersistenceFileHandler
 		implements IFileContentsScanner
 {
+	/**
+	 * The logger
+	 */
 	private static final Logger log = LogFactory.getLog("PersistenceFileHandler");
+	/**
+	 * The property that marks a persistence unit as ignore
+	 */
 	private static final String ignorePersistenceUnitProperty = "guicedpersistence.ignore";
+	/**
+	 * A list of all registered persistence units
+	 */
 	private static final Set<PersistenceUnit> persistenceUnits = new HashSet<>();
 
+	/**
+	 * A new persistence file handler
+	 */
 	public PersistenceFileHandler()
 	{
 		//No Config Required
@@ -33,21 +47,38 @@ public class PersistenceFileHandler
 	/**
 	 * Returns all the persistence units that were found or loaded
 	 *
-	 * @return
+	 * @return A set of persistence units
 	 */
 	public static Set<PersistenceUnit> getPersistenceUnits()
 	{
 		return PersistenceFileHandler.persistenceUnits;
 	}
 
+	/**
+	 * Returns a contents processer to run on match
+	 *
+	 * @return the maps of file identifiers and contents
+	 */
 	@Override
 	public Map<String, ResourceList.ByteArrayConsumer> onMatch()
 	{
 		Map<String, ResourceList.ByteArrayConsumer> map = new HashMap<>();
 		PersistenceFileHandler.log.info("Loading Persistence Units");
-		ResourceList.ByteArrayConsumer processor = (resource, bytes) ->
+		ResourceList.ByteArrayConsumer processor = buildPersistenceByteArrayConsumer();
+		map.put("persistence.xml", processor);
+		return map;
+	}
+
+	/**
+	 * Method buildPersistenceByteArrayConsumer ...
+	 *
+	 * @return ByteArrayConsumer
+	 */
+	private ResourceList.ByteArrayConsumer buildPersistenceByteArrayConsumer()
+	{
+		return (resource, byteArray) ->
 		{
-			Set<PersistenceUnit> units = getPersistenceUnitFromFile(bytes, resource.getPathRelativeToClasspathElement());
+			Set<PersistenceUnit> units = getPersistenceUnitFromFile(byteArray, resource.getPathRelativeToClasspathElement());
 			for (Iterator<PersistenceUnit> iterator = units.iterator(); iterator.hasNext(); )
 			{
 				PersistenceUnit unit = iterator.next();
@@ -56,29 +87,29 @@ public class PersistenceFileHandler
 				{
 					if (property.getName()
 					            .equals(PersistenceFileHandler.ignorePersistenceUnitProperty) &&
-					    property.getValue()
-					            .equalsIgnoreCase("true"))
+					    "true".equalsIgnoreCase(property.getValue()))
 					{
+
 						iterator.remove();
+					}
+					else
+					{
+						PersistenceFileHandler.persistenceUnits.add(unit);
 					}
 				}
 			}
-			for (PersistenceUnit unit : units)
-			{
-				PersistenceFileHandler.log.config("Found Persistence Unit " + unit.getName() + " - JTA (" + Strings.isNullOrEmpty(unit.getJtaDataSource()) + ")");
-				PersistenceFileHandler.persistenceUnits.add(unit);
-			}
 		};
-		map.put("persistence.xml", processor);
-		return map;
 	}
 
 	/**
 	 * Gets all the persistence files
 	 *
 	 * @param persistenceFile
+	 * 		The persistence file bytes
+	 * @param persistenceFileName
+	 * 		The filename
 	 *
-	 * @return
+	 * @return A set of persistence units
 	 */
 	private Set<PersistenceUnit> getPersistenceUnitFromFile(byte[] persistenceFile, String persistenceFileName)
 	{
@@ -86,10 +117,7 @@ public class PersistenceFileHandler
 		try
 		{
 			String xml = new String(persistenceFile);
-			JSONObject jsonObj = XML.toJSONObject(new String(persistenceFile));
-			String json = String.valueOf(jsonObj);
-			xml = replaceNameSpaceAttributes(xml);
-			jsonObj = XML.toJSONObject(xml);
+			JSONObject jsonObj = XML.toJSONObject(xml);
 
 			ObjectMapper om = new ObjectMapper();
 			om.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
@@ -105,32 +133,25 @@ public class PersistenceFileHandler
 		return units;
 	}
 
-	private String replaceNameSpaceAttributes(String xml)
-	{
-		String replaced = xml;
-		replaced = PersistenceFileHandler.removeAllXmlNamespace(replaced);
-		replaced = replaced.replace(
-				"xmlns=\"http://java.sun.com/xml/ns/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd\"",
-				"");
-		replaced = replaced.replace("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", "");
-		replaced = replaced.replace("xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"", "");
-		replaced = replaced.replace("xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/persistence", "");
-		replaced = replaced.replace("http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd\"", "");
-		return replaced;
-	}
-
-	private static String removeAllXmlNamespace(String xmlData)
-	{
-		String xmlnsPattern = "\\s+xmlns\\s*(:\\w)?\\s*=\\s*\\\"(?<url>[^\\\"]*)\\\"";
-		return xmlData.replaceAll(xmlnsPattern, "");
-	}
-
+	/**
+	 * Method hashCode ...
+	 *
+	 * @return int
+	 */
 	@Override
 	public int hashCode()
 	{
 		return super.hashCode();
 	}
 
+	/**
+	 * Method equals ...
+	 *
+	 * @param obj
+	 * 		of type Object
+	 *
+	 * @return boolean
+	 */
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -138,11 +159,7 @@ public class PersistenceFileHandler
 		{
 			return false;
 		}
-		if (obj.getClass()
-		       .equals(getClass()))
-		{
-			return true;
-		}
-		return false;
+		return obj.getClass()
+		          .equals(getClass());
 	}
 }

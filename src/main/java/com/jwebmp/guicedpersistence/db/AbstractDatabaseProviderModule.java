@@ -33,7 +33,13 @@ public abstract class AbstractDatabaseProviderModule
 	 * Field log
 	 */
 	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
+	/**
+	 * Properties loader
+	 */
 	private static final ServiceLoader<PropertiesEntityManagerReader> propsLoader = ServiceLoader.load(PropertiesEntityManagerReader.class);
+	/**
+	 * A set of all annotations that this abstraction built
+	 */
 	private static final Set<Class<? extends Annotation>> boundAnnotations = new HashSet<>();
 
 	/**
@@ -126,7 +132,7 @@ public abstract class AbstractDatabaseProviderModule
 		}
 		catch (Throwable T)
 		{
-			AbstractDatabaseProviderModule.log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]");
+			AbstractDatabaseProviderModule.log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]", T);
 		}
 		AbstractDatabaseProviderModule.log.log(Level.WARNING, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]. Returning a Null Instance");
 		return null;

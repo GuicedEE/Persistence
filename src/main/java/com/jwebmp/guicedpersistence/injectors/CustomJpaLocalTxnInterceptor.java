@@ -32,10 +32,8 @@ import java.lang.reflect.Method;
 public class CustomJpaLocalTxnInterceptor
 		implements MethodInterceptor
 {
-
 	// Tracks if the unit of work was begun implicitly by this transaction.
 	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
-	// TODO(gak): Move these args to the cxtor & make these final.
 	@Inject
 	private CustomJpaPersistService emProvider = null;
 	@Inject
