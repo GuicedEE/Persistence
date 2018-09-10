@@ -278,9 +278,7 @@ public final class CustomJpaPersistModule
 	/**
 	 * Method provideProperties ...
 	 *
-	 * @return Map<?
-                                               *               	       	       ,
-                                               *               	       	       ?>
+	 * @return Map
 	 */
 	@Provides
 	@CustomJpa

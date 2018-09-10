@@ -24,11 +24,6 @@ public class Persistence
 	@JsonProperty(value = "version",
 			required = true)
 	protected String version;
-	/**
-	 * The namespace
-	 */
-	@JsonProperty("xmlns")
-	private List<String> xmlns;
 
 	public List<PersistenceUnit> getPersistenceUnit()
 	{
@@ -54,15 +49,5 @@ public class Persistence
 	public void setVersion(String value)
 	{
 		version = value;
-	}
-
-	public List<String> getXmlns()
-	{
-		return xmlns;
-	}
-
-	public void setXmlns(List<String> xmlns)
-	{
-		this.xmlns = xmlns;
 	}
 }

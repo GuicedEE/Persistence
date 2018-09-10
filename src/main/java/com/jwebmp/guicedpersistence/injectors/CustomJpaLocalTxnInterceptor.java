@@ -110,7 +110,14 @@ public class CustomJpaLocalTxnInterceptor
 		return result;
 	}
 
-	// TODO(dhanji): Cache this method's results.
+	/**
+	 * Method readTransactionMetadata ...
+	 *
+	 * @param methodInvocation
+	 * 		of type MethodInvocation
+	 *
+	 * @return Transactional
+	 */
 	private Transactional readTransactionMetadata(MethodInvocation methodInvocation)
 	{
 		Transactional transactional;

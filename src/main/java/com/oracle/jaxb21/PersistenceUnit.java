@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
@@ -17,6 +18,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PersistenceUnit
+		implements Comparable<PersistenceUnit>
 {
 	@JsonProperty("description")
 	protected String description;
@@ -178,6 +180,50 @@ public class PersistenceUnit
 		this.properties = properties;
 	}
 
+	public PersistenceUnitTransactionType getTransactionType()
+	{
+		return transactionType;
+	}
+
+	public void setTransactionType(PersistenceUnitTransactionType transactionType)
+	{
+		this.transactionType = transactionType;
+	}
+
+	/**
+	 * Method hashCode ...
+	 *
+	 * @return int
+	 */
+	@Override
+	public int hashCode()
+	{
+		return Objects.hash(getName());
+	}
+
+	/**
+	 * Method equals ...
+	 *
+	 * @param o
+	 * 		of type Object
+	 *
+	 * @return boolean
+	 */
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+		{
+			return true;
+		}
+		if (!(o instanceof PersistenceUnit))
+		{
+			return false;
+		}
+		PersistenceUnit that = (PersistenceUnit) o;
+		return Objects.equals(getName(), that.getName());
+	}
+
 	public String getName()
 	{
 		return name;
@@ -188,13 +234,9 @@ public class PersistenceUnit
 		this.name = name;
 	}
 
-	public PersistenceUnitTransactionType getTransactionType()
+	@Override
+	public int compareTo(PersistenceUnit o)
 	{
-		return transactionType;
-	}
-
-	public void setTransactionType(PersistenceUnitTransactionType transactionType)
-	{
-		this.transactionType = transactionType;
+		return getName().compareTo(o.getName());
 	}
 }
