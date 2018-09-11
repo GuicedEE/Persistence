@@ -63,6 +63,8 @@ public class CustomJpaPersistService
 	 */
 	private volatile EntityManagerFactory emFactory;
 
+	private boolean serviceStartCalled;
+
 	@Inject
 	public CustomJpaPersistService(
 			@CustomJpa String persistenceUnitName, @CustomJpa Map<?, ?> persistenceProperties, @CustomJpa Class<? extends Annotation> annotation)
@@ -87,12 +89,14 @@ public class CustomJpaPersistService
 				+ "Try calling UnitOfWork.begin() first, or use a PersistFilter if you "
 				+ "are inside a servlet environment.");
 
+		em.setProperty("annotation", annotation);
 		return em;
 	}
 
 	public boolean isWorking()
 	{
-		return entityManager.get() != null;
+		boolean emExists = entityManager.get() != null;
+		return emExists;
 	}
 
 	@Override

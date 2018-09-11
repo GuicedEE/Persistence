@@ -22,10 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
-import com.google.inject.matcher.Matchers;
-import com.google.inject.persist.PersistModule;
 import com.google.inject.persist.PersistService;
-import com.google.inject.persist.Transactional;
 import com.google.inject.persist.UnitOfWork;
 import com.google.inject.persist.finder.DynamicFinder;
 import com.google.inject.persist.finder.Finder;
@@ -49,7 +46,7 @@ import java.util.Map;
  */
 @SuppressWarnings({"MissingClassJavaDoc", "WeakerAccess"})
 public final class CustomJpaPersistModule
-		extends PersistModule
+		extends CustomPersistModule
 {
 	/**
 	 * Field jpaUnit
@@ -106,9 +103,6 @@ public final class CustomJpaPersistModule
 		bind(EntityManager.class).toProvider(CustomJpaPersistService.class);
 		bind(EntityManagerFactory.class)
 				.toProvider(CustomJpaPersistService.EntityManagerFactoryProvider.class);
-
-		transactionInterceptor = new CustomJpaLocalTxnInterceptor();
-		bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), transactionInterceptor);
 
 		for (Class<?> finder : dynamicFinders)
 		{

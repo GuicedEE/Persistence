@@ -84,7 +84,6 @@ public abstract class AbstractDatabaseProviderModule
 				jdbcProperties.putAll(output);
 			}
 		}
-
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
 		connectionBaseInfo.setJndiName(getJndiMapping());

@@ -3,9 +3,12 @@ package com.jwebmp.guicedpersistence.scanners;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.Matchers;
 import com.jwebmp.guicedinjection.abstractions.GuiceInjectorModule;
 import com.jwebmp.guicedinjection.interfaces.IDefaultService;
 import com.jwebmp.guicedinjection.interfaces.IGuiceDefaultBinder;
+import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.jwebmp.guicedpersistence.injectors.CustomJpaLocalTxnInterceptor;
 import com.jwebmp.guicedpersistence.services.IAsyncStartup;
 import com.jwebmp.guicedpersistence.services.ITransactionHandler;
 import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
@@ -43,6 +46,7 @@ public class PersistenceServiceLoadersBinder
 		      .toProvider(() -> IDefaultService.loaderToSet(ServiceLoader.load(ITransactionHandler.class)))
 		      .in(Singleton.class);
 
+		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), new CustomJpaLocalTxnInterceptor());
 	}
 
 }

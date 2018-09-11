@@ -77,12 +77,11 @@ public final class AsyncPostStartup
 					                                                catch (Throwable T)
 					                                                {
 						                                                AsyncPostStartup.log.log(Level.SEVERE, "Unable to inject " + startup.getClass(), T);
-						                                                T.printStackTrace();
 					                                                }
 				                                                });
 			}
-			AsyncPostStartup.dbAutoStartupExecutors.shutdown();
 		}
+		AsyncPostStartup.dbAutoStartupExecutors.shutdown();
 	}
 
 	/**

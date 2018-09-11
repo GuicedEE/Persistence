@@ -16,16 +16,22 @@
 
 package com.jwebmp.guicedpersistence.injectors;
 
-import com.google.inject.Inject;
-import com.google.inject.persist.Transactional;
+import com.google.inject.Key;
 import com.google.inject.persist.UnitOfWork;
+import com.jwebmp.guicedinjection.GuiceContext;
+import com.jwebmp.guicedpersistence.db.annotations.Transactional;
+import com.jwebmp.guicedpersistence.services.ITransactionHandler;
+import com.oracle.jaxb21.PersistenceUnit;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder.*;
 
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
@@ -34,41 +40,47 @@ public class CustomJpaLocalTxnInterceptor
 		implements MethodInterceptor
 {
 	// Tracks if the unit of work was begun implicitly by this transaction.
-	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
-	@Inject
-	private CustomJpaPersistService emProvider = null;
+	private final ThreadLocal<Map<Class<? extends Annotation>, Boolean>> didWeStartWork = new ThreadLocal<>();
 
-	@Inject
-	private UnitOfWork unitOfWork = null;
-
-	/**
-	 * A reference to the annotation used for the entity manager
-	 */
-	private Class<? extends Annotation> emAnnotation;
+	public CustomJpaLocalTxnInterceptor()
+	{
+		didWeStartWork.set(new HashMap<>());
+	}
 
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
 	{
+		Transactional transactional = readTransactionMetadata(methodInvocation);
+
+		CustomJpaPersistService emProvider = GuiceContext.get(Key.get(CustomJpaPersistService.class, transactional.entityManagerAnnotation()));
+		UnitOfWork unitOfWork = GuiceContext.get(Key.get(UnitOfWork.class, transactional.entityManagerAnnotation()));
+		PersistenceUnit unit = GuiceContext.get(Key.get(PersistenceUnit.class, transactional.entityManagerAnnotation()));
 
 		// Should we start a unit of work?
 		if (!emProvider.isWorking())
 		{
 			emProvider.begin();
-			didWeStartWork.set(true);
+			didWeStartWork.get()
+			              .put(transactional.entityManagerAnnotation(), true);
 		}
 
-		Transactional transactional = readTransactionMetadata(methodInvocation);
-		EntityManager em = this.emProvider.get();
-
-		// Allow 'joining' of transactions if there is an enclosing @Transactional method.
-		if (em.getTransaction()
-		      .isActive())
+		EntityManager em = emProvider.get();
+		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
 		{
-			return methodInvocation.proceed();
+			// Allow 'joining' of transactions if there is an enclosing @Transactional method.
+			if (handler.active(unit) && handler.transactionExists(em, unit))
+			{
+				return methodInvocation.proceed();
+			}
 		}
 
-		final EntityTransaction txn = em.getTransaction();
-		txn.begin();
+		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+		{
+			if (handler.active(unit))
+			{
+				handler.beginTransacation(false, em, unit);
+			}
+		}
 
 		Object result;
 		try
@@ -78,10 +90,16 @@ public class CustomJpaLocalTxnInterceptor
 		}
 		catch (Exception e)
 		{
-			//commit transaction only if rollback didnt occur
-			if (rollbackIfNecessary(transactional, e, txn))
+			//commit transaction only if rollback didn't occur
+			if (rollbackIfNecessary(transactional, e, unit, em))
 			{
-				txn.commit();
+				for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+				{
+					if (handler.active(unit))
+					{
+						handler.commitTransacation(false, em, unit);
+					}
+				}
 			}
 
 			//propagate whatever exception is thrown anyway
@@ -89,10 +107,23 @@ public class CustomJpaLocalTxnInterceptor
 		}
 		finally
 		{
-			// Close the em if necessary (guarded so this code doesn't run unless catch fired).
-			if (null != didWeStartWork.get() && !txn.isActive())
+			boolean transactionActive = false;
+			for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
 			{
-				didWeStartWork.remove();
+				if (handler.transactionExists(em, unit))
+				{
+					transactionActive = true;
+					break;
+				}
+			}
+			// Close the em if necessary (guarded so this code doesn't run unless catch fired).
+			Map<Class<? extends Annotation>, Boolean> mappedOut = didWeStartWork.get();
+			Boolean startedWork = mappedOut != null && mappedOut.get(transactional.entityManagerAnnotation()) != null;
+
+			if (startedWork && !transactionActive)
+			{
+				didWeStartWork.get()
+				              .remove(transactional.entityManagerAnnotation());
 				unitOfWork.end();
 			}
 		}
@@ -101,14 +132,25 @@ public class CustomJpaLocalTxnInterceptor
 		//  interferes with the advised method's throwing semantics)
 		try
 		{
-			txn.commit();
+			for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+			{
+				if (handler.active(unit))
+				{
+					handler.commitTransacation(false, em, unit);
+				}
+			}
 		}
 		finally
 		{
+			// Close the em if necessary (guarded so this code doesn't run unless catch fired).
+			Map<Class<? extends Annotation>, Boolean> mappedOut = didWeStartWork.get();
+			Boolean startedWork = !(mappedOut == null) && mappedOut.get(transactional.entityManagerAnnotation()) != null;
+
 			//close the em if necessary
-			if (null != didWeStartWork.get())
+			if (startedWork)
 			{
-				didWeStartWork.remove();
+				didWeStartWork.get()
+				              .remove(transactional.entityManagerAnnotation());
 				unitOfWork.end();
 			}
 		}
@@ -138,12 +180,6 @@ public class CustomJpaLocalTxnInterceptor
 			// If none on method, try the class.
 			transactional = targetClass.getAnnotation(Transactional.class);
 		}
-		if (null == transactional)
-		{
-			// If there is no transactional annotation present, use the default
-			transactional = Internal.class.getAnnotation(Transactional.class);
-		}
-
 		return transactional;
 	}
 
@@ -151,14 +187,15 @@ public class CustomJpaLocalTxnInterceptor
 	 * Returns True if rollback DID NOT HAPPEN (i.e. if commit should continue).
 	 *
 	 * @param transactional
-	 * 		The metadata annotaiton of the method
+	 * 		The metadata annotation of the method
 	 * @param e
 	 * 		The exception to test for rollback
-	 * @param txn
-	 * 		A JPA Transaction to issue rollbacks on
+	 * @param em
+	 * 		Entity Manager
+	 * @param unit
+	 * 		The associated persistence unit
 	 */
-	private boolean rollbackIfNecessary(
-			Transactional transactional, Exception e, EntityTransaction txn)
+	private boolean rollbackIfNecessary(Transactional transactional, Exception e, PersistenceUnit unit, EntityManager em)
 	{
 		boolean commit = true;
 
@@ -186,7 +223,13 @@ public class CustomJpaLocalTxnInterceptor
 				//rollback only if nothing matched the ignore check
 				if (!commit)
 				{
-					txn.rollback();
+					for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+					{
+						if (handler.active(unit))
+						{
+							handler.rollbackTransacation(false, em, unit);
+						}
+					}
 				}
 				//otherwise continue to commit
 
@@ -196,7 +239,4 @@ public class CustomJpaLocalTxnInterceptor
 
 		return commit;
 	}
-
-	@Transactional
-	private static class Internal {}
 }

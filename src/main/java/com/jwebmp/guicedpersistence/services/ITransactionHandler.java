@@ -1,5 +1,7 @@
 package com.jwebmp.guicedpersistence.services;
 
+import com.oracle.jaxb21.PersistenceUnit;
+
 import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import java.util.Comparator;
@@ -18,7 +20,7 @@ public interface ITransactionHandler
 	 * @param entityManager
 	 * 		The entity manager associated
 	 */
-	void beginTransacation(boolean createNew, EntityManager entityManager);
+	void beginTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit);
 
 	/**
 	 * What to do when committing a transaction, always called
@@ -28,7 +30,17 @@ public interface ITransactionHandler
 	 * @param entityManager
 	 * 		The entity manager associated
 	 */
-	void commitTransacation(boolean createNew, EntityManager entityManager);
+	void commitTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit);
+
+	/**
+	 * What to do when committing a transaction, always called
+	 *
+	 * @param createNew
+	 * 		If the transaction already exists
+	 * @param entityManager
+	 * 		The entity manager associated
+	 */
+	void rollbackTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit);
 
 	/**
 	 * Returns the value denoting if the transaction exists or not
@@ -38,14 +50,24 @@ public interface ITransactionHandler
 	 *
 	 * @return if the transaction exists or not
 	 */
-	boolean transactionExists(EntityManager entityManager);
+	boolean transactionExists(EntityManager entityManager, PersistenceUnit persistenceUnit);
 
 	/**
 	 * If this handler is active or not
 	 *
 	 * @return If this handler should be active
 	 */
-	default boolean active()
+	default boolean active(PersistenceUnit persistenceUnit)
+	{
+		return true;
+	}
+
+	/**
+	 * If the handler should be available for automatic entity assist control
+	 *
+	 * @return default false
+	 */
+	default boolean enableAutomaticControl()
 	{
 		return false;
 	}

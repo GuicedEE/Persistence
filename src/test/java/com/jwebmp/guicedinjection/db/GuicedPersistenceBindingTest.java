@@ -14,7 +14,7 @@ import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GuicedPersistenceBindingTest
+public class GuicedPersistenceBindingTest
 {
 	@Test
 	public void testMe() throws InterruptedException

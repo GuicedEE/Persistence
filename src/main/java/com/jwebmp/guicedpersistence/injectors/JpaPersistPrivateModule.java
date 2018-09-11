@@ -52,7 +52,7 @@ public class JpaPersistPrivateModule
 		JpaPersistPrivateModule.log.log(Level.FINE, "Bound EntityManager.class with @" + qualifier.getSimpleName());
 		JpaPersistPrivateModule.log.log(Level.FINE, "Bound PersistService.class with @" + qualifier.getSimpleName());
 		JpaPersistPrivateModule.log.log(Level.FINE, "Bound UnitOfWork.class with @" + qualifier.getSimpleName());
-		rebind(qualifier, EntityManagerFactory.class, EntityManager.class, PersistService.class, UnitOfWork.class);
+		rebind(qualifier, EntityManagerFactory.class, EntityManager.class, PersistService.class, UnitOfWork.class, CustomJpaPersistService.class);
 		doConfigure();
 	}
 
