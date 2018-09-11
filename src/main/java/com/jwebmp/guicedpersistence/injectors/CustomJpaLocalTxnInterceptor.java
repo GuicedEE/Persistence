@@ -24,6 +24,7 @@ import org.aopalliance.intercept.MethodInvocation;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -39,6 +40,11 @@ public class CustomJpaLocalTxnInterceptor
 
 	@Inject
 	private UnitOfWork unitOfWork = null;
+
+	/**
+	 * A reference to the annotation used for the entity manager
+	 */
+	private Class<? extends Annotation> emAnnotation;
 
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable

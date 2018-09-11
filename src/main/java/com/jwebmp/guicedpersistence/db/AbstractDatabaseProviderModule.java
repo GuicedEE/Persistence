@@ -218,24 +218,13 @@ public abstract class AbstractDatabaseProviderModule
 	@SuppressWarnings("WeakerAccess")
 	protected void configurePersistenceUnitProperties(PersistenceUnit pu, Properties jdbcProperties)
 	{
-		Properties sysProps = System.getProperties();
 		if (pu != null)
 		{
 			for (Property props : pu.getProperties()
 			                        .getProperty())
 			{
-				String checkProperty = props.getValue()
-				                            .replace("\\$", "");
-				checkProperty = checkProperty.replaceAll("\\{", "");
-				checkProperty = checkProperty.replaceAll("}", "");
-				if (sysProps.containsKey(checkProperty))
-				{
-					jdbcProperties.put(props.getName(), sysProps.get(checkProperty));
-				}
-				else
-				{
-					jdbcProperties.put(props.getName(), props.getValue());
-				}
+				jdbcProperties.put(props.getName(), props.getValue());
+
 			}
 		}
 	}

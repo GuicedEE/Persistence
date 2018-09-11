@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Provides jar scoped persistence private modules, and exposes them to the ear level
+ * Provides jar scoped persistence private modules, and exposes them with the given annotation outwards
  *
  * @author GedMarc
  */
@@ -24,7 +24,9 @@ public class JpaPersistPrivateModule
 	private static final Logger log = LogFactory.getLog("JpaPersistPrivateModule");
 
 	protected final String persistenceUnitName;
+
 	protected final Properties props;
+
 	protected final Class<? extends Annotation> qualifier;
 
 	public JpaPersistPrivateModule(String persistenceUnitName, Class<? extends Annotation> qualifier)

@@ -11,5 +11,17 @@ import java.util.Properties;
 @FunctionalInterface
 public interface PropertiesConnectionInfoReader
 {
+	/**
+	 * Method populateConnectionBaseInfo ...
+	 *
+	 * @param unit
+	 * 		of type PersistenceUnit
+	 * @param filteredProperties
+	 * 		of type Properties
+	 * @param cbi
+	 * 		of type ConnectionBaseInfo
+	 *
+	 * @return ConnectionBaseInfo
+	 */
 	ConnectionBaseInfo populateConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties, ConnectionBaseInfo cbi);
 }

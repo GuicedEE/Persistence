@@ -42,14 +42,25 @@ public class CustomJpaPersistService
 {
 	private static final Logger log = LogFactory.getLog("PersistService");
 
+	/**
+	 * Thread Local instances of Entity Managers
+	 */
 	private final ThreadLocal<EntityManager> entityManager = new ThreadLocal<>();
-
+	/**
+	 * The assigned persistence unit name
+	 */
 	private final String persistenceUnitName;
-
+	/**
+	 * The given properties object
+	 */
 	private final Map<?, ?> persistenceProperties;
-
+	/**
+	 * The assigned annotation for the entity manager
+	 */
 	private final Class<? extends Annotation> annotation;
-
+	/**
+	 * The service em factory
+	 */
 	private volatile EntityManagerFactory emFactory;
 
 	@Inject
@@ -124,6 +135,9 @@ public class CustomJpaPersistService
 		}
 	}
 
+	/**
+	 * Starts up the Entity Manager Factory
+	 */
 	@Override
 	public synchronized void start()
 	{
@@ -151,6 +165,9 @@ public class CustomJpaPersistService
 		}
 	}
 
+	/**
+	 * Stops the Entity Manager Factory
+	 */
 	@Override
 	public synchronized void stop()
 	{

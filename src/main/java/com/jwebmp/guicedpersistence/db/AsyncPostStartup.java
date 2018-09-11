@@ -13,7 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * This class uses the
+ * This class loads up stuff asynchronously during boot
  */
 public final class AsyncPostStartup
 		implements IGuicePostStartup
@@ -40,7 +40,12 @@ public final class AsyncPostStartup
 		//No Config
 	}
 
-	public static ExecutorService getDbAutoStartupExecutors()
+	/**
+	 * Method getExecutionService returns the executionService of this AsyncPostStartup object.
+	 *
+	 * @return the executionService (type ExecutorService) of this AsyncPostStartup object.
+	 */
+	public static ExecutorService getExecutionService()
 	{
 		return dbAutoStartupExecutors;
 	}
@@ -72,6 +77,7 @@ public final class AsyncPostStartup
 					                                                catch (Throwable T)
 					                                                {
 						                                                AsyncPostStartup.log.log(Level.SEVERE, "Unable to inject " + startup.getClass(), T);
+						                                                T.printStackTrace();
 					                                                }
 				                                                });
 			}
@@ -83,6 +89,8 @@ public final class AsyncPostStartup
 	 * Sets the order in which this must run, default 50.
 	 *
 	 * @return the sort order to return
+	 *
+	 * @see com.jwebmp.guicedinjection.interfaces.IGuicePostStartup#sortOrder()
 	 */
 	@Override
 	public Integer sortOrder()

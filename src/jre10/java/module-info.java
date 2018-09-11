@@ -1,6 +1,5 @@
 import com.jwebmp.guicedinjection.interfaces.*;
 import com.jwebmp.guicedpersistence.db.AsyncPostStartup;
-import com.jwebmp.guicedpersistence.db.intercepters.HibernateEntityManagerProperties;
 import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
@@ -54,11 +53,7 @@ module com.jwebmp.guicedpersistence {
 	provides IGuicePostStartup with AsyncPostStartup;
 	provides IGuiceDefaultBinder with PersistenceServiceLoadersBinder;
 
-	provides com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader with HibernateEntityManagerProperties;
-
-	provides com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader with com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder,
-			                                                                              com.jwebmp.guicedpersistence.db.intercepters.HibernateDefaultConnectionBaseBuilder,
-			                                                                              com.jwebmp.guicedpersistence.db.intercepters.EclipseLinkDefaultConnectionBaseBuilder;
+	provides com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader with com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.db to com.fasterxml.jackson.databind;

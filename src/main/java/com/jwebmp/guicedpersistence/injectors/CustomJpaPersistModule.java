@@ -67,7 +67,9 @@ public final class CustomJpaPersistModule
 	 * Field transactionInterceptor
 	 */
 	private MethodInterceptor transactionInterceptor;
-
+	/**
+	 * The annotation to use
+	 */
 	private Class<? extends Annotation> annotation;
 
 	/**
@@ -76,6 +78,7 @@ public final class CustomJpaPersistModule
 	 * @param jpaUnit
 	 * 		of type String
 	 * @param annotation
+	 * 		The given annotation
 	 */
 	public CustomJpaPersistModule(String jpaUnit, Class<? extends Annotation> annotation)
 	{

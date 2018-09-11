@@ -24,7 +24,7 @@ class GuicedPersistenceBindingTest
 		                            .getScanResult();
 		GuiceContext.inject();
 
-		AsyncPostStartup.getDbAutoStartupExecutors()
+		AsyncPostStartup.getExecutionService()
 		                .awaitTermination(10, TimeUnit.MINUTES);
 
 		EntityManager em = GuiceContext.get(Key.get(EntityManager.class, TestCustomPersistenceLoader.class));

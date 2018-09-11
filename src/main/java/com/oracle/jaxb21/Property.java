@@ -15,19 +15,10 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Property
+		implements Comparable<Property>
 {
 	protected String name;
 	protected String value;
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
 
 	public String getValue()
 	{
@@ -45,6 +36,16 @@ public class Property
 		return Objects.hash(getName());
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
 	@Override
 	public boolean equals(Object o)
 	{
@@ -58,5 +59,11 @@ public class Property
 		}
 		Property property = (Property) o;
 		return Objects.equals(getName(), property.getName());
+	}
+
+	@Override
+	public int compareTo(Property o)
+	{
+		return getName().compareTo(o.getName());
 	}
 }
