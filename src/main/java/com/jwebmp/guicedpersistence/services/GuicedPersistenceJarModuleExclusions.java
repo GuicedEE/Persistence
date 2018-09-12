@@ -13,6 +13,7 @@ public class GuicedPersistenceJarModuleExclusions
 {
 	public GuicedPersistenceJarModuleExclusions()
 	{
+		//No config needed
 	}
 
 	@Override

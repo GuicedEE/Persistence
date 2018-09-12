@@ -144,7 +144,7 @@ public class CustomJpaLocalTxnInterceptor
 		{
 			// Close the em if necessary (guarded so this code doesn't run unless catch fired).
 			Map<Class<? extends Annotation>, Boolean> mappedOut = didWeStartWork.get();
-			Boolean startedWork = !(mappedOut == null) && mappedOut.get(transactional.entityManagerAnnotation()) != null;
+			Boolean startedWork = mappedOut != null && mappedOut.get(transactional.entityManagerAnnotation()) != null;
 
 			//close the em if necessary
 			if (startedWork)

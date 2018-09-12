@@ -40,6 +40,9 @@ import java.util.logging.Logger;
 public class CustomJpaPersistService
 		implements Provider<EntityManager>, UnitOfWork, PersistService
 {
+	/**
+	 * Field log
+	 */
 	private static final Logger log = LogFactory.getLog("PersistService");
 
 	/**
@@ -62,8 +65,6 @@ public class CustomJpaPersistService
 	 * The service em factory
 	 */
 	private volatile EntityManagerFactory emFactory;
-
-	private boolean serviceStartCalled;
 
 	@Inject
 	public CustomJpaPersistService(
@@ -95,8 +96,7 @@ public class CustomJpaPersistService
 
 	public boolean isWorking()
 	{
-		boolean emExists = entityManager.get() != null;
-		return emExists;
+		return entityManager.get() != null;
 	}
 
 	@Override
