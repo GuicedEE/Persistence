@@ -39,7 +39,9 @@ public class PersistenceServiceLoadersBinder
 		      .in(Singleton.class);
 
 		module.bind(PersistenceServiceLoadersBinder.IAsyncStartupReader)
-		      .toProvider(() -> IDefaultService.loaderToSet(ServiceLoader.load(IAsyncStartup.class)))
+		      .toProvider(() ->
+				                  IDefaultService.loaderToSet(ServiceLoader.load(IAsyncStartup.class)
+				                                             ))
 		      .in(Singleton.class);
 
 		module.bind(PersistenceServiceLoadersBinder.ITransactionHandlerReader)

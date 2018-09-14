@@ -861,7 +861,7 @@ public abstract class ConnectionBaseInfo
 	@JsonProperty("password")
 	private String passwordProperty()
 	{
-		return this.password == null ? "NotSet" : "Set";
+		return this.password == null ? "NotSet" : "*********";
 	}
 
 	@Override

@@ -1,15 +1,16 @@
 package com.jwebmp.guicedpersistence.db;
 
-import com.jwebmp.guicedinjection.GuiceContext;
+import com.jwebmp.guicedinjection.interfaces.IDefaultService;
 import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
 import com.jwebmp.guicedpersistence.services.IAsyncStartup;
 import com.jwebmp.logger.LogFactory;
 
+import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.ServiceLoader;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -27,10 +28,6 @@ public final class AsyncPostStartup
 	 */
 	private static final ExecutorService dbAutoStartupExecutors = Executors.newFixedThreadPool(Runtime.getRuntime()
 	                                                                                                  .availableProcessors());
-	/**
-	 * The list of items to startup asynchronously
-	 */
-	private static final ServiceLoader<IAsyncStartup> loader = ServiceLoader.load(IAsyncStartup.class);
 
 	/**
 	 * Default constructor for async post startup
@@ -58,27 +55,22 @@ public final class AsyncPostStartup
 	@Override
 	public void postLoad()
 	{
-		Iterator<IAsyncStartup> iterator = AsyncPostStartup.loader.iterator();
+		Set<IAsyncStartup> startups = IDefaultService.loaderToSet(ServiceLoader.load(IAsyncStartup.class));//GuiceContext.get(IAsyncStartupReader);
+
+		for (Class<? extends Annotation> boundAnnotation : AbstractDatabaseProviderModule.getBoundAnnotations())
+		{
+			startups.add(new DbStartupThread(boundAnnotation));
+		}
+
+		Iterator<IAsyncStartup> iterator = startups.iterator();
 		if (iterator.hasNext())
 		{
 			AsyncPostStartup.log.config("Loading AsyncPostStartup - " + Runtime.getRuntime()
 			                                                                   .availableProcessors() + " threads");
-			for (IAsyncStartup startup : AsyncPostStartup.loader)
+			for (IAsyncStartup startup : startups)
 			{
-				AsyncPostStartup.log.config("Scheduling IAsyncStartup - " + startup.getClass());
-				AsyncPostStartup.dbAutoStartupExecutors.execute(() ->
-				                                                {
-					                                                AsyncPostStartup.log.fine("Loading IAsyncStartup - " + startup.getClass());
-					                                                try
-					                                                {
-						                                                GuiceContext.getInstance(startup.getClass());
-						                                                AsyncPostStartup.log.fine("Started IAsyncStartup - " + startup.getClass());
-					                                                }
-					                                                catch (Throwable T)
-					                                                {
-						                                                AsyncPostStartup.log.log(Level.SEVERE, "Unable to inject " + startup.getClass(), T);
-					                                                }
-				                                                });
+				AsyncPostStartup.log.config("Scheduling IAsyncStartup - " + startup.name());
+				AsyncPostStartup.dbAutoStartupExecutors.execute(startup);
 			}
 		}
 		AsyncPostStartup.dbAutoStartupExecutors.shutdown();
@@ -96,4 +88,5 @@ public final class AsyncPostStartup
 	{
 		return 50;
 	}
+
 }

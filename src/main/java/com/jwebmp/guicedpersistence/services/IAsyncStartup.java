@@ -8,7 +8,7 @@ import java.util.Comparator;
  * Starts up services in a seperate executor service outside of the booting thread
  */
 public interface IAsyncStartup
-		extends Comparable<IAsyncStartup>, Comparator<IAsyncStartup>
+		extends Comparable<IAsyncStartup>, Comparator<IAsyncStartup>, Runnable
 {
 	@Override
 	default int compare(IAsyncStartup o1, IAsyncStartup o2)
@@ -36,5 +36,7 @@ public interface IAsyncStartup
 		}
 		return sort;
 	}
+
+	String name();
 
 }

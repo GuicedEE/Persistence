@@ -145,7 +145,7 @@ public class CustomJpaPersistService
 	@Override
 	public synchronized void start()
 	{
-		if (emFactory != null && !emFactory.isOpen())
+		if (emFactory != null && emFactory.isOpen())
 		{
 			return;
 		}

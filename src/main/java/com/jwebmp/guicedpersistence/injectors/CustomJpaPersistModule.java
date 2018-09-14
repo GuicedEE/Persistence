@@ -18,24 +18,15 @@ package com.jwebmp.guicedpersistence.injectors;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.inject.Inject;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
-import com.google.inject.persist.finder.DynamicFinder;
-import com.google.inject.persist.finder.Finder;
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.List;
 import java.util.Map;
 
@@ -60,10 +51,7 @@ public final class CustomJpaPersistModule
 	 * Field properties
 	 */
 	private Map<?, ?> properties;
-	/**
-	 * Field transactionInterceptor
-	 */
-	private MethodInterceptor transactionInterceptor;
+
 	/**
 	 * The annotation to use
 	 */
@@ -103,181 +91,6 @@ public final class CustomJpaPersistModule
 		bind(EntityManager.class).toProvider(CustomJpaPersistService.class);
 		bind(EntityManagerFactory.class)
 				.toProvider(CustomJpaPersistService.EntityManagerFactoryProvider.class);
-
-		for (Class<?> finder : dynamicFinders)
-		{
-			bindFinder(finder);
-		}
-	}
-
-	/**
-	 * Method getTransactionInterceptor returns the transactionInterceptor of this CustomJpaPersistModule object.
-	 *
-	 * @return the transactionInterceptor (type MethodInterceptor) of this CustomJpaPersistModule object.
-	 */
-	@Override
-	protected MethodInterceptor getTransactionInterceptor()
-	{
-		return transactionInterceptor;
-	}
-
-	/**
-	 * Method bindFinder ...
-	 *
-	 * @param iface
-	 * 		of type Class<T>
-	 */
-	private <T> void bindFinder(Class<T> iface)
-	{
-		if (!isDynamicFinderValid(iface))
-		{
-			return;
-		}
-
-		InvocationHandler finderInvoker =
-				new InvocationHandler()
-				{
-					/** Field finderProxy  */
-					@Inject
-					CustomJpaFinderProxy finderProxy;
-
-					/**
-					 * Method invoke ...
-					 *
-					 * @param thisObject of type Object
-					 * @param method of type Method
-					 * @param args of type Object[]
-					 * @return Object
-					 * @throws Throwable when
-					 */
-					@Override
-					public Object invoke(Object thisObject, Method method, Object[] args)
-							throws Throwable
-					{
-
-						// Don't intercept non-finder methods like equals and hashcode.
-						if (!method.isAnnotationPresent(Finder.class))
-						{
-							// NOTE(dhanji): This is not ideal, we are using the invocation handler's equals
-							// and hashcode as a proxy (!) for the proxy's equals and hashcode.
-							return method.invoke(this, args);
-						}
-
-						return finderProxy.invoke(
-								new MethodInvocation()
-								{
-									/**
-									 * Method getMethod returns the method of this ${CLASS} object.
-									 *
-									 *
-									 *
-									 * @return the method (type Method) of this ${CLASS} object.
-									 */
-									@Override
-									public Method getMethod()
-									{
-										return method;
-									}
-
-									/**
-									 * Method getArguments returns the arguments of this ${CLASS} object.
-									 *
-									 *
-									 *
-									 * @return the arguments (type Object[]) of this ${CLASS} object.
-									 */
-									@Override
-									public Object[] getArguments()
-									{
-										return null == args ? new Object[0] : args;
-									}
-
-									/**
-									 * Method proceed ...
-									 * @return Object
-									 * @throws Throwable when
-									 */
-									@Override
-									public Object proceed() throws Throwable
-									{
-										return method.invoke(thisObject, args);
-									}
-
-									/**
-									 * Method getThis returns the this of this ${CLASS} object.
-									 *
-									 *
-									 *
-									 * @return the this (type Object) of this ${CLASS} object.
-									 */
-									@Override
-									public Object getThis()
-									{
-										throw new UnsupportedOperationException(
-												"Bottomless proxies don't expose a this.");
-									}
-
-									/**
-									 * Method getStaticPart returns the staticPart of this ${CLASS} object.
-									 *
-									 *
-									 *
-									 * @return the staticPart (type AccessibleObject) of this ${CLASS} object.
-									 */
-									@Override
-									public AccessibleObject getStaticPart()
-									{
-										throw new UnsupportedOperationException();
-									}
-								});
-					}
-				};
-		requestInjection(finderInvoker);
-
-		@SuppressWarnings("unchecked") // Proxy must produce instance of type given.
-				T proxy =
-				(T)
-						Proxy.newProxyInstance(
-								Thread.currentThread()
-								      .getContextClassLoader(),
-								new Class<?>[]{iface},
-								finderInvoker);
-
-		bind(iface).toInstance(proxy);
-	}
-
-	/**
-	 * Method isDynamicFinderValid ...
-	 *
-	 * @param iface
-	 * 		of type Class<?>
-	 *
-	 * @return boolean
-	 */
-	private boolean isDynamicFinderValid(Class<?> iface)
-	{
-		boolean valid = true;
-		if (!iface.isInterface())
-		{
-			addError(iface + " is not an interface. Dynamic Finders must be interfaces.");
-			valid = false;
-		}
-
-		for (Method method : iface.getMethods())
-		{
-			DynamicFinder finder = DynamicFinder.from(method);
-			if (null == finder)
-			{
-				addError(
-						"Dynamic Finder methods must be annotated with @Finder, but "
-						+ iface
-						+ "."
-						+ method.getName()
-						+ " was not");
-				valid = false;
-			}
-		}
-		return valid;
 	}
 
 	/**
