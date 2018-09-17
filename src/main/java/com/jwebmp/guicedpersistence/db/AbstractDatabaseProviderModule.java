@@ -24,7 +24,6 @@ import java.util.logging.Logger;
  * <p>
  * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
-@SuppressWarnings("NullableProblems")
 public abstract class AbstractDatabaseProviderModule
 		extends AbstractModule
 		implements IGuiceModule
@@ -41,11 +40,14 @@ public abstract class AbstractDatabaseProviderModule
 	 * A set of all annotations that this abstraction built
 	 */
 	private static final Set<Class<? extends Annotation>> boundAnnotations = new HashSet<>();
+	/**
+	 * A list of already loaded data sources identified by JNDI Name
+	 */
+	private static final Map<String, DataSource> loadedDataSources = new HashMap<>();
 
 	/**
 	 * Constructor AbstractDatabaseProviderModule creates a new AbstractDatabaseProviderModule instance.
 	 */
-	@SuppressWarnings("unchecked")
 	public AbstractDatabaseProviderModule()
 	{
 		//Config required
@@ -62,6 +64,17 @@ public abstract class AbstractDatabaseProviderModule
 	}
 
 	/**
+	 * A list of already loaded data sources identified by JNDI Name
+	 * <p>
+	 *
+	 * @return Map String DataSource
+	 */
+	public static Map<String, DataSource> getLoadedDataSources()
+	{
+		return loadedDataSources;
+	}
+
+	/**
 	 * Configures the module with the bindings
 	 */
 	@Override
@@ -72,8 +85,8 @@ public abstract class AbstractDatabaseProviderModule
 		PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
 		{
-			AbstractDatabaseProviderModule.log.severe(
-					"Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
+			AbstractDatabaseProviderModule.log
+					.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
 			return;
 		}
 		for (PropertiesEntityManagerReader entityManagerReader : AbstractDatabaseProviderModule.propsLoader)
@@ -86,13 +99,23 @@ public abstract class AbstractDatabaseProviderModule
 		}
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
-		if (connectionBaseInfo.getJndiName() == null) {
+		if (connectionBaseInfo.getJndiName() == null)
+		{
 			connectionBaseInfo.setJndiName(getJndiMapping());
 		}
 		AbstractDatabaseProviderModule.log.fine(getPersistenceUnitName() + " - Connection Base Info Final - " + connectionBaseInfo);
 
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
-		DataSource ds = provideDataSource(connectionBaseInfo);
+		DataSource ds;
+		if (getLoadedDataSources().containsKey(getJndiMapping()))
+		{
+			ds = getLoadedDataSources().get(getJndiMapping());
+			log.log(Level.CONFIG, "Re-Using Data Source for JNDI Mapping " + getJndiMapping());
+		}
+		else
+		{
+			ds = provideDataSource(connectionBaseInfo);
+		}
 		if (ds != null)
 		{
 			AbstractDatabaseProviderModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
@@ -117,7 +140,6 @@ public abstract class AbstractDatabaseProviderModule
 	 *
 	 * @return The given persistence unit
 	 */
-	@SuppressWarnings("WeakerAccess")
 	protected PersistenceUnit getPersistenceUnit()
 	{
 		try
@@ -179,7 +201,6 @@ public abstract class AbstractDatabaseProviderModule
 	 *
 	 * @return The key of the annotation and data source
 	 */
-	@SuppressWarnings("WeakerAccess")
 	@NotNull
 	protected Key<DataSource> getDataSourceKey()
 	{
@@ -191,7 +212,6 @@ public abstract class AbstractDatabaseProviderModule
 	 *
 	 * @return The key for the entity manager and the annotation
 	 */
-	@SuppressWarnings("unused")
 	@NotNull
 	protected Key<EntityManager> getEntityManagerKey()
 	{
@@ -216,7 +236,6 @@ public abstract class AbstractDatabaseProviderModule
 	 * @param jdbcProperties
 	 * 		The final properties map
 	 */
-	@SuppressWarnings("WeakerAccess")
 	protected void configurePersistenceUnitProperties(PersistenceUnit pu, Properties jdbcProperties)
 	{
 		if (pu != null)

@@ -15,6 +15,7 @@ public class TestJTADBPrivateModule
 		implements IGuiceModule
 {
 
+	@NotNull
 	@Override
 	protected String getPersistenceUnitName()
 	{
@@ -34,12 +35,14 @@ public class TestJTADBPrivateModule
 		};
 	}
 
+	@NotNull
 	@Override
 	protected String getJndiMapping()
 	{
 		return "jdbc/jndi";
 	}
 
+	@NotNull
 	@Override
 	protected Class<? extends Annotation> getBindingAnnotation()
 	{

@@ -35,7 +35,6 @@ import java.util.Map;
  *
  * @author dhanji@gmail.com (Dhanji R. Prasanna)
  */
-@SuppressWarnings({"MissingClassJavaDoc", "WeakerAccess"})
 public final class CustomJpaPersistModule
 		extends CustomPersistModule
 {
@@ -89,8 +88,7 @@ public final class CustomJpaPersistModule
 		bind(PersistService.class).to(CustomJpaPersistService.class);
 		bind(UnitOfWork.class).to(CustomJpaPersistService.class);
 		bind(EntityManager.class).toProvider(CustomJpaPersistService.class);
-		bind(EntityManagerFactory.class)
-				.toProvider(CustomJpaPersistService.EntityManagerFactoryProvider.class);
+		bind(EntityManagerFactory.class).toProvider(CustomJpaPersistService.EntityManagerFactoryProvider.class);
 	}
 
 	/**
@@ -126,7 +124,6 @@ public final class CustomJpaPersistModule
 	 * @param iface
 	 * 		Any interface type whose methods are all dynamic finders.
 	 */
-	@SuppressWarnings("unused")
 	public <T> CustomJpaPersistModule addFinder(Class<T> iface)
 	{
 		dynamicFinders.add(iface);
