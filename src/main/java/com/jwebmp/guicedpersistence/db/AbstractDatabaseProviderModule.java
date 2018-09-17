@@ -115,6 +115,7 @@ public abstract class AbstractDatabaseProviderModule
 		else
 		{
 			ds = provideDataSource(connectionBaseInfo);
+			getLoadedDataSources().put(getJndiMapping(), ds);
 		}
 		if (ds != null)
 		{
