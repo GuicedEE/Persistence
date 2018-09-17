@@ -73,7 +73,7 @@ public final class AsyncPostStartup
 				AsyncPostStartup.dbAutoStartupExecutors.execute(startup);
 			}
 		}
-		AsyncPostStartup.dbAutoStartupExecutors.shutdown();
+		AsyncPostStartup.dbAutoStartupExecutors.shutdownNow();
 	}
 
 	/**

@@ -30,6 +30,6 @@ public class DbStartupThread
 	@Override
 	public String name()
 	{
-		return "Persist Service Starter - @" + annotation.getSimpleName();
+		return "DBStartupThread - @" + annotation.getSimpleName();
 	}
 }

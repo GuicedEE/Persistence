@@ -86,7 +86,9 @@ public abstract class AbstractDatabaseProviderModule
 		}
 		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
-		connectionBaseInfo.setJndiName(getJndiMapping());
+		if (connectionBaseInfo.getJndiName() == null) {
+			connectionBaseInfo.setJndiName(getJndiMapping());
+		}
 		AbstractDatabaseProviderModule.log.fine(getPersistenceUnitName() + " - Connection Base Info Final - " + connectionBaseInfo);
 
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
