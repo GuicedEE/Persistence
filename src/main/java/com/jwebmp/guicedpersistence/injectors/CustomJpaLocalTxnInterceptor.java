@@ -74,14 +74,12 @@ public class CustomJpaLocalTxnInterceptor
 
 		EntityManager em = emProvider.get();
 
-		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+		// Allow 'joining' of transactions if there is an enclosing @Transactional method.
+		if (!startedWork)
 		{
-			// Allow 'joining' of transactions if there is an enclosing @Transactional method.
-			if (!startedWork)
-			{
-				return methodInvocation.proceed();
-			}
+			return methodInvocation.proceed();
 		}
+
 
 		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
 		{
