@@ -64,6 +64,7 @@ public abstract class AbstractDatabaseProviderModule
 	}
 
 	/**
+	 * .
 	 * A list of already loaded data sources identified by JNDI Name
 	 * <p>
 	 *

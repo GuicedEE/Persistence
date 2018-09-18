@@ -28,8 +28,8 @@ import org.aopalliance.intercept.MethodInvocation;
 import javax.persistence.EntityManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder.*;
 
@@ -44,7 +44,7 @@ public class CustomJpaLocalTxnInterceptor
 
 	public CustomJpaLocalTxnInterceptor()
 	{
-		didWeStartWork.set(new HashMap<>());
+		didWeStartWork.set(new ConcurrentHashMap<>(5, 2, 1));
 	}
 
 	@Override
@@ -60,11 +60,12 @@ public class CustomJpaLocalTxnInterceptor
 		if (!emProvider.isWorking())
 		{
 			emProvider.begin();
-			didWeStartWork.get()
-			              .put(transactional.entityManagerAnnotation(), true);
+			Map<Class<? extends Annotation>, Boolean> runningMap = didWeStartWork.get();
+			runningMap.put(transactional.entityManagerAnnotation(), true);
 		}
 
 		EntityManager em = emProvider.get();
+
 		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
 		{
 			// Allow 'joining' of transactions if there is an enclosing @Transactional method.
@@ -86,7 +87,6 @@ public class CustomJpaLocalTxnInterceptor
 		try
 		{
 			result = methodInvocation.proceed();
-
 		}
 		catch (Exception e)
 		{
@@ -101,7 +101,6 @@ public class CustomJpaLocalTxnInterceptor
 					}
 				}
 			}
-
 			//propagate whatever exception is thrown anyway
 			throw e;
 		}
@@ -122,8 +121,7 @@ public class CustomJpaLocalTxnInterceptor
 
 			if (startedWork && !transactionActive)
 			{
-				didWeStartWork.get()
-				              .remove(transactional.entityManagerAnnotation());
+				mappedOut.remove(transactional.entityManagerAnnotation());
 				unitOfWork.end();
 			}
 		}
@@ -145,12 +143,10 @@ public class CustomJpaLocalTxnInterceptor
 			// Close the em if necessary (guarded so this code doesn't run unless catch fired).
 			Map<Class<? extends Annotation>, Boolean> mappedOut = didWeStartWork.get();
 			Boolean startedWork = mappedOut != null && mappedOut.get(transactional.entityManagerAnnotation()) != null;
-
 			//close the em if necessary
 			if (startedWork)
 			{
-				didWeStartWork.get()
-				              .remove(transactional.entityManagerAnnotation());
+				mappedOut.remove(transactional.entityManagerAnnotation());
 				unitOfWork.end();
 			}
 		}
