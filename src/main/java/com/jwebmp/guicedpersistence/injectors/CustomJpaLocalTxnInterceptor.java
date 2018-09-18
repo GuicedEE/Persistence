@@ -69,13 +69,15 @@ public class CustomJpaLocalTxnInterceptor
 			Map<Class<? extends Annotation>, Boolean> runningMap = didWeStartWork.get();
 			runningMap.put(transactional.entityManagerAnnotation(), true);
 		}
+		Map<Class<? extends Annotation>, Boolean> mappedOut = didWeStartWork.get();
+		Boolean startedWork = mappedOut != null && mappedOut.get(transactional.entityManagerAnnotation()) != null;
 
 		EntityManager em = emProvider.get();
 
 		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
 		{
 			// Allow 'joining' of transactions if there is an enclosing @Transactional method.
-			if (handler.active(unit) && handler.transactionExists(em, unit))
+			if (!startedWork)
 			{
 				return methodInvocation.proceed();
 			}
@@ -112,20 +114,8 @@ public class CustomJpaLocalTxnInterceptor
 		}
 		finally
 		{
-			boolean transactionActive = false;
-			for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
-			{
-				if (handler.transactionExists(em, unit))
-				{
-					transactionActive = true;
-					break;
-				}
-			}
 			// Close the em if necessary (guarded so this code doesn't run unless catch fired).
-			Map<Class<? extends Annotation>, Boolean> mappedOut = didWeStartWork.get();
-			Boolean startedWork = mappedOut != null && mappedOut.get(transactional.entityManagerAnnotation()) != null;
-
-			if (startedWork && !transactionActive)
+			if (startedWork)
 			{
 				mappedOut.remove(transactional.entityManagerAnnotation());
 				unitOfWork.end();
@@ -146,9 +136,6 @@ public class CustomJpaLocalTxnInterceptor
 		}
 		finally
 		{
-			// Close the em if necessary (guarded so this code doesn't run unless catch fired).
-			Map<Class<? extends Annotation>, Boolean> mappedOut = didWeStartWork.get();
-			Boolean startedWork = mappedOut != null && mappedOut.get(transactional.entityManagerAnnotation()) != null;
 			//close the em if necessary
 			if (startedWork)
 			{
