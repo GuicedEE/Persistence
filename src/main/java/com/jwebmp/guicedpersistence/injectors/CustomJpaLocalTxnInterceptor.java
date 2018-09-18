@@ -112,15 +112,6 @@ public class CustomJpaLocalTxnInterceptor
 			//propagate whatever exception is thrown anyway
 			throw e;
 		}
-		finally
-		{
-			// Close the em if necessary (guarded so this code doesn't run unless catch fired).
-			if (startedWork)
-			{
-				mappedOut.remove(transactional.entityManagerAnnotation());
-				unitOfWork.end();
-			}
-		}
 
 		//everything was normal so commit the txn (do not move into try block above as it
 		//  interferes with the advised method's throwing semantics)
