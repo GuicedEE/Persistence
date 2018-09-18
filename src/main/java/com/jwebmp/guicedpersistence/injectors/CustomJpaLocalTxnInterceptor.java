@@ -109,6 +109,12 @@ public class CustomJpaLocalTxnInterceptor
 					}
 				}
 			}
+			//close the em if necessary
+			if (startedWork)
+			{
+				mappedOut.remove(transactional.entityManagerAnnotation());
+				unitOfWork.end();
+			}
 			//propagate whatever exception is thrown anyway
 			throw e;
 		}
