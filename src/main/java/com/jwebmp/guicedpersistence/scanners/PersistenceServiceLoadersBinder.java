@@ -8,7 +8,7 @@ import com.jwebmp.guicedinjection.abstractions.GuiceInjectorModule;
 import com.jwebmp.guicedinjection.interfaces.IDefaultService;
 import com.jwebmp.guicedinjection.interfaces.IGuiceDefaultBinder;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
-import com.jwebmp.guicedpersistence.injectors.CustomJpaLocalTxnInterceptor;
+import com.jwebmp.guicedpersistence.injectors.GuicedPersistenceTxnInterceptor;
 import com.jwebmp.guicedpersistence.services.IAsyncStartup;
 import com.jwebmp.guicedpersistence.services.ITransactionHandler;
 import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
@@ -17,7 +17,6 @@ import com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-@SuppressWarnings("Convert2Diamond")
 public class PersistenceServiceLoadersBinder
 		implements IGuiceDefaultBinder<PersistenceServiceLoadersBinder, GuiceInjectorModule>
 {
@@ -48,7 +47,7 @@ public class PersistenceServiceLoadersBinder
 		      .toProvider(() -> IDefaultService.loaderToSet(ServiceLoader.load(ITransactionHandler.class)))
 		      .in(Singleton.class);
 
-		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), new CustomJpaLocalTxnInterceptor());
+		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), new GuicedPersistenceTxnInterceptor());
 	}
 
 }

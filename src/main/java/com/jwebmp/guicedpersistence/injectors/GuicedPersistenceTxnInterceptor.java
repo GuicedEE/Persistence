@@ -36,7 +36,7 @@ import static com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBin
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
-public class CustomJpaLocalTxnInterceptor
+public class GuicedPersistenceTxnInterceptor
 		implements MethodInterceptor
 {
 	/**
@@ -44,7 +44,7 @@ public class CustomJpaLocalTxnInterceptor
 	 */
 	private final ThreadLocal<Map<Class<? extends Annotation>, Boolean>> didWeStartWork = new ThreadLocal<>();
 
-	public CustomJpaLocalTxnInterceptor()
+	public GuicedPersistenceTxnInterceptor()
 	{
 		//No config required
 	}
@@ -56,6 +56,7 @@ public class CustomJpaLocalTxnInterceptor
 		{
 			didWeStartWork.set(new ConcurrentHashMap<>(5, 2, 1));
 		}
+
 		Transactional transactional = readTransactionMetadata(methodInvocation);
 
 		CustomJpaPersistService emProvider = GuiceContext.get(Key.get(CustomJpaPersistService.class, transactional.entityManagerAnnotation()));
@@ -84,8 +85,8 @@ public class CustomJpaLocalTxnInterceptor
 				break;
 			}
 		}
-		
-		if (!startedWork || transactionAlreadyStarted)
+
+		if (!startedWork && transactionAlreadyStarted)
 		{
 			return methodInvocation.proceed();
 		}
