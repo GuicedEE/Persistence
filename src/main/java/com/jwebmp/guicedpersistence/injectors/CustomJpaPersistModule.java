@@ -17,7 +17,6 @@
 package com.jwebmp.guicedpersistence.injectors;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
@@ -27,7 +26,6 @@ import com.google.inject.persist.UnitOfWork;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import java.lang.annotation.Annotation;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -42,10 +40,7 @@ public final class CustomJpaPersistModule
 	 * Field jpaUnit
 	 */
 	private final String jpaUnit;
-	/**
-	 * Field dynamicFinders
-	 */
-	private final List<Class<?>> dynamicFinders = Lists.newArrayList();
+
 	/**
 	 * Field properties
 	 */
@@ -89,6 +84,7 @@ public final class CustomJpaPersistModule
 		bind(UnitOfWork.class).to(CustomJpaPersistService.class);
 		bind(EntityManager.class).toProvider(CustomJpaPersistService.class);
 		bind(EntityManagerFactory.class).toProvider(CustomJpaPersistService.EntityManagerFactoryProvider.class);
+
 	}
 
 	/**
@@ -118,15 +114,4 @@ public final class CustomJpaPersistModule
 		return this;
 	}
 
-	/**
-	 * Adds an interface to this module to use as a dynamic finder.
-	 *
-	 * @param iface
-	 * 		Any interface type whose methods are all dynamic finders.
-	 */
-	public <T> CustomJpaPersistModule addFinder(Class<T> iface)
-	{
-		dynamicFinders.add(iface);
-		return this;
-	}
 }
