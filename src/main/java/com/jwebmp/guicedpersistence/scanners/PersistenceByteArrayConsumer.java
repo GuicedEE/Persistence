@@ -71,6 +71,7 @@ public class PersistenceByteArrayConsumer
 			PersistenceFileHandler.getPersistenceUnits()
 			                      .add(unit);
 		}
+		resource.close();
 	}
 
 	/**

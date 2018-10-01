@@ -18,7 +18,6 @@ package com.jwebmp.guicedpersistence.injectors;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
@@ -78,12 +77,21 @@ public final class CustomJpaPersistModule
 		bind(new TypeLiteral<Class<? extends Annotation>>() {}).annotatedWith(CustomJpa.class)
 		                                                       .toInstance(annotation);
 
-		bind(CustomJpaPersistService.class).in(Singleton.class);
+		CustomJpaPersistService persistService = new CustomJpaPersistService();
+		persistService.setPersistenceUnitName(jpaUnit);
+		persistService.setAnnotation(annotation);
+		persistService.setPersistenceProperties(properties);
+
+		bind(CustomJpaPersistService.class).toInstance(persistService);
 
 		bind(PersistService.class).to(CustomJpaPersistService.class);
 		bind(UnitOfWork.class).to(CustomJpaPersistService.class);
 		bind(EntityManager.class).toProvider(CustomJpaPersistService.class);
-		bind(EntityManagerFactory.class).toProvider(CustomJpaPersistService.EntityManagerFactoryProvider.class);
+
+		CustomJpaPersistService.EntityManagerFactoryProvider provider = new CustomJpaPersistService.EntityManagerFactoryProvider();
+		provider.setEmProvider(persistService);
+
+		bind(EntityManagerFactory.class).toProvider(provider);
 
 	}
 

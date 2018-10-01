@@ -2,7 +2,11 @@ package com.jwebmp.guicedpersistence.db;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
+import com.google.inject.persist.PersistService;
+import com.google.inject.persist.UnitOfWork;
+import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
+import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
 import com.jwebmp.guicedpersistence.db.exceptions.NoConnectionInfoException;
 import com.jwebmp.guicedpersistence.injectors.JpaPersistPrivateModule;
 import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
@@ -26,7 +30,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractDatabaseProviderModule
 		extends AbstractModule
-		implements IGuiceModule
+		implements IGuiceModule, IGuicePostStartup
 {
 	/**
 	 * Field log
@@ -266,5 +270,35 @@ public abstract class AbstractDatabaseProviderModule
 			throw new NoConnectionInfoException("Not point in trying to create a connection with no info.....");
 		}
 		return cbi.toPooledDatasource();
+	}
+
+	/**
+	 * Boots the persistence unit during post-load asynchronously
+	 */
+	@Override
+	public void postLoad()
+	{
+		try
+		{
+			GuiceContext.get(DataSource.class, getBindingAnnotation());
+		}
+		catch (Throwable T)
+		{
+			LogFactory.getLog("DBStartup")
+			          .log(Level.SEVERE, "Datasource Unable to start", T);
+		}
+
+		PersistService ps = GuiceContext.get(PersistService.class, getBindingAnnotation());
+		ps.start();
+		UnitOfWork ow = GuiceContext.get(UnitOfWork.class, getBindingAnnotation());
+		ow.end();
+
+		LogFactory.getLog("DBStartup")
+		          .log(Level.CONFIG, "DB Post Startup Completed - " + getBindingAnnotation().getSimpleName());
+	}
+
+	public Integer sortOrder()
+	{
+		return 50 + new ArrayList<>(getBoundAnnotations()).indexOf(getBindingAnnotation());
 	}
 }

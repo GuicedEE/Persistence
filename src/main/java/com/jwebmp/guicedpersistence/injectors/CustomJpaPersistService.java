@@ -20,7 +20,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.inject.Singleton;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
 import com.jwebmp.logger.LogFactory;
@@ -36,7 +35,6 @@ import java.util.logging.Logger;
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
-@Singleton
 public class CustomJpaPersistService
 		implements Provider<EntityManager>, UnitOfWork, PersistService
 {
@@ -52,23 +50,27 @@ public class CustomJpaPersistService
 	/**
 	 * The assigned persistence unit name
 	 */
-	private final String persistenceUnitName;
+	private String persistenceUnitName;
 	/**
 	 * The given properties object
 	 */
-	private final Map<?, ?> persistenceProperties;
+	private Map<?, ?> persistenceProperties;
 	/**
 	 * The assigned annotation for the entity manager
 	 */
-	private final Class<? extends Annotation> annotation;
+	private Class<? extends Annotation> annotation;
 	/**
 	 * The service em factory
 	 */
 	private volatile EntityManagerFactory emFactory;
 
-	@Inject
+	public CustomJpaPersistService()
+	{
+		//No configuration
+	}
+
 	public CustomJpaPersistService(
-			@CustomJpa String persistenceUnitName, @CustomJpa Map<?, ?> persistenceProperties, @CustomJpa Class<? extends Annotation> annotation)
+			String persistenceUnitName, Map<?, ?> persistenceProperties, Class<? extends Annotation> annotation)
 	{
 		this.persistenceUnitName = persistenceUnitName;
 		this.persistenceProperties = persistenceProperties;
@@ -151,7 +153,7 @@ public class CustomJpaPersistService
 		}
 		try
 		{
-			CustomJpaPersistService.log.finer("Starting up Persist Service - " + this.persistenceUnitName);
+			CustomJpaPersistService.log.finer("Starting up Persist Service - " + persistenceUnitName);
 			if (null != persistenceProperties)
 			{
 				emFactory =
@@ -161,7 +163,7 @@ public class CustomJpaPersistService
 			{
 				emFactory = Persistence.createEntityManagerFactory(persistenceUnitName);
 			}
-			CustomJpaPersistService.log.finer("Persist Service Started - " + this.persistenceUnitName);
+			CustomJpaPersistService.log.finer("Persist Service Started - " + persistenceUnitName);
 		}
 		catch (Throwable T)
 		{
@@ -189,19 +191,72 @@ public class CustomJpaPersistService
 		this.emFactory = emFactory;
 	}
 
+	public String getPersistenceUnitName()
+	{
+		return persistenceUnitName;
+	}
+
+	public void setPersistenceUnitName(String persistenceUnitName)
+	{
+		this.persistenceUnitName = persistenceUnitName;
+	}
+
+	public Map<?, ?> getPersistenceProperties()
+	{
+		return persistenceProperties;
+	}
+
+	public void setPersistenceProperties(Map<?, ?> persistenceProperties)
+	{
+		this.persistenceProperties = persistenceProperties;
+	}
+
+	public Class<? extends Annotation> getAnnotation()
+	{
+		return annotation;
+	}
+
+	public void setAnnotation(Class<? extends Annotation> annotation)
+	{
+		this.annotation = annotation;
+	}
+
+	public EntityManagerFactory getEmFactory()
+	{
+		return emFactory;
+	}
+
+	public void setEmFactory(EntityManagerFactory emFactory)
+	{
+		this.emFactory = emFactory;
+	}
+
 	@Documented
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.PARAMETER)
 	private @interface Nullable {}
 
-	@Singleton
 	public static class EntityManagerFactoryProvider
 			implements Provider<EntityManagerFactory>
 	{
-		private final CustomJpaPersistService emProvider;
+		private CustomJpaPersistService emProvider;
+
+		public EntityManagerFactoryProvider()
+		{
+		}
 
 		@Inject
 		public EntityManagerFactoryProvider(CustomJpaPersistService emProvider)
+		{
+			this.emProvider = emProvider;
+		}
+
+		public CustomJpaPersistService getEmProvider()
+		{
+			return emProvider;
+		}
+
+		public void setEmProvider(CustomJpaPersistService emProvider)
 		{
 			this.emProvider = emProvider;
 		}
@@ -212,5 +267,7 @@ public class CustomJpaPersistService
 			assert null != emProvider.emFactory;
 			return emProvider.emFactory;
 		}
+
+
 	}
 }

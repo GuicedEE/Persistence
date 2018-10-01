@@ -9,7 +9,6 @@ import com.jwebmp.guicedinjection.interfaces.IDefaultService;
 import com.jwebmp.guicedinjection.interfaces.IGuiceDefaultBinder;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 import com.jwebmp.guicedpersistence.injectors.GuicedPersistenceTxnInterceptor;
-import com.jwebmp.guicedpersistence.services.IAsyncStartup;
 import com.jwebmp.guicedpersistence.services.ITransactionHandler;
 import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
 import com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
@@ -17,12 +16,15 @@ import com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
 import java.util.ServiceLoader;
 import java.util.Set;
 
+
 public class PersistenceServiceLoadersBinder
 		implements IGuiceDefaultBinder<PersistenceServiceLoadersBinder, GuiceInjectorModule>
 {
+	@SuppressWarnings("Convert2Diamond")
 	public static final Key<Set<PropertiesEntityManagerReader>> PropertiesEntityManagerReader = Key.get(new TypeLiteral<Set<PropertiesEntityManagerReader>>() {});
+	@SuppressWarnings("Convert2Diamond")
 	public static final Key<Set<PropertiesConnectionInfoReader>> PropertiesConnectionInfoReader = Key.get(new TypeLiteral<Set<PropertiesConnectionInfoReader>>() {});
-	public static final Key<Set<IAsyncStartup>> IAsyncStartupReader = Key.get(new TypeLiteral<Set<IAsyncStartup>>() {});
+	@SuppressWarnings("Convert2Diamond")
 	public static final Key<Set<ITransactionHandler>> ITransactionHandlerReader = Key.get(new TypeLiteral<Set<ITransactionHandler>>() {});
 
 	@Override
@@ -35,12 +37,6 @@ public class PersistenceServiceLoadersBinder
 
 		module.bind(PersistenceServiceLoadersBinder.PropertiesConnectionInfoReader)
 		      .toProvider(() -> IDefaultService.loaderToSet(ServiceLoader.load(PropertiesConnectionInfoReader.class)))
-		      .in(Singleton.class);
-
-		module.bind(PersistenceServiceLoadersBinder.IAsyncStartupReader)
-		      .toProvider(() ->
-				                  IDefaultService.loaderToSet(ServiceLoader.load(IAsyncStartup.class)
-				                                             ))
 		      .in(Singleton.class);
 
 		module.bind(PersistenceServiceLoadersBinder.ITransactionHandlerReader)

@@ -3,13 +3,11 @@ package com.jwebmp.guicedinjection.db;
 import com.google.inject.Key;
 import com.google.inject.persist.UnitOfWork;
 import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.db.AsyncPostStartup;
 import com.jwebmp.logger.LogFactory;
 import io.github.classgraph.ScanResult;
 import org.junit.jupiter.api.Test;
 
 import javax.persistence.EntityManager;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,9 +21,6 @@ public class GuicedPersistenceBindingTest
 		ScanResult sr = GuiceContext.instance()
 		                            .getScanResult();
 		GuiceContext.inject();
-
-		AsyncPostStartup.getExecutionService()
-		                .awaitTermination(10, TimeUnit.MINUTES);
 
 		EntityManager em = GuiceContext.get(Key.get(EntityManager.class, TestCustomPersistenceLoader.class));
 
