@@ -58,16 +58,6 @@ public abstract class AbstractDatabaseProviderModule
 	}
 
 	/**
-	 * Returns a full list of all annotations that have bindings
-	 *
-	 * @return The set of all annotations that have bindings
-	 */
-	public static Set<Class<? extends Annotation>> getBoundAnnotations()
-	{
-		return AbstractDatabaseProviderModule.boundAnnotations;
-	}
-
-	/**
 	 * .
 	 * A list of already loaded data sources identified by JNDI Name
 	 * <p>
@@ -77,6 +67,16 @@ public abstract class AbstractDatabaseProviderModule
 	public static Map<String, DataSource> getLoadedDataSources()
 	{
 		return loadedDataSources;
+	}
+
+	/**
+	 * Returns a full list of all annotations that have bindings
+	 *
+	 * @return The set of all annotations that have bindings
+	 */
+	public static Set<Class<? extends Annotation>> getBoundAnnotations()
+	{
+		return AbstractDatabaseProviderModule.boundAnnotations;
 	}
 
 	/**
@@ -297,8 +297,14 @@ public abstract class AbstractDatabaseProviderModule
 		          .log(Level.CONFIG, "DB Post Startup Completed - " + getBindingAnnotation().getSimpleName());
 	}
 
+	@Override
+	/*public Integer sortOrder()
+	{
+		return 50 + new ArrayList(getBoundAnnotations()).indexOf(getBindingAnnotation());
+	}*/
+
 	public Integer sortOrder()
 	{
-		return 50 + new ArrayList<>(getBoundAnnotations()).indexOf(getBindingAnnotation());
+		return 50;
 	}
 }
