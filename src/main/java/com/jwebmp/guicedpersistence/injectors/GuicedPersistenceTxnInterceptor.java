@@ -26,10 +26,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import javax.persistence.EntityManager;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder.*;
 
@@ -42,7 +39,7 @@ public class GuicedPersistenceTxnInterceptor
 	/**
 	 * Tracks if the unit of work was begun implicitly by this transaction.
 	 */
-	private final ThreadLocal<Map<Class<? extends Annotation>, Boolean>> didWeStartWork = new ThreadLocal<>();
+	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
 
 	public GuicedPersistenceTxnInterceptor()
 	{
@@ -52,11 +49,6 @@ public class GuicedPersistenceTxnInterceptor
 	@Override
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
 	{
-		if (didWeStartWork.get() == null)
-		{
-			didWeStartWork.set(new ConcurrentHashMap<>(5, 2, 1));
-		}
-
 		Transactional transactional = readTransactionMetadata(methodInvocation);
 
 		CustomJpaPersistService emProvider = GuiceContext.get(Key.get(CustomJpaPersistService.class, transactional.entityManagerAnnotation()));
@@ -67,12 +59,9 @@ public class GuicedPersistenceTxnInterceptor
 		if (!emProvider.isWorking())
 		{
 			emProvider.begin();
-			Map<Class<? extends Annotation>, Boolean> runningMap = didWeStartWork.get();
-			runningMap.put(transactional.entityManagerAnnotation(), true);
+			didWeStartWork.set(true);
 		}
-		Map<Class<? extends Annotation>, Boolean> mappedOut = didWeStartWork.get();
-		Boolean startedWork = mappedOut != null && mappedOut.get(transactional.entityManagerAnnotation()) != null;
-
+		Boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 		EntityManager em = emProvider.get();
 
 		// Allow 'joining' of transactions if there is an enclosing @Transactional method.
@@ -90,7 +79,6 @@ public class GuicedPersistenceTxnInterceptor
 		{
 			return methodInvocation.proceed();
 		}
-
 
 		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
 		{
@@ -121,7 +109,7 @@ public class GuicedPersistenceTxnInterceptor
 			//close the em if necessary
 			if (startedWork)
 			{
-				mappedOut.remove(transactional.entityManagerAnnotation());
+				didWeStartWork.remove();
 				unitOfWork.end();
 			}
 			//propagate whatever exception is thrown anyway
@@ -145,7 +133,7 @@ public class GuicedPersistenceTxnInterceptor
 			//close the em if necessary
 			if (startedWork)
 			{
-				mappedOut.remove(transactional.entityManagerAnnotation());
+				didWeStartWork.remove();
 				unitOfWork.end();
 			}
 		}
