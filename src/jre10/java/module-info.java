@@ -39,6 +39,7 @@ module com.jwebmp.guicedpersistence {
 	requires java.persistence;
 	requires org.json;
 	requires java.sql;
+	requires java.transaction;
 
 	uses com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
 	uses com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;

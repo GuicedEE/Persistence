@@ -28,18 +28,15 @@ import java.util.logging.Logger;
  * <p>
  * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
-public abstract class AbstractDatabaseProviderModule
+public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseProviderModule<J>>
 		extends AbstractModule
-		implements IGuiceModule, IGuicePostStartup
+		implements IGuiceModule<J>, IGuicePostStartup<J>
 {
 	/**
 	 * Field log
 	 */
 	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
-	/**
-	 * Properties loader
-	 */
-	private static final ServiceLoader<PropertiesEntityManagerReader> propsLoader = ServiceLoader.load(PropertiesEntityManagerReader.class);
+
 	/**
 	 * A set of all annotations that this abstraction built
 	 */
@@ -94,8 +91,11 @@ public abstract class AbstractDatabaseProviderModule
 					.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
 			return;
 		}
-		for (PropertiesEntityManagerReader entityManagerReader : AbstractDatabaseProviderModule.propsLoader)
+		for (PropertiesEntityManagerReader entityManagerReader : GuiceContext.instance()
+		                                                                     .getLoader(PropertiesEntityManagerReader.class, true,
+		                                                                                ServiceLoader.load(PropertiesEntityManagerReader.class)))
 		{
+
 			Map<String, String> output = entityManagerReader.processProperties(pu, jdbcProperties);
 			if (output != null && !output.isEmpty())
 			{

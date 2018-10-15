@@ -11,8 +11,8 @@ import java.lang.annotation.Annotation;
 import java.util.Properties;
 
 public class TestJTADBPrivateModule
-		extends AbstractDatabaseProviderModule
-		implements IGuiceModule
+		extends AbstractDatabaseProviderModule<TestJTADBPrivateModule>
+		implements IGuiceModule<TestJTADBPrivateModule>
 {
 
 	@NotNull

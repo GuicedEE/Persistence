@@ -3,12 +3,12 @@ package com.jwebmp.guicedpersistence.db;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
 import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import javax.sql.DataSource;
-import java.io.Serializable;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
@@ -27,10 +27,8 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ConnectionBaseInfo
-		implements Serializable, Cloneable
+		implements Cloneable
 {
-	private static final long serialVersionUID = 1L;
-	private static final ServiceLoader<PropertiesConnectionInfoReader> serviceLoader = ServiceLoader.load(PropertiesConnectionInfoReader.class);
 	/**
 	 * The persistence unit name applied to this cbi
 	 */
@@ -90,7 +88,9 @@ public abstract class ConnectionBaseInfo
 
 	public ConnectionBaseInfo populateFromProperties(PersistenceUnit unit, Properties filteredProperties)
 	{
-		for (PropertiesConnectionInfoReader connectionInfoReader : ConnectionBaseInfo.serviceLoader)
+		for (PropertiesConnectionInfoReader connectionInfoReader : GuiceContext.instance()
+		                                                                       .getLoader(PropertiesConnectionInfoReader.class, true, ServiceLoader.load(
+				                                                                       PropertiesConnectionInfoReader.class)))
 		{
 			connectionInfoReader.populateConnectionBaseInfo(unit, filteredProperties, this);
 		}
@@ -861,7 +861,7 @@ public abstract class ConnectionBaseInfo
 	@JsonProperty("password")
 	private String passwordProperty()
 	{
-		return this.password == null ? "NotSet" : "*********";
+		return password == null ? "Empty" : "*********";
 	}
 
 	@Override

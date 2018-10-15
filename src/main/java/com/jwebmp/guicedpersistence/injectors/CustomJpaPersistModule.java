@@ -50,6 +50,8 @@ public final class CustomJpaPersistModule
 	 */
 	private Class<? extends Annotation> annotation;
 
+	private CustomJpaLocalTxnInterceptor transactionInterceptor;
+
 	/**
 	 * Constructor CustomJpaPersistModule creates a new CustomJpaPersistModule instance.
 	 *
@@ -93,6 +95,8 @@ public final class CustomJpaPersistModule
 
 		bind(EntityManagerFactory.class).toProvider(provider);
 
+		transactionInterceptor = new CustomJpaLocalTxnInterceptor();
+		requestInjection(transactionInterceptor);
 	}
 
 	/**

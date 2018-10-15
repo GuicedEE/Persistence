@@ -29,7 +29,7 @@ import java.lang.reflect.Method;
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
-class CustomJpaLocalTxnInterceptor
+public class CustomJpaLocalTxnInterceptor
 		implements MethodInterceptor
 {
 	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
@@ -56,7 +56,7 @@ class CustomJpaLocalTxnInterceptor
 			return methodInvocation.proceed();
 		}
 
-		final EntityTransaction txn = em.getTransaction();
+		EntityTransaction txn = em.getTransaction();
 		txn.begin();
 
 		Object result;
@@ -106,12 +106,10 @@ class CustomJpaLocalTxnInterceptor
 		transactional = method.getAnnotation(Transactional.class);
 		if (null == transactional)
 		{
-			// If none on method, try the class.
 			transactional = targetClass.getAnnotation(Transactional.class);
 		}
 		if (null == transactional)
 		{
-			// If there is no transactional annotation present, use the default
 			transactional = Internal.class.getAnnotation(Transactional.class);
 		}
 

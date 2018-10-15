@@ -10,6 +10,7 @@ public class PersistenceGuiceConfigurator
 	public GuiceConfig configure(GuiceConfig config)
 	{
 		return config.setClasspathScanning(false)
+		             .setExcludePaths(true)
 		             .setWhiteList(true);
 	}
 }
