@@ -47,6 +47,7 @@ public class GuicedPersistenceTxnInterceptor
 	}
 
 	@Override
+	@SuppressWarnings("Duplicates")
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
 	{
 		Transactional transactional = readTransactionMetadata(methodInvocation);
@@ -55,7 +56,6 @@ public class GuicedPersistenceTxnInterceptor
 		UnitOfWork unitOfWork = GuiceContext.get(Key.get(UnitOfWork.class, transactional.entityManagerAnnotation()));
 		PersistenceUnit unit = GuiceContext.get(Key.get(PersistenceUnit.class, transactional.entityManagerAnnotation()));
 
-		// Should we start a unit of work?
 		if (!emProvider.isWorking())
 		{
 			emProvider.begin();
@@ -64,11 +64,10 @@ public class GuicedPersistenceTxnInterceptor
 		Boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 		EntityManager em = emProvider.get();
 
-		// Allow 'joining' of transactions if there is an enclosing @Transactional method.
 		boolean transactionAlreadyStarted = false;
 		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
 		{
-			if (handler.transactionExists(em, unit))
+			if (handler.active(unit) && handler.transactionExists(em, unit))
 			{
 				transactionAlreadyStarted = true;
 				break;
@@ -95,7 +94,6 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		catch (Exception e)
 		{
-			//commit transaction only if rollback didn't occur
 			if (rollbackIfNecessary(transactional, e, unit, em))
 			{
 				for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
@@ -106,18 +104,15 @@ public class GuicedPersistenceTxnInterceptor
 					}
 				}
 			}
-			//close the em if necessary
+
 			if (startedWork)
 			{
 				didWeStartWork.remove();
 				unitOfWork.end();
 			}
-			//propagate whatever exception is thrown anyway
+
 			throw e;
 		}
-
-		//everything was normal so commit the txn (do not move into try block above as it
-		//  interferes with the advised method's throwing semantics)
 		try
 		{
 			for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
@@ -130,15 +125,12 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		finally
 		{
-			//close the em if necessary
 			if (startedWork)
 			{
 				didWeStartWork.remove();
 				unitOfWork.end();
 			}
 		}
-
-		//or return result
 		return result;
 	}
 
@@ -160,7 +152,6 @@ public class GuicedPersistenceTxnInterceptor
 		transactional = method.getAnnotation(Transactional.class);
 		if (null == transactional)
 		{
-			// If none on method, try the class.
 			transactional = targetClass.getAnnotation(Transactional.class);
 		}
 		return transactional;
@@ -178,24 +169,19 @@ public class GuicedPersistenceTxnInterceptor
 	 * @param unit
 	 * 		The associated persistence unit
 	 */
+	@SuppressWarnings("Duplicates")
 	private boolean rollbackIfNecessary(Transactional transactional, Exception e, PersistenceUnit unit, EntityManager em)
 	{
 		boolean commit = true;
 
-		//check rollback clauses
 		for (Class<? extends Exception> rollBackOn : transactional.rollbackOn())
 		{
-
-			//if one matched, try to perform a rollback
 			if (rollBackOn.isInstance(e))
 			{
 				commit = false;
 
-				//check ignore clauses (supercedes rollback clause)
 				for (Class<? extends Exception> exceptOn : transactional.ignore())
 				{
-					//An exception to the rollback clause was found, DON'T rollback
-					// (i.e. commit and throw anyway)
 					if (exceptOn.isInstance(e))
 					{
 						commit = true;
@@ -203,7 +189,6 @@ public class GuicedPersistenceTxnInterceptor
 					}
 				}
 
-				//rollback only if nothing matched the ignore check
 				if (!commit)
 				{
 					for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
@@ -214,7 +199,6 @@ public class GuicedPersistenceTxnInterceptor
 						}
 					}
 				}
-				//otherwise continue to commit
 				break;
 			}
 		}
