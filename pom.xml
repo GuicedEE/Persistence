@@ -31,15 +31,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.jwebmp</groupId>
-            <artifactId>jwebmp-log-master</artifactId>
-            <version>${project.version}</version>
-            <classifier>${jwebmp.runtime.classifier}</classifier>
-            <!--<optional>true</optional>-->
-            <type>jar</type>
-        </dependency>
-
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <type>jar</type>
@@ -106,7 +97,6 @@
             <type>jar</type>
         </dependency>
 
-
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -120,8 +110,6 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
-
-
     </dependencies>
 
     <scm>
