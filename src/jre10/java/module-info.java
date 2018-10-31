@@ -16,30 +16,17 @@ module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.scanners to com.jwebmp.guicedinjection, io.github.classgraph, com.jwebmp.entityassist;
 	exports com.oracle.jaxb21;
 
-	requires com.google.guice.extensions.persist;
-	requires com.jwebmp.guicedinjection;
-	requires com.jwebmp.logmaster;
+	requires transitive com.google.guice.extensions.persist;
+	requires transitive com.jwebmp.guicedinjection;
+	requires transitive com.jwebmp.logmaster;
 
-	requires io.github.classgraph;
-	requires java.logging;
-	requires com.google.guice;
+	requires transitive java.naming;
+	requires transitive javax.inject;
 
-	requires java.naming;
-	requires aopalliance;
-
-	requires java.validation;
-
-	requires com.google.common;
-	requires javax.inject;
-
-	requires com.fasterxml.jackson.core;
-	requires com.fasterxml.jackson.annotation;
-	requires com.fasterxml.jackson.databind;
-
-	requires java.persistence;
-	requires org.json;
-	requires java.sql;
-	requires java.transaction;
+	requires transitive java.persistence;
+	requires transitive org.json;
+	requires transitive java.sql;
+	requires transitive java.transaction;
 
 	uses com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
 	uses com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
@@ -54,7 +41,8 @@ module com.jwebmp.guicedpersistence {
 	provides IGuiceScanModuleExclusions with GuicedPersistenceJarModuleExclusions;
 	provides IGuiceScanJarExclusions with GuicedPersistenceJarModuleExclusions;
 
-	provides com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader with com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
+	provides com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader
+			with com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.db to com.fasterxml.jackson.databind;
