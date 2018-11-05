@@ -51,6 +51,7 @@ module com.jwebmp.guicedpersistence {
 	provides IGuiceConfigurator with PersistenceGuiceConfigurator;
 	//provides IGuicePostStartup with AsyncPostStartup;
 	provides IGuiceDefaultBinder with PersistenceServiceLoadersBinder;
+
 	provides IGuiceScanModuleExclusions with GuicedPersistenceJarModuleExclusions;
 	provides IGuiceScanJarExclusions with GuicedPersistenceJarModuleExclusions;
 
