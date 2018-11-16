@@ -298,11 +298,6 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	}
 
 	@Override
-	/*public Integer sortOrder()
-	{
-		return 50 + new ArrayList(getBoundAnnotations()).indexOf(getBindingAnnotation());
-	}*/
-
 	public Integer sortOrder()
 	{
 		return 50;
