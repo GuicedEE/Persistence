@@ -115,6 +115,14 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>1.0</version>
+            <type>jar</type>
+        </dependency>
+
     </dependencies>
 
     <scm>
