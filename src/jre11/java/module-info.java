@@ -13,8 +13,6 @@ module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.db.intercepters;
 	exports com.jwebmp.guicedpersistence.services;
 
-	//exports com.jwebmp.guicedpersistence.injectors;
-
 	exports com.jwebmp.guicedpersistence.scanners to com.jwebmp.guicedinjection, io.github.classgraph, com.jwebmp.entityassist;
 	exports com.oracle.jaxb21;
 
@@ -23,10 +21,11 @@ module com.jwebmp.guicedpersistence {
 	requires com.jwebmp.logmaster;
 
 	requires io.github.classgraph;
+
 	requires java.logging;
 	requires com.google.guice;
 
-	requires transitive java.xml.bind;
+	requires java.xml.bind;
 
 	requires java.naming;
 	requires aopalliance;
