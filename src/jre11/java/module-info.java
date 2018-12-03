@@ -40,7 +40,7 @@ module com.jwebmp.guicedpersistence {
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
 
-	requires java.persistence;
+	requires transitive java.persistence;
 	requires org.json;
 	requires java.sql;
 	requires java.transaction;
