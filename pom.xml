@@ -39,6 +39,17 @@
             <type>jar</type>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.jwebmp</groupId>
+            <artifactId>aopalliance-core</artifactId>
+            <version>${project.version}</version>
+            <classifier>${jwebmp.runtime.classifier}</classifier>
+            <!--<optional>true</optional>-->
+            <type>jar</type>
+        </dependency>
+
+
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>javax.activation-api</artifactId>
@@ -51,8 +62,11 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.inject.extensions</groupId>
+            <groupId>com.jwebmp.inject.extensions</groupId>
             <artifactId>guice-persist</artifactId>
+            <version>${project.version}</version>
+            <classifier>${jwebmp.runtime.classifier}</classifier>
+            <!--<optional>true</optional>-->
             <type>jar</type>
         </dependency>
 
