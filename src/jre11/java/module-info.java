@@ -63,5 +63,5 @@ module com.jwebmp.guicedpersistence {
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.db to com.fasterxml.jackson.databind;
-	opens com.jwebmp.guicedpersistence.injectors to com.google.guice,cglib;
+	opens com.jwebmp.guicedpersistence.injectors to com.google.guice;
 }
