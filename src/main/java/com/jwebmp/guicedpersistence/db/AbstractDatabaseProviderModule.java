@@ -2,12 +2,13 @@ package com.jwebmp.guicedpersistence.db;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
+import com.google.inject.Provider;
+import com.google.inject.Singleton;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
 import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
-import com.jwebmp.guicedpersistence.db.exceptions.NoConnectionInfoException;
 import com.jwebmp.guicedpersistence.injectors.JpaPersistPrivateModule;
 import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
@@ -22,6 +23,8 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.jwebmp.guicedpersistence.db.DbStartupThread.*;
 
 /**
  * An abstract implementation for persistence.xml
@@ -41,10 +44,6 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	 * A set of all annotations that this abstraction built
 	 */
 	private static final Set<Class<? extends Annotation>> boundAnnotations = new HashSet<>();
-	/**
-	 * A list of already loaded data sources identified by JNDI Name
-	 */
-	private static final Map<String, DataSource> loadedDataSources = new HashMap<>();
 
 	/**
 	 * Constructor AbstractDatabaseProviderModule creates a new AbstractDatabaseProviderModule instance.
@@ -54,17 +53,6 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 		//Config required
 	}
 
-	/**
-	 * .
-	 * A list of already loaded data sources identified by JNDI Name
-	 * <p>
-	 *
-	 * @return Map String DataSource
-	 */
-	public static Map<String, DataSource> getLoadedDataSources()
-	{
-		return loadedDataSources;
-	}
 
 	/**
 	 * Returns a full list of all annotations that have bindings
@@ -75,6 +63,11 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	{
 		return AbstractDatabaseProviderModule.boundAnnotations;
 	}
+
+	/**
+	 * Creates a DB Startup that will boot
+	 */
+	public boolean autoStart;
 
 	/**
 	 * Configures the module with the bindings
@@ -111,7 +104,8 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 		AbstractDatabaseProviderModule.log.fine(getPersistenceUnitName() + " - Connection Base Info Final - " + connectionBaseInfo);
 
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
-		DataSource ds;
+
+		ConnectionBaseInfo ds;
 		if (getLoadedDataSources().containsKey(getJndiMapping()))
 		{
 			ds = getLoadedDataSources().get(getJndiMapping());
@@ -119,13 +113,21 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 		}
 		else
 		{
-			ds = provideDataSource(connectionBaseInfo);
-			getLoadedDataSources().put(getJndiMapping(), ds);
+			ds = connectionBaseInfo;
+			getLoadedDataSources().put(getJndiMapping(), connectionBaseInfo);
+			if (isAutoStart())
+			{
+				DbStartupThread newPostStartup = new DbStartupThread(getBindingAnnotation());
+				GuiceContext.instance()
+				            .loadPostStartupServices()
+				            .add(newPostStartup);
+			}
 		}
 		if (ds != null)
 		{
 			AbstractDatabaseProviderModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
-			bind(getDataSourceKey()).toInstance(ds);
+			bind(getDataSourceKey()).toProvider(new DataSourceProvider(ds))
+			                        .in(Singleton.class);
 		}
 
 		AbstractDatabaseProviderModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
@@ -256,23 +258,6 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	}
 
 	/**
-	 * Provides the given data source
-	 *
-	 * @param cbi
-	 * 		The connection base info required to generate a datasource
-	 *
-	 * @return The given data source or a NoConnectionInfo Exceptions
-	 */
-	private DataSource provideDataSource(ConnectionBaseInfo cbi)
-	{
-		if (cbi == null)
-		{
-			throw new NoConnectionInfoException("Not point in trying to create a connection with no info.....");
-		}
-		return cbi.toPooledDatasource();
-	}
-
-	/**
 	 * Boots the persistence unit during post-load asynchronously
 	 */
 	@Override
@@ -301,5 +286,35 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	public Integer sortOrder()
 	{
 		return 50;
+	}
+
+	/**
+	 * Method isAutoStart returns the autoStart of this AbstractDatabaseProviderModule object.
+	 * <p>
+	 * Creates a DB Startup that will boot
+	 *
+	 * @return the autoStart (type boolean) of this AbstractDatabaseProviderModule object.
+	 */
+	public boolean isAutoStart()
+	{
+		return autoStart;
+	}
+
+	/**
+	 * Method setAutoStart sets the autoStart of this AbstractDatabaseProviderModule object.
+	 * <p>
+	 * Creates a DB Startup that will boot
+	 *
+	 * @param autoStart
+	 * 		the autoStart of this AbstractDatabaseProviderModule object.
+	 *
+	 * @return AbstractDatabaseProviderModule<J>
+	 */
+	@SuppressWarnings("unchecked")
+	@NotNull
+	public J setAutoStart(boolean autoStart)
+	{
+		this.autoStart = autoStart;
+		return (J)this;
 	}
 }
