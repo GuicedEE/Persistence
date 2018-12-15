@@ -1,4 +1,4 @@
-package com.jwebmp.guicedpersistence.services;
+package com.jwebmp.guicedpersistence.implementations;
 
 import com.jwebmp.guicedinjection.interfaces.IGuiceScanJarExclusions;
 import com.jwebmp.guicedinjection.interfaces.IGuiceScanModuleExclusions;

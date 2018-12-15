@@ -1,13 +1,13 @@
 package com.jwebmp.guicedpersistence.db.intercepters;
 
 import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
-import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
+import com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import java.util.Properties;
 
 public class JPADefaultConnectionBaseBuilder
-		implements PropertiesConnectionInfoReader
+		implements IPropertiesConnectionInfoReader
 {
 	@Override
 	public ConnectionBaseInfo populateConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties, ConnectionBaseInfo cbi)

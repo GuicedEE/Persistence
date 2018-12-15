@@ -9,7 +9,7 @@ import java.util.Properties;
  * Manages properties passed into the entity manager factory
  */
 @FunctionalInterface
-public interface PropertiesEntityManagerReader
+public interface IPropertiesEntityManagerReader
 {
 	/**
 	 * Manages properties passed into the entity manager factory

@@ -9,9 +9,9 @@ import com.jwebmp.guicedinjection.interfaces.IGuiceDefaultBinder;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 import com.jwebmp.guicedpersistence.injectors.CustomJpaLocalTxnInterceptor;
 import com.jwebmp.guicedpersistence.injectors.GuicedPersistenceTxnInterceptor;
+import com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader;
+import com.jwebmp.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.jwebmp.guicedpersistence.services.ITransactionHandler;
-import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
-import com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
 
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -21,21 +21,21 @@ public class PersistenceServiceLoadersBinder
 		implements IGuiceDefaultBinder<PersistenceServiceLoadersBinder, GuiceInjectorModule>
 {
 	@SuppressWarnings("Convert2Diamond")
-	public static final Key<Set<PropertiesEntityManagerReader>> PropertiesEntityManagerReader = Key.get(new TypeLiteral<Set<PropertiesEntityManagerReader>>() {});
+	public static final Key<Set<IPropertiesEntityManagerReader>> PropertiesEntityManagerReader = Key.get(new TypeLiteral<Set<IPropertiesEntityManagerReader>>() {});
 	@SuppressWarnings("Convert2Diamond")
-	public static final Key<Set<PropertiesConnectionInfoReader>> PropertiesConnectionInfoReader = Key.get(new TypeLiteral<Set<PropertiesConnectionInfoReader>>() {});
+	public static final Key<Set<IPropertiesConnectionInfoReader>> PropertiesConnectionInfoReader = Key.get(new TypeLiteral<Set<IPropertiesConnectionInfoReader>>() {});
 	@SuppressWarnings("Convert2Diamond")
 	public static final Key<Set<ITransactionHandler>> ITransactionHandlerReader = Key.get(new TypeLiteral<Set<ITransactionHandler>>() {});
 
 	@Override
 	public void onBind(GuiceInjectorModule module)
 	{
-		Set<PropertiesEntityManagerReader> propertiesEntityManager = GuiceContext.instance()
-		                                                                         .getLoader(PropertiesEntityManagerReader.class, true, ServiceLoader.load(
-				                                                                         PropertiesEntityManagerReader.class));
-		Set<PropertiesConnectionInfoReader> propertiesConnectionInfoReader = GuiceContext.instance()
-		                                                                                 .getLoader(PropertiesConnectionInfoReader.class, true, ServiceLoader.load(
-				                                                                                 PropertiesConnectionInfoReader.class));
+		Set<IPropertiesEntityManagerReader> propertiesEntityManager = GuiceContext.instance()
+		                                                                          .getLoader(IPropertiesEntityManagerReader.class, true, ServiceLoader.load(
+				                                                                         IPropertiesEntityManagerReader.class));
+		Set<IPropertiesConnectionInfoReader> IPropertiesConnectionInfoReader = GuiceContext.instance()
+		                                                                                   .getLoader(IPropertiesConnectionInfoReader.class, true, ServiceLoader.load(
+				                                                                                 IPropertiesConnectionInfoReader.class));
 		Set<ITransactionHandler> transactionHandlerReader = GuiceContext.instance()
 		                                                                .getLoader(ITransactionHandler.class, true, ServiceLoader.load(
 				                                                                ITransactionHandler.class));
@@ -44,7 +44,7 @@ public class PersistenceServiceLoadersBinder
 		      .toInstance(propertiesEntityManager);
 
 		module.bind(PersistenceServiceLoadersBinder.PropertiesConnectionInfoReader)
-		      .toInstance(propertiesConnectionInfoReader);
+		      .toInstance(IPropertiesConnectionInfoReader);
 
 		module.bind(PersistenceServiceLoadersBinder.ITransactionHandlerReader)
 		      .toInstance(transactionHandlerReader);

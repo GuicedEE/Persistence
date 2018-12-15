@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
+import com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader;
 import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 
@@ -88,9 +88,9 @@ public abstract class ConnectionBaseInfo
 
 	public ConnectionBaseInfo populateFromProperties(PersistenceUnit unit, Properties filteredProperties)
 	{
-		for (PropertiesConnectionInfoReader connectionInfoReader : GuiceContext.instance()
-		                                                                       .getLoader(PropertiesConnectionInfoReader.class, true, ServiceLoader.load(
-				                                                                       PropertiesConnectionInfoReader.class)))
+		for (IPropertiesConnectionInfoReader connectionInfoReader : GuiceContext.instance()
+		                                                                        .getLoader(IPropertiesConnectionInfoReader.class, true, ServiceLoader.load(
+				                                                                       IPropertiesConnectionInfoReader.class)))
 		{
 			connectionInfoReader.populateConnectionBaseInfo(unit, filteredProperties, this);
 		}

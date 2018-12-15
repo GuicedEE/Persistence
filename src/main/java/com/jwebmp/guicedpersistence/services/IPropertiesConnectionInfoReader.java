@@ -9,7 +9,7 @@ import java.util.Properties;
  * A functional interface to populate a connection base info based on properties received
  */
 @FunctionalInterface
-public interface PropertiesConnectionInfoReader
+public interface IPropertiesConnectionInfoReader
 {
 	/**
 	 * Method populateConnectionBaseInfo ...

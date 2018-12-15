@@ -2,7 +2,6 @@ package com.jwebmp.guicedpersistence.db;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
-import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
@@ -11,7 +10,7 @@ import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
 import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
 import com.jwebmp.guicedpersistence.injectors.JpaPersistPrivateModule;
 import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
-import com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
+import com.jwebmp.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 import com.oracle.jaxb21.Property;
@@ -31,14 +30,14 @@ import static com.jwebmp.guicedpersistence.db.DbStartupThread.*;
  * <p>
  * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
-public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseProviderModule<J>>
+public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		extends AbstractModule
 		implements IGuiceModule<J>, IGuicePostStartup<J>
 {
 	/**
 	 * Field log
 	 */
-	private static final Logger log = LogFactory.getLog("AbstractDatabaseProviderModule");
+	private static final Logger log = LogFactory.getLog("DatabaseModule");
 
 	/**
 	 * A set of all annotations that this abstraction built
@@ -46,9 +45,9 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	private static final Set<Class<? extends Annotation>> boundAnnotations = new HashSet<>();
 
 	/**
-	 * Constructor AbstractDatabaseProviderModule creates a new AbstractDatabaseProviderModule instance.
+	 * Constructor DatabaseModule creates a new DatabaseModule instance.
 	 */
-	public AbstractDatabaseProviderModule()
+	public DatabaseModule()
 	{
 		//Config required
 	}
@@ -61,7 +60,7 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	 */
 	public static Set<Class<? extends Annotation>> getBoundAnnotations()
 	{
-		return AbstractDatabaseProviderModule.boundAnnotations;
+		return DatabaseModule.boundAnnotations;
 	}
 
 	/**
@@ -75,18 +74,18 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	@Override
 	protected void configure()
 	{
-		AbstractDatabaseProviderModule.log.config("Loading Database Module - " + getClass().getName() + " - " + getPersistenceUnitName());
+		DatabaseModule.log.config("Loading Database Module - " + getClass().getName() + " - " + getPersistenceUnitName());
 		Properties jdbcProperties = getJDBCPropertiesMap();
 		PersistenceUnit pu = getPersistenceUnit();
 		if (pu == null)
 		{
-			AbstractDatabaseProviderModule.log
+			DatabaseModule.log
 					.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
 			return;
 		}
-		for (PropertiesEntityManagerReader entityManagerReader : GuiceContext.instance()
-		                                                                     .getLoader(PropertiesEntityManagerReader.class, true,
-		                                                                                ServiceLoader.load(PropertiesEntityManagerReader.class)))
+		for (IPropertiesEntityManagerReader entityManagerReader : GuiceContext.instance()
+		                                                                      .getLoader(IPropertiesEntityManagerReader.class, true,
+		                                                                                 ServiceLoader.load(IPropertiesEntityManagerReader.class)))
 		{
 
 			Map<String, String> output = entityManagerReader.processProperties(pu, jdbcProperties);
@@ -101,7 +100,7 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 		{
 			connectionBaseInfo.setJndiName(getJndiMapping());
 		}
-		AbstractDatabaseProviderModule.log.fine(getPersistenceUnitName() + " - Connection Base Info Final - " + connectionBaseInfo);
+		DatabaseModule.log.fine(getPersistenceUnitName() + " - Connection Base Info Final - " + connectionBaseInfo);
 
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
 
@@ -125,14 +124,14 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 		}
 		if (ds != null)
 		{
-			AbstractDatabaseProviderModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
+			DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
 			bind(getDataSourceKey()).toProvider(new DataSourceProvider(ds))
 			                        .in(Singleton.class);
 		}
 
-		AbstractDatabaseProviderModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
+		DatabaseModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
-		AbstractDatabaseProviderModule.boundAnnotations.add(getBindingAnnotation());
+		DatabaseModule.boundAnnotations.add(getBindingAnnotation());
 	}
 
 	/**
@@ -163,9 +162,9 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 		}
 		catch (Throwable T)
 		{
-			AbstractDatabaseProviderModule.log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]", T);
+			DatabaseModule.log.log(Level.SEVERE, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]", T);
 		}
-		AbstractDatabaseProviderModule.log.log(Level.WARNING, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]. Returning a Null Instance");
+		DatabaseModule.log.log(Level.WARNING, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]. Returning a Null Instance");
 		return null;
 	}
 
@@ -289,11 +288,11 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	}
 
 	/**
-	 * Method isAutoStart returns the autoStart of this AbstractDatabaseProviderModule object.
+	 * Method isAutoStart returns the autoStart of this DatabaseModule object.
 	 * <p>
 	 * Creates a DB Startup that will boot
 	 *
-	 * @return the autoStart (type boolean) of this AbstractDatabaseProviderModule object.
+	 * @return the autoStart (type boolean) of this DatabaseModule object.
 	 */
 	public boolean isAutoStart()
 	{
@@ -301,14 +300,14 @@ public abstract class AbstractDatabaseProviderModule<J extends AbstractDatabaseP
 	}
 
 	/**
-	 * Method setAutoStart sets the autoStart of this AbstractDatabaseProviderModule object.
+	 * Method setAutoStart sets the autoStart of this DatabaseModule object.
 	 * <p>
 	 * Creates a DB Startup that will boot
 	 *
 	 * @param autoStart
-	 * 		the autoStart of this AbstractDatabaseProviderModule object.
+	 * 		the autoStart of this DatabaseModule object.
 	 *
-	 * @return AbstractDatabaseProviderModule<J>
+	 * @return DatabaseModule<J>
 	 */
 	@SuppressWarnings("unchecked")
 	@NotNull

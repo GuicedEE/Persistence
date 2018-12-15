@@ -1,10 +1,12 @@
 import com.jwebmp.guicedinjection.interfaces.*;
+import com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
 import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
+import com.jwebmp.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
 import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
 import com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
-import com.jwebmp.guicedpersistence.services.GuicedPersistenceJarModuleExclusions;
+import com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader;
 
 module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.db;
@@ -40,13 +42,14 @@ module com.jwebmp.guicedpersistence {
 	requires com.fasterxml.jackson.annotation;
 	requires com.fasterxml.jackson.databind;
 
-	requires transitive java.persistence;
+	requires java.persistence;
+
 	requires org.json;
 	requires java.sql;
 	requires java.transaction;
 
-	uses com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader;
-	uses com.jwebmp.guicedpersistence.services.PropertiesEntityManagerReader;
+	uses IPropertiesConnectionInfoReader;
+	uses com.jwebmp.guicedpersistence.services.IPropertiesEntityManagerReader;
 	uses com.jwebmp.guicedpersistence.services.ITransactionHandler;
 
 	provides IPathContentsScanner with GuiceInjectionMetaInfScanner;
@@ -59,7 +62,7 @@ module com.jwebmp.guicedpersistence {
 	provides IGuiceScanModuleExclusions with GuicedPersistenceJarModuleExclusions;
 	provides IGuiceScanJarExclusions with GuicedPersistenceJarModuleExclusions;
 
-	provides com.jwebmp.guicedpersistence.services.PropertiesConnectionInfoReader with com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
+	provides IPropertiesConnectionInfoReader with JPADefaultConnectionBaseBuilder;
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.db to com.fasterxml.jackson.databind;

@@ -1,7 +1,7 @@
 package com.jwebmp.guicedinjection.db;
 
 import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
-import com.jwebmp.guicedpersistence.db.AbstractDatabaseProviderModule;
+import com.jwebmp.guicedpersistence.db.DatabaseModule;
 import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
 import com.oracle.jaxb21.PersistenceUnit;
 
@@ -11,7 +11,7 @@ import java.lang.annotation.Annotation;
 import java.util.Properties;
 
 public class TestDBPrivateModule
-		extends AbstractDatabaseProviderModule<TestDBPrivateModule>
+		extends DatabaseModule<TestDBPrivateModule>
 		implements IGuiceModule<TestDBPrivateModule>
 {
 
