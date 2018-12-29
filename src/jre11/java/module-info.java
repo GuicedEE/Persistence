@@ -1,6 +1,7 @@
 import com.jwebmp.guicedinjection.interfaces.*;
 import com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
 import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
+import com.jwebmp.guicedpersistence.implementations.GuicedPersistenceDestroyer;
 import com.jwebmp.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
 import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
@@ -61,10 +62,11 @@ module com.jwebmp.guicedpersistence {
 
 	provides IGuiceScanModuleExclusions with GuicedPersistenceJarModuleExclusions;
 	provides IGuiceScanJarExclusions with GuicedPersistenceJarModuleExclusions;
+	provides IGuicePreDestroy with GuicedPersistenceDestroyer;
 
 	provides IPropertiesConnectionInfoReader with JPADefaultConnectionBaseBuilder;
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.db to com.fasterxml.jackson.databind;
-	opens com.jwebmp.guicedpersistence.injectors to com.google.guice,cglib;
+	opens com.jwebmp.guicedpersistence.injectors to com.google.guice, cglib;
 }
