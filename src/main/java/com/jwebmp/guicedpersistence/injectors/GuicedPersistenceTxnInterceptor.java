@@ -142,6 +142,7 @@ public class GuicedPersistenceTxnInterceptor
 	 *
 	 * @return Transactional
 	 */
+	@SuppressWarnings("Duplicates")
 	private Transactional readTransactionMetadata(MethodInvocation methodInvocation)
 	{
 		Transactional transactional;
