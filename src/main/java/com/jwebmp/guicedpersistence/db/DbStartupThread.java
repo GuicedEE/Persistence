@@ -12,14 +12,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class DbStartupThread implements IGuicePostStartup<DbStartupThread>
+public class DbStartupThread
+		implements IGuicePostStartup<DbStartupThread>
 {
-	private Class<? extends Annotation> annotation;
-
 	/**
 	 * A list of already loaded data sources identified by JNDI Name
 	 */
 	private static final Map<String, ConnectionBaseInfo> loadedDataSources = new HashMap<>();
+	private Class<? extends Annotation> annotation;
+
+	public DbStartupThread(Class<? extends Annotation> annotation)
+	{
+		this.annotation = annotation;
+	}
 
 	/**
 	 * .
@@ -31,11 +36,6 @@ public class DbStartupThread implements IGuicePostStartup<DbStartupThread>
 	public static Map<String, ConnectionBaseInfo> getLoadedDataSources()
 	{
 		return loadedDataSources;
-	}
-
-	public DbStartupThread(Class<? extends Annotation> annotation)
-	{
-		this.annotation = annotation;
 	}
 
 	public String name()

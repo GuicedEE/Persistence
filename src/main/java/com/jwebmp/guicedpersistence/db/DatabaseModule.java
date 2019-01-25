@@ -43,6 +43,10 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	 * A set of all annotations that this abstraction built
 	 */
 	private static final Set<Class<? extends Annotation>> boundAnnotations = new HashSet<>();
+	/**
+	 * Creates a DB Startup that will boot
+	 */
+	public boolean autoStart;
 
 	/**
 	 * Constructor DatabaseModule creates a new DatabaseModule instance.
@@ -51,7 +55,6 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	{
 		//Config required
 	}
-
 
 	/**
 	 * Returns a full list of all annotations that have bindings
@@ -62,11 +65,6 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	{
 		return DatabaseModule.boundAnnotations;
 	}
-
-	/**
-	 * Creates a DB Startup that will boot
-	 */
-	public boolean autoStart;
 
 	/**
 	 * Configures the module with the bindings
@@ -247,11 +245,18 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	{
 		if (pu != null)
 		{
-			for (Property props : pu.getProperties()
-			                        .getProperty())
+			try
 			{
-				jdbcProperties.put(props.getName(), props.getValue());
+				for (Property props : pu.getProperties()
+				                        .getProperty())
+				{
+					jdbcProperties.put(props.getName(), props.getValue());
 
+				}
+			}
+			catch (Throwable t)
+			{
+				log.log(Level.SEVERE, "Unable to load persistence unit properties for [" + pu.getName() + "]", t);
 			}
 		}
 	}
@@ -314,6 +319,6 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	public J setAutoStart(boolean autoStart)
 	{
 		this.autoStart = autoStart;
-		return (J)this;
+		return (J) this;
 	}
 }
