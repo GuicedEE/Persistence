@@ -1,14 +1,3 @@
-import com.jwebmp.guicedinjection.interfaces.*;
-import com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
-import com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
-import com.jwebmp.guicedpersistence.implementations.GuicedPersistenceDestroyer;
-import com.jwebmp.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
-import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
-import com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
-import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
-import com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
-import com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader;
-
 module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.db;
 	exports com.jwebmp.guicedpersistence.db.annotations;
@@ -49,22 +38,22 @@ module com.jwebmp.guicedpersistence {
 	requires java.sql;
 	requires java.transaction;
 
-	uses IPropertiesConnectionInfoReader;
+	uses com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader;
 	uses com.jwebmp.guicedpersistence.services.IPropertiesEntityManagerReader;
 	uses com.jwebmp.guicedpersistence.services.ITransactionHandler;
 
-	provides IPathContentsScanner with GuiceInjectionMetaInfScanner;
-	provides IPathContentsBlacklistScanner with GuiceInjectionMetaInfScannerExclusions;
-	provides IFileContentsScanner with PersistenceFileHandler;
-	provides IGuiceConfigurator with PersistenceGuiceConfigurator;
+	provides com.jwebmp.guicedinjection.interfaces.IPathContentsScanner with com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
+	provides com.jwebmp.guicedinjection.interfaces.IPathContentsBlacklistScanner with com.jwebmp.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
+	provides com.jwebmp.guicedinjection.interfaces.IFileContentsScanner with com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
+	provides com.jwebmp.guicedinjection.interfaces.IGuiceConfigurator with com.jwebmp.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 	//provides IGuicePostStartup with AsyncPostStartup;
-	provides IGuiceDefaultBinder with PersistenceServiceLoadersBinder;
+	provides com.jwebmp.guicedinjection.interfaces.IGuiceDefaultBinder with com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 
-	provides IGuiceScanModuleExclusions with GuicedPersistenceJarModuleExclusions;
-	provides IGuiceScanJarExclusions with GuicedPersistenceJarModuleExclusions;
-	provides IGuicePreDestroy with GuicedPersistenceDestroyer;
+	provides com.jwebmp.guicedinjection.interfaces.IGuiceScanModuleExclusions with com.jwebmp.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
+	provides com.jwebmp.guicedinjection.interfaces.IGuiceScanJarExclusions with com.jwebmp.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
+	provides com.jwebmp.guicedinjection.interfaces.IGuicePreDestroy with com.jwebmp.guicedpersistence.implementations.GuicedPersistenceDestroyer;
 
-	provides IPropertiesConnectionInfoReader with JPADefaultConnectionBaseBuilder;
+	provides com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader with com.jwebmp.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.jwebmp.guicedpersistence.db to com.fasterxml.jackson.databind;
