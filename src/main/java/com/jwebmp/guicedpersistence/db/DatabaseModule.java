@@ -46,7 +46,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	/**
 	 * Creates a DB Startup that will boot
 	 */
-	public boolean autoStart;
+	public boolean autoStart = true;
 
 	/**
 	 * Constructor DatabaseModule creates a new DatabaseModule instance.
