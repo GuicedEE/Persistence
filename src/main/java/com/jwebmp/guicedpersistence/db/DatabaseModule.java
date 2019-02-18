@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.jwebmp.guicedpersistence.db.DbStartupThread.*;
+import static com.jwebmp.guicedpersistence.db.DbStartup.*;
 
 /**
  * An abstract implementation for persistence.xml
@@ -114,7 +114,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 			getLoadedDataSources().put(getJndiMapping(), connectionBaseInfo);
 			if (isAutoStart())
 			{
-				DbStartupThread newPostStartup = new DbStartupThread(getBindingAnnotation());
+				DbStartup newPostStartup = new DbStartup(getBindingAnnotation());
 				GuiceContext.instance()
 				            .loadPostStartupServices()
 				            .add(newPostStartup);

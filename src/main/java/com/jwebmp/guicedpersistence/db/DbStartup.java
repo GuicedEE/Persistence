@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-public class DbStartupThread
-		implements IGuicePostStartup<DbStartupThread>
+public class DbStartup
+		implements IGuicePostStartup<DbStartup>
 {
 	/**
 	 * A list of already loaded data sources identified by JNDI Name
@@ -21,7 +21,7 @@ public class DbStartupThread
 	private static final Map<String, ConnectionBaseInfo> loadedDataSources = new HashMap<>();
 	private Class<? extends Annotation> annotation;
 
-	public DbStartupThread(Class<? extends Annotation> annotation)
+	public DbStartup(Class<? extends Annotation> annotation)
 	{
 		this.annotation = annotation;
 	}
@@ -40,7 +40,7 @@ public class DbStartupThread
 
 	public String name()
 	{
-		return "DBStartupThread - @" + annotation.getSimpleName();
+		return "DBStartup - @" + annotation.getSimpleName();
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class DbStartupThread
 		ow.end();
 
 		LogFactory.getLog("DBStartup")
-		          .log(Level.CONFIG, "DBStartupThread Started - " + annotation.getSimpleName());
+		          .log(Level.CONFIG, "DBStartup Started - " + annotation.getSimpleName());
 	}
 
 	@Override
