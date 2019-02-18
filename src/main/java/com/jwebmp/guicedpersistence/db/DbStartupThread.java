@@ -69,6 +69,6 @@ public class DbStartupThread
 	@Override
 	public Integer sortOrder()
 	{
-		return 50;
+		return 55;
 	}
 }
