@@ -20,6 +20,15 @@ public @interface Transactional
 	Class<? extends Annotation> entityManagerAnnotation();
 
 	/**
+	 * The timeout applied for this transaction
+	 *
+	 * Great for debugging and applying a custom timeout
+	 *
+	 * @return Default of 30 seconds (30)
+	 */
+	int timeout() default 30;
+
+	/**
 	 * A list of exceptions to rollback on, if thrown by the transactional method. These exceptions
 	 * are propagated correctly after a rollback.
 	 */

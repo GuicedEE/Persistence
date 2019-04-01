@@ -83,6 +83,7 @@ public class GuicedPersistenceTxnInterceptor
 		{
 			if (handler.active(unit))
 			{
+				handler.setTransactionTimeout(transactional.timeout(),em,unit);
 				handler.beginTransacation(false, em, unit);
 			}
 		}

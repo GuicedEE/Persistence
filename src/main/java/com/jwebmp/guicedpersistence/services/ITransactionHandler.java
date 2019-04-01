@@ -31,6 +31,17 @@ public interface ITransactionHandler<J extends ITransactionHandler<J>>
 	 */
 	void commitTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit);
 
+
+	/**
+	 * What to do when committing a transaction, always called
+	 *
+	 * @param timeout
+	 * 		The timeout to apply default 30
+	 * @param entityManager
+	 * 		The entity manager associated
+	 */
+	void setTransactionTimeout(int timeout, EntityManager entityManager, PersistenceUnit persistenceUnit);
+
 	/**
 	 * What to do when committing a transaction, always called
 	 *
