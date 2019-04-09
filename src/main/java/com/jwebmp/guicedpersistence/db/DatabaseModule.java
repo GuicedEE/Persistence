@@ -3,6 +3,7 @@ package com.jwebmp.guicedpersistence.db;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
+import com.google.inject.name.Names;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -120,11 +121,13 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 				            .add(newPostStartup);
 			}
 		}
-		if (ds != null)
+		DataSource dSource;
+		if (ds != null && ((dSource = ds.toPooledDatasource()) != null))
 		{
 			DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
-			bind(getDataSourceKey()).toProvider(new DataSourceProvider(ds))
-			                        .in(Singleton.class);
+			DbStartup.getAvailableDataSources()
+			         .add(getBindingAnnotation());
+			bind(getDataSourceKey()).toProvider(() ->dSource).in(Singleton.class);
 		}
 
 		DatabaseModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());

@@ -135,6 +135,8 @@ public class CustomJpaLocalTxnInterceptor
 		{
 			if (startedWork)
 			{
+				em.clear();
+				em.close();
 				didWeStartWork.remove();
 				unitOfWork.end();
 			}

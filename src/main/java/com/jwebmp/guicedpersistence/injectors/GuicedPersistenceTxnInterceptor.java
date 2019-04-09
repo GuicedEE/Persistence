@@ -128,6 +128,8 @@ public class GuicedPersistenceTxnInterceptor
 		{
 			if (startedWork)
 			{
+				em.clear();
+				em.close();
 				didWeStartWork.remove();
 				unitOfWork.end();
 			}

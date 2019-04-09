@@ -13,16 +13,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
 public class DbStartup
-		implements IGuicePostStartup<DbStartup>, Callable<DbStartup>,Runnable
+		implements IGuicePostStartup<DbStartup>, Callable<DbStartup>, Runnable
 {
 	/**
 	 * A list of already loaded data sources identified by JNDI Name
 	 */
-	private static final Map<String, ConnectionBaseInfo> loadedDataSources = new HashMap<>();
-	private static final List<Class<? extends Annotation>> availableDataSources = new ArrayList<>();
+	private static final Map<String, ConnectionBaseInfo> loadedDataSources = new ConcurrentHashMap<>();
+	private static final List<Class<? extends Annotation>> availableDataSources = new CopyOnWriteArrayList<>();
 	private Class<? extends Annotation> annotation;
 
 	public DbStartup(Class<? extends Annotation> annotation)
@@ -44,30 +46,37 @@ public class DbStartup
 
 	public String name()
 	{
-		return "DBStartup - @" + annotation.getSimpleName();
+		return "DB Startup - @" + annotation.getSimpleName();
 	}
 
 	@Override
 	public void postLoad()
 	{
+		LogFactory.getLog("DBStartup")
+		          .log(Level.CONFIG, "DB Starting - " + annotation.getSimpleName());
+		LogFactory.getLog("DataSource Startup")
+		          .log(Level.CONFIG, "DataSource Starting - " + annotation.getSimpleName());
 		try
 		{
 			GuiceContext.get(DataSource.class, annotation);
-			availableDataSources.add(annotation);
+		}
+		catch (Throwable T)
+		{
+			LogFactory.getLog("DataSource Startup")
+			          .log(Level.SEVERE, "Datasource Unable to start", T);
+		}
+		try
+		{
+			PersistService ps = GuiceContext.get(PersistService.class, annotation);
+			ps.start();
+			UnitOfWork ow = GuiceContext.get(UnitOfWork.class, annotation);
+			ow.end();
 		}
 		catch (Throwable T)
 		{
 			LogFactory.getLog("DBStartup")
 			          .log(Level.SEVERE, "Datasource Unable to start", T);
 		}
-
-		PersistService ps = GuiceContext.get(PersistService.class, annotation);
-		ps.start();
-		UnitOfWork ow = GuiceContext.get(UnitOfWork.class, annotation);
-		ow.end();
-
-		LogFactory.getLog("DBStartup")
-		          .log(Level.CONFIG, "DBStartup Started - " + annotation.getSimpleName());
 	}
 
 	@Override
