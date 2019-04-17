@@ -112,6 +112,14 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		else
 		{
 			ds = connectionBaseInfo;
+			DataSource dSource;
+			if (ds != null && ((dSource = ds.toPooledDatasource()) != null))
+			{
+				DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
+				DbStartup.getAvailableDataSources()
+				         .add(getBindingAnnotation());
+				bind(getDataSourceKey()).toProvider(() ->dSource).in(Singleton.class);
+			}
 			getLoadedDataSources().put(getJndiMapping(), connectionBaseInfo);
 			if (isAutoStart())
 			{
@@ -121,14 +129,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 				            .add(newPostStartup);
 			}
 		}
-		DataSource dSource;
-		if (ds != null && ((dSource = ds.toPooledDatasource()) != null))
-		{
-			DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
-			DbStartup.getAvailableDataSources()
-			         .add(getBindingAnnotation());
-			bind(getDataSourceKey()).toProvider(() ->dSource).in(Singleton.class);
-		}
+
 
 		DatabaseModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
