@@ -31,6 +31,11 @@ public class GuicedPersistenceDestroyer
 				log.log(Level.SEVERE, "Unable to close entity managers and factories for annotation [" + boundAnnotation.getCanonicalName() + "]", e);
 			}
 		}
+	}
 
+	@Override
+	public Integer sortOrder()
+	{
+		return 500;
 	}
 }
