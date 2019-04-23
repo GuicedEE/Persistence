@@ -21,18 +21,22 @@ import com.google.inject.persist.UnitOfWork;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedpersistence.db.annotations.Transactional;
 import com.jwebmp.guicedpersistence.services.ITransactionHandler;
+import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder.*;
 
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
+
 public class GuicedPersistenceTxnInterceptor
 		implements MethodInterceptor
 {
@@ -40,6 +44,7 @@ public class GuicedPersistenceTxnInterceptor
 	 * Tracks if the unit of work was begun implicitly by this transaction.
 	 */
 	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
+	private static final Logger log = LogFactory.getLog("GuicedPersistenceTxnIntercepter");
 
 	public GuicedPersistenceTxnInterceptor()
 	{
@@ -111,7 +116,7 @@ public class GuicedPersistenceTxnInterceptor
 				didWeStartWork.remove();
 				unitOfWork.end();
 			}
-
+			log.log(Level.SEVERE, "Unable to commit : ", e);
 			throw e;
 		}
 		try
