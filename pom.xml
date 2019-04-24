@@ -102,8 +102,8 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.transaction</groupId>
-            <artifactId>javax.transaction-api</artifactId>
+            <groupId>com.jwebmp.thirdparty</groupId>
+            <artifactId>javax.transaction</artifactId>
             <type>jar</type>
         </dependency>
 
@@ -151,9 +151,8 @@
                     <artifactId>validation-api</artifactId>
                 </dependency>
                 <dependency>
-                    <groupId>javax.transaction</groupId>
-                    <artifactId>javax.transaction-api</artifactId>
-                    <version>${javax.transaction.transactionapi}</version>
+                    <groupId>com.jwebmp.thirdparty</groupId>
+                    <artifactId>javax.transaction</artifactId>
                 </dependency>
             </dependencies>
             <build>
