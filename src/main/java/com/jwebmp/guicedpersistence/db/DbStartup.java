@@ -77,6 +77,7 @@ public class DbStartup
 			LogFactory.getLog("DBStartup")
 			          .log(Level.SEVERE, "Datasource Unable to start", T);
 		}
+		notify();
 	}
 
 	@Override

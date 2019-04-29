@@ -55,6 +55,7 @@
         <dependency>
             <groupId>com.jwebmp.thirdparty</groupId>
             <artifactId>javax.activation</artifactId>
+            <type>jar</type>
         </dependency>
 
         <dependency>
