@@ -3,7 +3,6 @@ package com.jwebmp.guicedpersistence.db;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
-import com.google.inject.name.Names;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -104,23 +103,28 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
 
 		ConnectionBaseInfo ds;
-		if (getLoadedDataSources().containsKey(getJndiMapping()))
+		if (getLoadedConnectionBaseInfos().containsKey(getJndiMapping()))
 		{
-			ds = getLoadedDataSources().get(getJndiMapping());
 			log.log(Level.CONFIG, "Re-Using Data Source for JNDI Mapping " + getJndiMapping());
+			DataSource dSource = DbStartup.getLoadedDataSources()
+			                              .get(getBindingAnnotation());
+			bind(getDataSourceKey()).toProvider(() ->dSource).in(Singleton.class);
+			DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
 		}
 		else
 		{
 			ds = connectionBaseInfo;
 			DataSource dSource;
-			if (ds != null && ((dSource = ds.toPooledDatasource()) != null))
+			if ((dSource = ds.toPooledDatasource()) != null)
 			{
 				DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
 				DbStartup.getAvailableDataSources()
 				         .add(getBindingAnnotation());
+				DbStartup.getLoadedDataSources()
+				         .put(getBindingAnnotation(),dSource);
 				bind(getDataSourceKey()).toProvider(() ->dSource).in(Singleton.class);
 			}
-			getLoadedDataSources().put(getJndiMapping(), connectionBaseInfo);
+			getLoadedConnectionBaseInfos().put(getJndiMapping(), connectionBaseInfo);
 			if (isAutoStart())
 			{
 				DbStartup newPostStartup = new DbStartup(getBindingAnnotation());
@@ -129,7 +133,6 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 				            .add(newPostStartup);
 			}
 		}
-
 
 		DatabaseModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);

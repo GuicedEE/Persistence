@@ -8,8 +8,6 @@ import com.jwebmp.logger.LogFactory;
 
 import javax.sql.DataSource;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -23,7 +21,8 @@ public class DbStartup
 	/**
 	 * A list of already loaded data sources identified by JNDI Name
 	 */
-	private static final Map<String, ConnectionBaseInfo> loadedDataSources = new ConcurrentHashMap<>();
+	private static final Map<String, ConnectionBaseInfo> loadedConnectionBaseInfos = new ConcurrentHashMap<>();
+	private static final Map<Class<? extends Annotation>, DataSource> loadedDataSources = new ConcurrentHashMap<>();
 	private static final List<Class<? extends Annotation>> availableDataSources = new CopyOnWriteArrayList<>();
 	private Class<? extends Annotation> annotation;
 
@@ -39,7 +38,16 @@ public class DbStartup
 	 *
 	 * @return Map String DataSource
 	 */
-	public static Map<String, ConnectionBaseInfo> getLoadedDataSources()
+	public static Map<String, ConnectionBaseInfo> getLoadedConnectionBaseInfos()
+	{
+		return loadedConnectionBaseInfos;
+	}
+
+	/**
+	 * Returns the data sources associated with an annotation
+	 * @return
+	 */
+	public static Map<Class<? extends Annotation>, DataSource> getLoadedDataSources()
 	{
 		return loadedDataSources;
 	}
