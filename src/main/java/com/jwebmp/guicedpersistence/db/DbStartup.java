@@ -14,10 +14,12 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DbStartup
 		implements IGuicePostStartup<DbStartup>, Callable<DbStartup>, Runnable
 {
+	private static final Logger log = LogFactory.getLog("DbStartup");
 	/**
 	 * A list of already loaded data sources identified by JNDI Name
 	 */
@@ -85,7 +87,13 @@ public class DbStartup
 			LogFactory.getLog("DBStartup")
 			          .log(Level.SEVERE, "Datasource Unable to start", T);
 		}
-		notify();
+		try
+		{
+			notify();
+		}catch(IllegalMonitorStateException me)
+		{
+			log.log(Level.FINER, "Notify not applicable for this running execution", me);
+		}
 	}
 
 	@Override
