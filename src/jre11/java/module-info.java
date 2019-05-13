@@ -23,7 +23,7 @@ module com.jwebmp.guicedpersistence {
 	requires aopalliance;
 
 	requires java.validation;
-	requires java.activation;
+	requires jakarta.activation;
 
 	requires com.google.common;
 	requires javax.inject;
