@@ -1,5 +1,6 @@
 package com.jwebmp.guicedpersistence.db;
 
+import com.google.inject.Provider;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
 import com.jwebmp.guicedinjection.GuiceContext;
@@ -17,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DbStartup
-		implements IGuicePostStartup<DbStartup>, Callable<DbStartup>, Runnable
+		implements IGuicePostStartup<DbStartup>, Callable<DbStartup>, Runnable, Provider<DataSource>
 {
 	private static final Logger log = LogFactory.getLog("DbStartup");
 	/**
@@ -25,12 +26,17 @@ public class DbStartup
 	 */
 	private static final Map<String, ConnectionBaseInfo> loadedConnectionBaseInfos = new ConcurrentHashMap<>();
 	private static final Map<Class<? extends Annotation>, DataSource> loadedDataSources = new ConcurrentHashMap<>();
-	private static final List<Class<? extends Annotation>> availableDataSources = new CopyOnWriteArrayList<>();
-	private Class<? extends Annotation> annotation;
+	private static final Map<String, DataSource> jndiDataSources = new ConcurrentHashMap<>();
 
-	public DbStartup(Class<? extends Annotation> annotation)
+	private static final List<Class<? extends Annotation>> availableDataSources = new CopyOnWriteArrayList<>();
+
+	private final Class<? extends Annotation> annotation;
+	private final String jndiName;
+
+	public DbStartup(Class<? extends Annotation> annotation,String jndiName)
 	{
 		this.annotation = annotation;
+		this.jndiName = jndiName;
 	}
 
 	/**
@@ -47,6 +53,7 @@ public class DbStartup
 
 	/**
 	 * Returns the data sources associated with an annotation
+	 *
 	 * @return
 	 */
 	public static Map<Class<? extends Annotation>, DataSource> getLoadedDataSources()
@@ -62,19 +69,30 @@ public class DbStartup
 	@Override
 	public void postLoad()
 	{
-		LogFactory.getLog("DBStartup")
-		          .log(Level.CONFIG, "DB Starting - " + annotation.getSimpleName());
-		LogFactory.getLog("DataSource Startup")
-		          .log(Level.CONFIG, "DataSource Starting - " + annotation.getSimpleName());
-		try
+		log.log(Level.CONFIG, "DataSource Init - " + annotation.getSimpleName());
+
+		if (availableDataSources.contains(annotation))
 		{
-			GuiceContext.get(DataSource.class, annotation);
+			if(jndiDataSources.containsKey(jndiName))
+			{
+				getLoadedDataSources().put(annotation, jndiDataSources.get(jndiName));
+			}
+			else if(!getLoadedDataSources().containsKey(annotation))
+			{
+				try
+				{
+					ConnectionBaseInfo cbi = getLoadedConnectionBaseInfos().get(jndiName);
+					log.log(Level.CONFIG, "DataSource Starting - " + annotation.getSimpleName());
+					DataSource ds = cbi.toPooledDatasource();
+					jndiDataSources.put(jndiName, ds);
+					getLoadedDataSources().put(annotation, ds);
+				}catch(Throwable t)
+				{
+					log.log(Level.SEVERE, "Cannot start data source [" + annotation + "]", t);
+				}
+			}
 		}
-		catch (Throwable T)
-		{
-			LogFactory.getLog("DataSource Startup")
-			          .log(Level.SEVERE, "Datasource Unable to start", T);
-		}
+		log.log(Level.CONFIG, "Entity Manager/Persist Service Starting - " + annotation.getSimpleName());
 		try
 		{
 			PersistService ps = GuiceContext.get(PersistService.class, annotation);
@@ -84,15 +102,7 @@ public class DbStartup
 		}
 		catch (Throwable T)
 		{
-			LogFactory.getLog("DBStartup")
-			          .log(Level.SEVERE, "Datasource Unable to start", T);
-		}
-		try
-		{
-			notify();
-		}catch(IllegalMonitorStateException me)
-		{
-			log.log(Level.FINER, "Notify not applicable for this running execution", me);
+			log.log(Level.SEVERE, "Persist Service Unable to start/end", T);
 		}
 	}
 
@@ -118,5 +128,11 @@ public class DbStartup
 	{
 		postLoad();
 		return this;
+	}
+
+	@Override
+	public DataSource get()
+	{
+		return getLoadedDataSources().get(annotation);
 	}
 }

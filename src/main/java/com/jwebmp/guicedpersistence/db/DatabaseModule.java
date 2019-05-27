@@ -3,8 +3,6 @@ package com.jwebmp.guicedpersistence.db;
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
-import com.google.inject.persist.PersistService;
-import com.google.inject.persist.UnitOfWork;
 import com.jwebmp.guicedinjection.GuiceContext;
 import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
 import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
@@ -32,7 +30,7 @@ import static com.jwebmp.guicedpersistence.db.DbStartup.*;
  */
 public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		extends AbstractModule
-		implements IGuiceModule<J>, IGuicePostStartup<J>
+		implements IGuiceModule<J>
 {
 	/**
 	 * Field log
@@ -43,10 +41,6 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	 * A set of all annotations that this abstraction built
 	 */
 	private static final Set<Class<? extends Annotation>> boundAnnotations = new HashSet<>();
-	/**
-	 * Creates a DB Startup that will boot
-	 */
-	public boolean autoStart = true;
 
 	/**
 	 * Constructor DatabaseModule creates a new DatabaseModule instance.
@@ -69,6 +63,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	/**
 	 * Configures the module with the bindings
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void configure()
 	{
@@ -103,36 +98,20 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
 
 		ConnectionBaseInfo ds;
-		if (getLoadedConnectionBaseInfos().containsKey(getJndiMapping()))
+		DbStartup startup = new DbStartup(getBindingAnnotation(),getJndiMapping());
+		if(isDataSourceAvailable())
 		{
-			log.log(Level.CONFIG, "Re-Using Data Source for JNDI Mapping " + getJndiMapping());
-			DataSource dSource = DbStartup.getLoadedDataSources()
-			                              .get(getBindingAnnotation());
-			bind(getDataSourceKey()).toProvider(() ->dSource).in(Singleton.class);
 			DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
+			DbStartup.getAvailableDataSources()
+			         .add(getBindingAnnotation());
+			bind(getDataSourceKey()).toProvider(startup).in(Singleton.class);
 		}
-		else
-		{
-			ds = connectionBaseInfo;
-			DataSource dSource;
-			if ((dSource = ds.toPooledDatasource()) != null)
-			{
-				DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
-				DbStartup.getAvailableDataSources()
-				         .add(getBindingAnnotation());
-				DbStartup.getLoadedDataSources()
-				         .put(getBindingAnnotation(),dSource);
-				bind(getDataSourceKey()).toProvider(() ->dSource).in(Singleton.class);
-			}
-			getLoadedConnectionBaseInfos().put(getJndiMapping(), connectionBaseInfo);
-			if (isAutoStart())
-			{
-				DbStartup newPostStartup = new DbStartup(getBindingAnnotation());
-				GuiceContext.instance()
-				            .loadPostStartupServices()
-				            .add(newPostStartup);
-			}
-		}
+		getLoadedConnectionBaseInfos().put(getJndiMapping(), connectionBaseInfo);
+		GuiceContext.instance().loadPostStartupServices();
+
+		GuiceContext.getAllLoadedServices()
+		            .get(IGuicePostStartup.class)
+		            .add(startup);
 
 		DatabaseModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
@@ -268,64 +247,14 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		}
 	}
 
-	/**
-	 * Boots the persistence unit during post-load asynchronously
-	 */
-	@Override
-	public void postLoad()
-	{
-		try
-		{
-			GuiceContext.get(DataSource.class, getBindingAnnotation());
-		}
-		catch (Throwable T)
-		{
-			LogFactory.getLog("DBStartup")
-			          .log(Level.SEVERE, "Datasource Unable to start", T);
-		}
-
-		PersistService ps = GuiceContext.get(PersistService.class, getBindingAnnotation());
-		ps.start();
-		UnitOfWork ow = GuiceContext.get(UnitOfWork.class, getBindingAnnotation());
-		ow.end();
-
-		LogFactory.getLog("DBStartup")
-		          .log(Level.CONFIG, "DB Post Startup Completed - " + getBindingAnnotation().getSimpleName());
-	}
-
 	@Override
 	public Integer sortOrder()
 	{
 		return 50;
 	}
 
-	/**
-	 * Method isAutoStart returns the autoStart of this DatabaseModule object.
-	 * <p>
-	 * Creates a DB Startup that will boot
-	 *
-	 * @return the autoStart (type boolean) of this DatabaseModule object.
-	 */
-	public boolean isAutoStart()
+	public boolean isDataSourceAvailable()
 	{
-		return autoStart;
-	}
-
-	/**
-	 * Method setAutoStart sets the autoStart of this DatabaseModule object.
-	 * <p>
-	 * Creates a DB Startup that will boot
-	 *
-	 * @param autoStart
-	 * 		the autoStart of this DatabaseModule object.
-	 *
-	 * @return DatabaseModule<J>
-	 */
-	@SuppressWarnings("unchecked")
-	@NotNull
-	public J setAutoStart(boolean autoStart)
-	{
-		this.autoStart = autoStart;
-		return (J) this;
+		return true;
 	}
 }

@@ -9,6 +9,8 @@ import com.jwebmp.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.logging.Level;
@@ -79,6 +81,8 @@ public abstract class ConnectionBaseInfo
 	private String testQuery;
 
 	private String serverInstanceNameProperty;
+
+	private final Map<String, String> customProperties = new HashMap<>();
 
 	public ConnectionBaseInfo()
 	{
@@ -856,6 +860,11 @@ public abstract class ConnectionBaseInfo
 	{
 		this.persistenceUnitName = persistenceUnitName;
 		return this;
+	}
+
+	public Map<String, String> getCustomProperties()
+	{
+		return customProperties;
 	}
 
 	@JsonProperty("password")
