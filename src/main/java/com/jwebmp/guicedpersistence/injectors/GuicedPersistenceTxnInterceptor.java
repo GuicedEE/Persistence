@@ -72,20 +72,23 @@ public class GuicedPersistenceTxnInterceptor
 			EntityManager em = emProvider.get();
 			for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
 			{
-				if (handler.active(unit) && handler.transactionExists(em, unit))
-				{
-					transactionAlreadyStarted = true;
-					break;
-				}
-				else
+				if (handler.active(unit) && !handler.transactionExists(em, unit))
 				{
 					didWeStartWork.set(true);
+					break;
 				}
 			}
 		}
 		Boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 		EntityManager em = emProvider.get();
-
+		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+		{
+			if (handler.active(unit) && handler.transactionExists(em, unit))
+			{
+				transactionAlreadyStarted = true;
+				break;
+			}
+		}
 		if (!startedWork && transactionAlreadyStarted)
 		{
 			return methodInvocation.proceed();
