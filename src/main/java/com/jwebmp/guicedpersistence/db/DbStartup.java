@@ -86,7 +86,11 @@ public class DbStartup
 					DataSource ds = cbi.toPooledDatasource();
 					jndiDataSources.put(jndiName, ds);
 					getLoadedDataSources().put(annotation, ds);
-				}catch(Throwable t)
+				}catch(IllegalArgumentException t)
+				{
+					log.log(Level.CONFIG, "DataSource Illegal Argument (Perhaps this resource is already registered?) - [" + annotation + "]", t);
+				}
+				catch(Throwable t)
 				{
 					log.log(Level.SEVERE, "Cannot start data source [" + annotation + "]", t);
 				}
