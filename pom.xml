@@ -102,11 +102,17 @@
             <type>jar</type>
         </dependency>
 
-     <!--   <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
+        <dependency>
+            <groupId>com.jwebmp.thirdparty</groupId>
+            <artifactId>javax.activation</artifactId>
             <type>jar</type>
-        </dependency>-->
+        </dependency>
+
+        <!--   <dependency>
+               <groupId>javax.xml.bind</groupId>
+               <artifactId>jaxb-api</artifactId>
+               <type>jar</type>
+           </dependency>-->
 
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
@@ -127,6 +133,7 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+
     </dependencies>
 
     <scm>

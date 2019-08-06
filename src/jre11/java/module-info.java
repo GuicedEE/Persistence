@@ -8,6 +8,7 @@ module com.jwebmp.guicedpersistence {
 	exports com.jwebmp.guicedpersistence.scanners to com.jwebmp.guicedinjection,
 			io.github.classgraph,
 			com.jwebmp.entityassist;
+
 	exports com.oracle.jaxb21;
 
 	requires com.google.guice.extensions.persist;
@@ -25,7 +26,6 @@ module com.jwebmp.guicedpersistence {
 	requires aopalliance;
 
 	requires java.validation;
-	requires jakarta.activation;
 
 	requires com.google.common;
 	requires javax.inject;
