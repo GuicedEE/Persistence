@@ -92,7 +92,8 @@ public class DbStartup
 				}
 				catch(Throwable t)
 				{
-					log.log(Level.SEVERE, "Cannot start data source [" + annotation + "]", t);
+					log.log(Level.WARNING, "Cannot start data source [" + annotation + "]. This is expected for JPA without C3P0. Consider using JTA");
+					log.log(Level.FINEST, "Cannot start data source [" + annotation + "]. This is expected for JPA. Consider using JTA", t);
 				}
 			}
 		}
