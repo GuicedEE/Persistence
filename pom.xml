@@ -26,34 +26,34 @@
             <groupId>com.jwebmp.guicedee</groupId>
             <artifactId>guiced-injection</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
             <groupId>com.jwebmp.inject.extensions</groupId>
             <artifactId>guice-persist</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
-            <groupId>com.jwebmp.thirdparty</groupId>
+            <groupId>com.jwebmp.jpms.thirdparty</groupId>
             <artifactId>json</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
-            <groupId>com.jwebmp.thirdparty</groupId>
+            <groupId>com.jwebmp.jpms.thirdparty</groupId>
             <artifactId>aopalliance-core</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
-            <groupId>com.google.guava</groupId>
+            <groupId>com.jwebmp.jpms.thirdparty</groupId>
             <artifactId>guava</artifactId>
             <type>jar</type>
         </dependency>
@@ -62,70 +62,70 @@
             <groupId>com.jwebmp.inject</groupId>
             <artifactId>guice</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-        </dependency>
+            <artifactId>junit-jupiter-api</artifactId><type>jar</type>
+            </dependency>
 
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
-        </dependency>
+            <artifactId>hamcrest-all</artifactId><type>jar</type>
+            </dependency>
 
         <dependency>
             <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-        </dependency>
+            <artifactId>assertj-core</artifactId><type>jar</type>
+            </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-        </dependency>
+            <artifactId>mockito-core</artifactId><type>jar</type>
+            </dependency>
 
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
+            <scope>test</scope><type>jar</type>
+            </dependency>
 
         <dependency>
-            <groupId>com.jwebmp.thirdparty.hibernate</groupId>
+            <groupId>com.jwebmp.jpms.thirdparty.hibernate</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
-            <groupId>com.jwebmp.thirdparty</groupId>
+            <groupId>com.jwebmp.jpms.thirdparty</groupId>
             <artifactId>javax.transaction</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
-            <groupId>com.jwebmp.thirdparty</groupId>
+            <groupId>com.jwebmp.jpms.thirdparty</groupId>
             <artifactId>javax.activation</artifactId>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
-            <groupId>com.jwebmp.thirdparty</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-        </dependency>
+            <groupId>com.jwebmp.jpms.thirdparty</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId><type>jar</type>
+            </dependency>
 
         <dependency>
-            <groupId>com.jwebmp.thirdparty.hibernate</groupId>
+            <groupId>com.jwebmp.jpms.thirdparty.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <scope>test</scope>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
         <dependency>
-            <groupId>com.jwebmp.thirdparty.hibernate</groupId>
+            <groupId>com.jwebmp.jpms.thirdparty.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <scope>test</scope>
             <type>jar</type>
-        </dependency>
+            </dependency>
 
     </dependencies>
 
