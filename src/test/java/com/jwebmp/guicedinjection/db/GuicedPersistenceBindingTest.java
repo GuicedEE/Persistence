@@ -18,6 +18,7 @@ public class GuicedPersistenceBindingTest
 	public void testMe() throws InterruptedException
 	{
 		LogFactory.configureConsoleSingleLineOutput(Level.FINE);
+		System.setErr(System.out);
 		ScanResult sr = GuiceContext.instance()
 		                            .getScanResult();
 		GuiceContext.inject();
