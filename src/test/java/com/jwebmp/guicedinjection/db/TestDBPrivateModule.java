@@ -1,8 +1,8 @@
-package com.jwebmp.guicedinjection.db;
+package com.guicedee.guicedinjection.db;
 
-import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
-import com.jwebmp.guicedpersistence.db.DatabaseModule;
-import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
+import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.guicedpersistence.db.DatabaseModule;
+import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import javax.sql.DataSource;

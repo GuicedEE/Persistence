@@ -1,8 +1,8 @@
-package com.jwebmp.guicedpersistence.scanners;
+package com.guicedee.guicedpersistence.scanners;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.logger.LogFactory;
 import com.oracle.jaxb21.Persistence;
 import com.oracle.jaxb21.PersistenceContainer;
 import com.oracle.jaxb21.PersistenceUnit;

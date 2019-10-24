@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jwebmp.guicedpersistence.injectors;
+package com.guicedee.guicedpersistence.injectors;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
@@ -22,7 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.logger.LogFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

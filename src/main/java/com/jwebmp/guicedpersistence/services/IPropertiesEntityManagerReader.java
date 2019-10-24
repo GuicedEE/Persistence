@@ -1,4 +1,4 @@
-package com.jwebmp.guicedpersistence.services;
+package com.guicedee.guicedpersistence.services;
 
 import com.oracle.jaxb21.PersistenceUnit;
 

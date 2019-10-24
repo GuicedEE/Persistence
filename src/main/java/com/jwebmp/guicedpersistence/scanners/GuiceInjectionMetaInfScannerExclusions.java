@@ -1,6 +1,6 @@
-package com.jwebmp.guicedpersistence.scanners;
+package com.guicedee.guicedpersistence.scanners;
 
-import com.jwebmp.guicedinjection.interfaces.IPathContentsBlacklistScanner;
+import com.guicedee.guicedinjection.interfaces.IPathContentsBlacklistScanner;
 
 import java.util.HashSet;
 import java.util.Set;

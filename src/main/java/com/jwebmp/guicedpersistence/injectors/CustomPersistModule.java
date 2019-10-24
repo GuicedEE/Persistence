@@ -1,4 +1,4 @@
-package com.jwebmp.guicedpersistence.injectors;
+package com.guicedee.guicedpersistence.injectors;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.persist.PersistService;

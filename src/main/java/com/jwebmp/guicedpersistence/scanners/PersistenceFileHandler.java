@@ -1,7 +1,7 @@
-package com.jwebmp.guicedpersistence.scanners;
+package com.guicedee.guicedpersistence.scanners;
 
-import com.jwebmp.guicedinjection.interfaces.IFileContentsScanner;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.interfaces.IFileContentsScanner;
+import com.guicedee.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 import io.github.classgraph.ResourceList;
 

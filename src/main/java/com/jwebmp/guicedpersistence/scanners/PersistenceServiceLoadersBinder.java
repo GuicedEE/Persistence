@@ -1,17 +1,17 @@
-package com.jwebmp.guicedpersistence.scanners;
+package com.guicedee.guicedpersistence.scanners;
 
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.matcher.Matchers;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedinjection.abstractions.GuiceInjectorModule;
-import com.jwebmp.guicedinjection.interfaces.IGuiceDefaultBinder;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
-import com.jwebmp.guicedpersistence.injectors.CustomJpaLocalTxnInterceptor;
-import com.jwebmp.guicedpersistence.injectors.GuicedPersistenceTxnInterceptor;
-import com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader;
-import com.jwebmp.guicedpersistence.services.IPropertiesEntityManagerReader;
-import com.jwebmp.guicedpersistence.services.ITransactionHandler;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.abstractions.GuiceInjectorModule;
+import com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
+import com.guicedee.guicedpersistence.injectors.GuicedPersistenceTxnInterceptor;
+import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
+import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
+import com.guicedee.guicedpersistence.services.ITransactionHandler;
+import com.guicedee.guicedpersistence.injectors.CustomJpaLocalTxnInterceptor;
 
 import java.util.ServiceLoader;
 import java.util.Set;

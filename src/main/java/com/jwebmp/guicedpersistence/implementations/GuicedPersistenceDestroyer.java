@@ -1,10 +1,10 @@
-package com.jwebmp.guicedpersistence.implementations;
+package com.guicedee.guicedpersistence.implementations;
 
 import com.google.inject.persist.PersistService;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedinjection.interfaces.IGuicePreDestroy;
-import com.jwebmp.guicedpersistence.db.DatabaseModule;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.interfaces.IGuicePreDestroy;
+import com.guicedee.guicedpersistence.db.DatabaseModule;
+import com.guicedee.logger.LogFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.logging.Level;

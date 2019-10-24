@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.jwebmp.guicedpersistence.injectors;
+package com.guicedee.guicedpersistence.injectors;
 
 import com.google.inject.Key;
 import com.google.inject.persist.UnitOfWork;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.db.annotations.Transactional;
-import com.jwebmp.guicedpersistence.services.ITransactionHandler;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.db.annotations.Transactional;
+import com.guicedee.guicedpersistence.services.ITransactionHandler;
+import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
+import com.guicedee.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -30,8 +31,6 @@ import javax.persistence.EntityManager;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder.*;
 
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
@@ -70,7 +69,7 @@ public class GuicedPersistenceTxnInterceptor
 		EntityManager em = emProvider.get();
 
 		boolean transactionAlreadyStarted = false;
-		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 		{
 			if (handler.active(unit) && handler.transactionExists(em, unit))
 			{
@@ -84,7 +83,7 @@ public class GuicedPersistenceTxnInterceptor
 			return methodInvocation.proceed();
 		}
 
-		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 		{
 			if (handler.active(unit))
 			{
@@ -102,7 +101,7 @@ public class GuicedPersistenceTxnInterceptor
 		{
 			if (rollbackIfNecessary(transactional, e, unit, em))
 			{
-				for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+				for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 				{
 					if (handler.active(unit))
 					{
@@ -121,7 +120,7 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		try
 		{
-			for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+			for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 			{
 				if (handler.active(unit))
 				{
@@ -200,7 +199,7 @@ public class GuicedPersistenceTxnInterceptor
 
 				if (!commit)
 				{
-					for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+					for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 					{
 						if (handler.active(unit))
 						{

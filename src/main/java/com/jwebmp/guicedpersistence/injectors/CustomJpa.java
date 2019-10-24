@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jwebmp.guicedpersistence.injectors;
+package com.guicedee.guicedpersistence.injectors;
 
 import com.google.inject.BindingAnnotation;
 

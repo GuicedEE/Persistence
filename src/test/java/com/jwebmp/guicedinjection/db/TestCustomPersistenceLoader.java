@@ -1,4 +1,4 @@
-package com.jwebmp.guicedinjection.db;
+package com.guicedee.guicedinjection.db;
 
 import com.google.inject.BindingAnnotation;
 

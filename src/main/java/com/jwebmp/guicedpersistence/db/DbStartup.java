@@ -1,11 +1,11 @@
-package com.jwebmp.guicedpersistence.db;
+package com.guicedee.guicedpersistence.db;
 
 import com.google.inject.Provider;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
+import com.guicedee.logger.LogFactory;
 
 import javax.sql.DataSource;
 import java.lang.annotation.Annotation;
@@ -79,9 +79,9 @@ public class DbStartup
 			}
 			else if(!getLoadedDataSources().containsKey(annotation))
 			{
+				ConnectionBaseInfo cbi = getLoadedConnectionBaseInfos().get(jndiName);
 				try
 				{
-					ConnectionBaseInfo cbi = getLoadedConnectionBaseInfos().get(jndiName);
 					log.log(Level.CONFIG, "DataSource Starting - " + annotation.getSimpleName());
 					DataSource ds = cbi.toPooledDatasource();
 					jndiDataSources.put(jndiName, ds);
@@ -89,11 +89,11 @@ public class DbStartup
 				}catch(IllegalArgumentException t)
 				{
 					log.log(Level.CONFIG, "DataSource Illegal Argument (Perhaps this resource is already registered?) - [" + annotation + "]", t);
+					getLoadedDataSources().put(annotation, jndiDataSources.get(cbi.getJndiName()));
 				}
 				catch(Throwable t)
 				{
-					log.log(Level.WARNING, "Cannot start data source [" + annotation + "]. This is expected for JPA without C3P0. Consider using JTA");
-					log.log(Level.FINEST, "Cannot start data source [" + annotation + "]. This is expected for JPA. Consider using JTA", t);
+					log.log(Level.SEVERE, "Cannot start data source [" + annotation + "]", t);
 				}
 			}
 		}

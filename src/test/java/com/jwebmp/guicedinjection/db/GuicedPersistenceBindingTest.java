@@ -1,9 +1,9 @@
-package com.jwebmp.guicedinjection.db;
+package com.guicedee.guicedinjection.db;
 
 import com.google.inject.Key;
 import com.google.inject.persist.UnitOfWork;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.logger.LogFactory;
 import io.github.classgraph.ScanResult;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,6 @@ public class GuicedPersistenceBindingTest
 	public void testMe() throws InterruptedException
 	{
 		LogFactory.configureConsoleSingleLineOutput(Level.FINE);
-		System.setErr(System.out);
 		ScanResult sr = GuiceContext.instance()
 		                            .getScanResult();
 		GuiceContext.inject();

@@ -1,9 +1,9 @@
-package com.jwebmp.guicedpersistence.injectors;
+package com.guicedee.guicedpersistence.injectors;
 
 import com.google.inject.PrivateModule;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.logger.LogFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

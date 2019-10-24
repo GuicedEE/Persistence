@@ -1,7 +1,7 @@
-package com.jwebmp.guicedpersistence.db.services;
+package com.guicedee.guicedpersistence.db.services;
 
-import com.jwebmp.guicedinjection.GuiceConfig;
-import com.jwebmp.guicedinjection.interfaces.IGuiceConfigurator;
+import com.guicedee.guicedinjection.GuiceConfig;
+import com.guicedee.guicedinjection.interfaces.IGuiceConfigurator;
 
 public class PersistenceGuiceConfigurator
 		implements IGuiceConfigurator

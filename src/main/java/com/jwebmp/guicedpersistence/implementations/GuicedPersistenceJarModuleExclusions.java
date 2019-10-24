@@ -1,7 +1,7 @@
-package com.jwebmp.guicedpersistence.implementations;
+package com.guicedee.guicedpersistence.implementations;
 
-import com.jwebmp.guicedinjection.interfaces.IGuiceScanJarExclusions;
-import com.jwebmp.guicedinjection.interfaces.IGuiceScanModuleExclusions;
+import com.guicedee.guicedinjection.interfaces.IGuiceScanJarExclusions;
+import com.guicedee.guicedinjection.interfaces.IGuiceScanModuleExclusions;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -48,11 +48,11 @@ public class GuicedPersistenceJarModuleExclusions
 	public @NotNull Set<String> excludeModules()
 	{
 		Set<String> strings = new HashSet<>();
-		strings.add("com.jwebmp.guicedpersistence");
+		strings.add("com.guicedee.jpms.guicedpersistence");
 
 		strings.add("com.google.guice.extensions.persist");
-		strings.add("com.jwebmp.guicedinjection");
-		strings.add("com.jwebmp.logmaster");
+		strings.add("com.guicedee.jpms.guicedinjection");
+		strings.add("com.guicedee.jpms.logmaster");
 
 		strings.add("io.github.classgraph");
 		strings.add("java.logging");

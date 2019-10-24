@@ -1,6 +1,6 @@
-package com.jwebmp.guicedpersistence.services;
+package com.guicedee.guicedpersistence.services;
 
-import com.jwebmp.guicedpersistence.db.ConnectionBaseInfo;
+import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import java.util.Properties;

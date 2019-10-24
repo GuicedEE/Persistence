@@ -1,6 +1,6 @@
-package com.jwebmp.guicedpersistence.services;
+package com.guicedee.guicedpersistence.services;
 
-import com.jwebmp.guicedinjection.interfaces.IDefaultService;
+import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import javax.persistence.EntityManager;

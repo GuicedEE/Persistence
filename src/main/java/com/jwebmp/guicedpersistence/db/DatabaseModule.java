@@ -1,15 +1,15 @@
-package com.jwebmp.guicedpersistence.db;
+package com.guicedee.guicedpersistence.db;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.google.inject.Singleton;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedinjection.interfaces.IGuiceModule;
-import com.jwebmp.guicedinjection.interfaces.IGuicePostStartup;
-import com.jwebmp.guicedpersistence.injectors.JpaPersistPrivateModule;
-import com.jwebmp.guicedpersistence.scanners.PersistenceFileHandler;
-import com.jwebmp.guicedpersistence.services.IPropertiesEntityManagerReader;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
+import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
+import com.guicedee.guicedpersistence.injectors.JpaPersistPrivateModule;
+import com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
+import com.guicedee.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 import com.oracle.jaxb21.Property;
 
@@ -20,8 +20,6 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static com.jwebmp.guicedpersistence.db.DbStartup.*;
 
 /**
  * An abstract implementation for persistence.xml
@@ -77,7 +75,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 			return;
 		}
 		for (IPropertiesEntityManagerReader entityManagerReader : GuiceContext.instance()
-		                                                                      .getLoader(IPropertiesEntityManagerReader.class, true,
+																			  .getLoader(IPropertiesEntityManagerReader.class, true,
 		                                                                                 ServiceLoader.load(IPropertiesEntityManagerReader.class)))
 		{
 
@@ -106,7 +104,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 			         .add(getBindingAnnotation());
 			bind(getDataSourceKey()).toProvider(startup).in(Singleton.class);
 		}
-		getLoadedConnectionBaseInfos().put(getJndiMapping(), connectionBaseInfo);
+		DbStartup.getLoadedConnectionBaseInfos().put(getJndiMapping(), connectionBaseInfo);
 		GuiceContext.instance().loadPostStartupServices();
 
 		GuiceContext.getAllLoadedServices()

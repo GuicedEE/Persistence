@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.jwebmp.guicedpersistence.injectors;
+package com.guicedee.guicedpersistence.injectors;
 
 import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.persist.Transactional;
 import com.google.inject.persist.UnitOfWork;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.services.ITransactionHandler;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
+import com.guicedee.guicedpersistence.services.ITransactionHandler;
 import com.oracle.jaxb21.PersistenceUnit;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -29,8 +30,6 @@ import org.aopalliance.intercept.MethodInvocation;
 import javax.persistence.EntityManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-
-import static com.jwebmp.guicedpersistence.scanners.PersistenceServiceLoadersBinder.*;
 
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
@@ -70,7 +69,7 @@ public class CustomJpaLocalTxnInterceptor
 		Boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 
 		boolean transactionIsActive = false;
-		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 		{
 			if (handler.active(unit) && handler.transactionExists(em, unit))
 			{
@@ -84,7 +83,7 @@ public class CustomJpaLocalTxnInterceptor
 			return methodInvocation.proceed();
 		}
 
-		for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 		{
 			if (handler.active(unit))
 			{
@@ -102,7 +101,7 @@ public class CustomJpaLocalTxnInterceptor
 		{
 			if (rollbackIfNecessary(transactional, e, unit, em))
 			{
-				for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+				for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 				{
 					if (handler.active(unit))
 					{
@@ -123,7 +122,7 @@ public class CustomJpaLocalTxnInterceptor
 
 		try
 		{
-			for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+			for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 			{
 				if (handler.active(unit))
 				{
@@ -205,7 +204,7 @@ public class CustomJpaLocalTxnInterceptor
 
 				if (!commit)
 				{
-					for (ITransactionHandler handler : GuiceContext.get(ITransactionHandlerReader))
+					for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 					{
 						if (handler.active(unit))
 						{

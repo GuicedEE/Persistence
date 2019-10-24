@@ -1,11 +1,11 @@
-package com.jwebmp.guicedpersistence.db;
+package com.guicedee.guicedpersistence.db;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jwebmp.guicedinjection.GuiceContext;
-import com.jwebmp.guicedpersistence.services.IPropertiesConnectionInfoReader;
-import com.jwebmp.logger.LogFactory;
+import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
+import com.guicedee.logger.LogFactory;
 import com.oracle.jaxb21.PersistenceUnit;
 
 import javax.sql.DataSource;
@@ -93,7 +93,7 @@ public abstract class ConnectionBaseInfo
 	public ConnectionBaseInfo populateFromProperties(PersistenceUnit unit, Properties filteredProperties)
 	{
 		for (IPropertiesConnectionInfoReader connectionInfoReader : GuiceContext.instance()
-		                                                                        .getLoader(IPropertiesConnectionInfoReader.class, true, ServiceLoader.load(
+																				.getLoader(IPropertiesConnectionInfoReader.class, true, ServiceLoader.load(
 				                                                                       IPropertiesConnectionInfoReader.class)))
 		{
 			connectionInfoReader.populateConnectionBaseInfo(unit, filteredProperties, this);
