@@ -48,11 +48,11 @@ public class GuicedPersistenceJarModuleExclusions
 	public @NotNull Set<String> excludeModules()
 	{
 		Set<String> strings = new HashSet<>();
-		strings.add("com.guicedee.jpms.guicedpersistence");
+		strings.add("com.guicedee.guicedpersistence");
 
 		strings.add("com.google.guice.extensions.persist");
-		strings.add("com.guicedee.jpms.guicedinjection");
-		strings.add("com.guicedee.jpms.logmaster");
+		strings.add("com.guicedee.guicedinjection");
+		strings.add("com.guicedee.logmaster");
 
 		strings.add("io.github.classgraph");
 		strings.add("java.logging");
