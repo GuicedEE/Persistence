@@ -1,16 +1,3 @@
-import com.guicedee.guicedinjection.interfaces.*;
-import com.guicedee.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
-import com.guicedee.guicedpersistence.db.services.PersistenceGuiceConfigurator;
-import com.guicedee.guicedpersistence.implementations.GuicedPersistenceDestroyer;
-import com.guicedee.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
-import com.guicedee.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
-import com.guicedee.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
-import com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
-import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
-import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
-import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
-import com.guicedee.guicedpersistence.services.ITransactionHandler;
-
 module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.db;
 	exports com.guicedee.guicedpersistence.db.annotations;
@@ -52,22 +39,22 @@ module com.guicedee.guicedpersistence {
 	requires java.transaction;
 	requires net.bytebuddy;
 
-	uses IPropertiesConnectionInfoReader;
-	uses IPropertiesEntityManagerReader;
-	uses ITransactionHandler;
+	uses com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
+	uses com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
+	uses com.guicedee.guicedpersistence.services.ITransactionHandler;
 
-	provides IPathContentsScanner with GuiceInjectionMetaInfScanner;
-	provides IPathContentsBlacklistScanner with GuiceInjectionMetaInfScannerExclusions;
-	provides IFileContentsScanner with PersistenceFileHandler;
-	provides IGuiceConfigurator with PersistenceGuiceConfigurator;
+	provides com.guicedee.guicedinjection.interfaces.IPathContentsScanner with com.guicedee.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
+	provides com.guicedee.guicedinjection.interfaces.IPathContentsBlacklistScanner with com.guicedee.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
+	provides com.guicedee.guicedinjection.interfaces.IFileContentsScanner with com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
+	provides com.guicedee.guicedinjection.interfaces.IGuiceConfigurator with com.guicedee.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 	//provides IGuicePostStartup with AsyncPostStartup;
-	provides IGuiceDefaultBinder with PersistenceServiceLoadersBinder;
+	provides com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder with com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 
-	provides IGuiceScanModuleExclusions with GuicedPersistenceJarModuleExclusions;
-	provides IGuiceScanJarExclusions with GuicedPersistenceJarModuleExclusions;
-	provides IGuicePreDestroy with GuicedPersistenceDestroyer;
+	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleExclusions with com.guicedee.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
+	provides com.guicedee.guicedinjection.interfaces.IGuiceScanJarExclusions with com.guicedee.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
+	provides com.guicedee.guicedinjection.interfaces.IGuicePreDestroy with com.guicedee.guicedpersistence.implementations.GuicedPersistenceDestroyer;
 
-	provides IPropertiesConnectionInfoReader with JPADefaultConnectionBaseBuilder;
+	provides com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader with com.guicedee.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.guicedee.guicedpersistence.db to com.fasterxml.jackson.databind;
