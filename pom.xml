@@ -91,6 +91,13 @@
             <type>jar</type>
         </dependency>
 
+
+
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+
     </dependencies>
 
     <scm>

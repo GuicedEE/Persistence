@@ -84,8 +84,15 @@ public class DbStartup
 				{
 					log.log(Level.CONFIG, "DataSource Starting - " + annotation.getSimpleName());
 					DataSource ds = cbi.toPooledDatasource();
-					jndiDataSources.put(jndiName, ds);
-					getLoadedDataSources().put(annotation, ds);
+					if(ds == null)
+					{
+						log.log(Level.WARNING, "No Data Source Registered - [" + annotation + "]. Consider adding a pool");
+					}
+					else
+					{
+						jndiDataSources.put(jndiName, ds);
+						getLoadedDataSources().put(annotation, ds);
+					}
 				}catch(IllegalArgumentException t)
 				{
 					log.log(Level.CONFIG, "DataSource Illegal Argument (Perhaps this resource is already registered?) - [" + annotation + "]", t);
