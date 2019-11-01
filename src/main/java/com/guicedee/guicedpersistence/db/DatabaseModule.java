@@ -111,6 +111,10 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		            .get(IGuicePostStartup.class)
 		            .add(startup);
 
+		log.config("Starting Datasource - " + getBindingAnnotation() + " - " + getJndiMapping());
+		new DatasourceStartup(getBindingAnnotation(), getJndiMapping()).postLoad();
+
+
 		DatabaseModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
 		DatabaseModule.boundAnnotations.add(getBindingAnnotation());

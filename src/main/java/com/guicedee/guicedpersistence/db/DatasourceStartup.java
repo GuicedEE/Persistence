@@ -17,23 +17,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DbStartup
-		implements IGuicePostStartup<DbStartup>, Callable<DbStartup>, Runnable, Provider<DataSource>
+public class DatasourceStartup
+		implements IGuicePostStartup<DatasourceStartup>, Callable<DatasourceStartup>, Runnable, Provider<DataSource>
 {
-	private static final Logger log = LogFactory.getLog("DbStartup");
-	/**
-	 * A list of already loaded data sources identified by JNDI Name
-	 */
-	private static final Map<String, ConnectionBaseInfo> loadedConnectionBaseInfos = new ConcurrentHashMap<>();
-	private static final Map<Class<? extends Annotation>, DataSource> loadedDataSources = new ConcurrentHashMap<>();
-	private static final Map<String, DataSource> jndiDataSources = new ConcurrentHashMap<>();
-
-	private static final List<Class<? extends Annotation>> availableDataSources = new CopyOnWriteArrayList<>();
+	private static final Logger log = LogFactory.getLog("DatasourceStartup");
 
 	private final Class<? extends Annotation> annotation;
 	private final String jndiName;
 
-	public DbStartup(Class<? extends Annotation> annotation,String jndiName)
+	public DatasourceStartup(Class<? extends Annotation> annotation,String jndiName)
 	{
 		this.annotation = annotation;
 		this.jndiName = jndiName;
@@ -48,7 +40,7 @@ public class DbStartup
 	 */
 	public static Map<String, ConnectionBaseInfo> getLoadedConnectionBaseInfos()
 	{
-		return loadedConnectionBaseInfos;
+		return DbStartup.getLoadedConnectionBaseInfos();
 	}
 
 	/**
@@ -58,7 +50,7 @@ public class DbStartup
 	 */
 	public static Map<Class<? extends Annotation>, DataSource> getLoadedDataSources()
 	{
-		return loadedDataSources;
+		return DbStartup.getLoadedDataSources();
 	}
 
 	public String name()
@@ -69,29 +61,39 @@ public class DbStartup
 	@Override
 	public void postLoad()
 	{
-		log.log(Level.CONFIG, "Entity Manager/Persist Service Starting - " + annotation.getSimpleName());
-		try
+		log.log(Level.CONFIG, "DataSource Init - " + annotation.getSimpleName());
+		if (DbStartup.getAvailableDataSources().contains(annotation))
 		{
-			PersistService ps = GuiceContext.get(PersistService.class, annotation);
-			ps.start();
-			UnitOfWork ow = GuiceContext.get(UnitOfWork.class, annotation);
-			ow.end();
-		}
-		catch (Throwable T)
-		{
-			log.log(Level.SEVERE, "Persist Service Unable to start/end", T);
+			if(DbStartup.getJndiDataSources().containsKey(jndiName))
+			{
+				getLoadedDataSources().put(annotation, DbStartup.getJndiDataSources().get(jndiName));
+			}
+			else if(!getLoadedDataSources().containsKey(annotation))
+			{
+				ConnectionBaseInfo cbi = getLoadedConnectionBaseInfos().get(jndiName);
+				try
+				{
+					log.log(Level.CONFIG, "DataSource Starting - " + annotation.getSimpleName());
+					DataSource ds = cbi.toPooledDatasource();
+					DbStartup.getJndiDataSources().put(jndiName, ds);
+					getLoadedDataSources().put(annotation, ds);
+				}catch(IllegalArgumentException t)
+				{
+					log.log(Level.CONFIG, "DataSource Illegal Argument (Perhaps this resource is already registered?) - [" + annotation + "]", t);
+					getLoadedDataSources().put(annotation, DbStartup.getJndiDataSources().get(cbi.getJndiName()));
+				}
+				catch(Throwable t)
+				{
+					log.log(Level.SEVERE, "Cannot start data source [" + annotation + "]", t);
+				}
+			}
 		}
 	}
 
 	@Override
 	public Integer sortOrder()
 	{
-		return 55;
-	}
-
-	public static List<Class<? extends Annotation>> getAvailableDataSources()
-	{
-		return availableDataSources;
+		return 54;
 	}
 
 	@Override
@@ -101,14 +103,10 @@ public class DbStartup
 	}
 
 	@Override
-	public DbStartup call() throws Exception
+	public DatasourceStartup call() throws Exception
 	{
 		postLoad();
 		return this;
-	}
-
-	public static Map<String, DataSource> getJndiDataSources() {
-		return jndiDataSources;
 	}
 
 	@Override
