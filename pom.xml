@@ -44,7 +44,6 @@
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy</artifactId>
-            <type>jar</type>
         </dependency>
 
         <dependency>
