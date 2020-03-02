@@ -15,6 +15,7 @@ public class GuiceInjectionMetaInfScannerExclusions
 		strings.add("META-INF/resources");
 		strings.add("META-INF/services");
 		strings.add("META-INF/maven");
+		strings.add("META-INF/versions");
 		return strings;
 	}
 }

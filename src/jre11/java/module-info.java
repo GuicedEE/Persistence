@@ -47,11 +47,8 @@ module com.guicedee.guicedpersistence {
 	provides com.guicedee.guicedinjection.interfaces.IPathContentsBlacklistScanner with com.guicedee.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
 	provides com.guicedee.guicedinjection.interfaces.IFileContentsScanner with com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
 	provides com.guicedee.guicedinjection.interfaces.IGuiceConfigurator with com.guicedee.guicedpersistence.db.services.PersistenceGuiceConfigurator;
-	//provides IGuicePostStartup with AsyncPostStartup;
 	provides com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder with com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 
-	provides com.guicedee.guicedinjection.interfaces.IGuiceScanModuleExclusions with com.guicedee.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
-	provides com.guicedee.guicedinjection.interfaces.IGuiceScanJarExclusions with com.guicedee.guicedpersistence.implementations.GuicedPersistenceJarModuleExclusions;
 	provides com.guicedee.guicedinjection.interfaces.IGuicePreDestroy with com.guicedee.guicedpersistence.implementations.GuicedPersistenceDestroyer;
 
 	provides com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader with com.guicedee.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;

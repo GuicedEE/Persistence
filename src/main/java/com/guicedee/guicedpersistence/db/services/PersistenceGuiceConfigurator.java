@@ -9,6 +9,8 @@ public class PersistenceGuiceConfigurator
 	@Override
 	public GuiceConfig configure(GuiceConfig config)
 	{
-		return config.setPathScanning(true);
+		return config.setPathScanning(true)
+				.setExcludePaths(true)
+				;
 	}
 }
