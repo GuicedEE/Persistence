@@ -1,6 +1,5 @@
 package com.guicedee.guicedpersistence.implementations;
 
-import com.guicedee.guicedinjection.interfaces.IGuiceScanJarExclusions;
 import com.guicedee.guicedinjection.interfaces.IGuiceScanModuleExclusions;
 
 import javax.validation.constraints.NotNull;
@@ -8,40 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class GuicedPersistenceJarModuleExclusions
-		implements IGuiceScanJarExclusions<GuicedPersistenceJarModuleExclusions>,
-				           IGuiceScanModuleExclusions<GuicedPersistenceJarModuleExclusions>
+		implements IGuiceScanModuleExclusions<GuicedPersistenceJarModuleExclusions>
 {
 	public GuicedPersistenceJarModuleExclusions()
 	{
 		//No config needed
-	}
-
-	@Override
-	public @NotNull Set<String> excludeJars()
-	{
-		Set<String> strings = new HashSet<>();
-		strings.add("guiced-persistence-*");
-
-		strings.add("byte-buddy-*");
-
-		strings.add("dom4j-*");
-		strings.add("guice-persist-*");
-
-		strings.add("hibernate-core-*");
-		strings.add("hibernate-commons-annotations-*");
-		strings.add("hibernate-jcache-*");
-		strings.add("hibernate-jpamodelgen-*");
-		strings.add("hibernate-validator-*");
-
-		strings.add("javax.persistence-*");
-
-		strings.add("javax.transaction-api-*");
-		strings.add("javax.persistence-api-*");
-
-		strings.add("jaxb-api-*");
-		strings.add("jboss-logging-*");
-
-		return strings;
 	}
 
 	@Override
