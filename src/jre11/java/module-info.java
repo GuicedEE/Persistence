@@ -11,31 +11,12 @@ module com.guicedee.guicedpersistence {
 
 	requires com.google.guice.extensions.persist;
 	requires com.guicedee.guicedinjection;
-	requires com.guicedee.logmaster;
-
-	requires io.github.classgraph;
-
-	requires java.logging;
-	requires com.google.guice;
 
 	requires java.xml.bind;
 
-	requires java.naming;
-	requires aopalliance;
-
-	requires java.validation;
-
-	requires com.google.common;
-	requires javax.inject;
-
-	requires com.fasterxml.jackson.core;
-	requires com.fasterxml.jackson.annotation;
-	requires com.fasterxml.jackson.databind;
-
-	requires java.persistence;
+	requires transitive java.persistence;
 
 	requires org.json;
-	requires java.sql;
 	requires java.transaction;
 	requires net.bytebuddy;
 
