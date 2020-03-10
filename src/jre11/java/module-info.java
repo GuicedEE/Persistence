@@ -12,13 +12,13 @@ module com.guicedee.guicedpersistence {
 	requires com.google.guice.extensions.persist;
 	requires com.guicedee.guicedinjection;
 
-	requires java.xml.bind;
+	requires transitive java.xml.bind;
 
 	requires transitive java.persistence;
 
 	requires org.json;
 	requires java.transaction;
-	requires net.bytebuddy;
+	requires static net.bytebuddy;
 
 	uses com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
 	uses com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;

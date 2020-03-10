@@ -62,24 +62,6 @@
             <groupId>com.guicedee.services</groupId>
             <artifactId>hibernate-core</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jboss-transaction-api_1.2_spec</artifactId>
-                    <groupId>org.jboss.spec.javax.transaction</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>javax.activation-api</artifactId>
-                    <groupId>javax.activation</groupId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.glassfish.jaxb</groupId>
-                    <artifactId>jaxb-runtime</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-            </exclusions>
             <type>jar</type>
         </dependency>
 
@@ -89,8 +71,6 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
-
-
 
         <dependency>
             <groupId>com.guicedee.services</groupId>
