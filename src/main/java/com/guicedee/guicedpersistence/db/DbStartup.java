@@ -7,6 +7,7 @@ import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
 import com.guicedee.logger.LogFactory;
 
+import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -74,6 +75,7 @@ public class DbStartup
 		{
 			PersistService ps = GuiceContext.get(PersistService.class, annotation);
 			ps.start();
+            GuiceContext.get(EntityManager.class, annotation);
 			UnitOfWork ow = GuiceContext.get(UnitOfWork.class, annotation);
 			ow.end();
 		}

@@ -18,6 +18,9 @@ public class GuicedPersistenceBindingTest
 	public void testMe() throws InterruptedException
 	{
 		LogFactory.configureConsoleSingleLineOutput(Level.FINE);
+        //GuiceContext.instance().loadIGuiceModules().add(new TestDBPrivateModule());
+        GuiceContext.instance().loadIGuiceModules().add(new TestJTADBPrivateModule());
+
 		ScanResult sr = GuiceContext.instance()
 		                            .getScanResult();
 		GuiceContext.inject();
