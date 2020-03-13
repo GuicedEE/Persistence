@@ -36,4 +36,5 @@ module com.guicedee.guicedpersistence {
 
 	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.guicedee.guicedpersistence.db to com.fasterxml.jackson.databind;
+    opens com.guicedee.guicedpersistence.injectors to com.google.guice;
 }
