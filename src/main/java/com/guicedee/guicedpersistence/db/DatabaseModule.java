@@ -6,6 +6,8 @@ import com.google.inject.Singleton;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
+import com.guicedee.guicedpersistence.injectors.CustomJpaPersistModule;
+import com.guicedee.guicedpersistence.injectors.PersistenceServicesModule;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.guicedee.guicedpersistence.injectors.JpaPersistPrivateModule;
 import com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
@@ -92,32 +94,12 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 			connectionBaseInfo.setJndiName(getJndiMapping());
 		}
 		DatabaseModule.log.fine(getPersistenceUnitName() + " - Connection Base Info Final - " + connectionBaseInfo);
-
-		install(new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
-
-		ConnectionBaseInfo ds;
-		DbStartup startup = new DbStartup(getBindingAnnotation(),getJndiMapping());
-		if(isDataSourceAvailable())
-		{
-			DatabaseModule.log.log(Level.FINE, "Bound DataSource.class with @" + getBindingAnnotation().getSimpleName());
-			DbStartup.getAvailableDataSources()
-			         .add(getBindingAnnotation());
-			bind(getDataSourceKey()).toProvider(startup).in(Singleton.class);
-		}
-		DbStartup.getLoadedConnectionBaseInfos().put(getJndiMapping(), connectionBaseInfo);
-		GuiceContext.instance().loadPostStartupServices();
-
-		GuiceContext.getAllLoadedServices()
-		            .get(IGuicePostStartup.class)
-		            .add(startup);
-
-		log.config("Starting Datasource - " + getBindingAnnotation() + " - " + getJndiMapping());
-		new DatasourceStartup(getBindingAnnotation(), getJndiMapping()).postLoad();
-
-
-		DatabaseModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + getBindingAnnotation().getSimpleName());
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
-		DatabaseModule.boundAnnotations.add(getBindingAnnotation());
+		PersistenceServicesModule.getModules()
+		                         .put(getBindingAnnotation(),
+		                              new JpaPersistPrivateModule(getPersistenceUnitName(),jdbcProperties, getBindingAnnotation()));
+		PersistenceServicesModule.getJtaConnectionBaseInfo()
+		                         .put(getBindingAnnotation(), connectionBaseInfo);
 	}
 
 	/**

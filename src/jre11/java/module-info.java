@@ -1,3 +1,6 @@
+import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.guicedpersistence.injectors.PersistenceServicesModule;
+
 module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.db;
 	exports com.guicedee.guicedpersistence.db.annotations;
@@ -18,7 +21,7 @@ module com.guicedee.guicedpersistence {
 
 	requires org.json;
 	requires java.transaction;
-	requires static net.bytebuddy;
+	requires net.bytebuddy;
 
 	uses com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
 	uses com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
@@ -29,6 +32,7 @@ module com.guicedee.guicedpersistence {
 	provides com.guicedee.guicedinjection.interfaces.IFileContentsScanner with com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
 	provides com.guicedee.guicedinjection.interfaces.IGuiceConfigurator with com.guicedee.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 	provides com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder with com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
+	provides IGuiceModule with PersistenceServicesModule;
 
 	provides com.guicedee.guicedinjection.interfaces.IGuicePreDestroy with com.guicedee.guicedpersistence.implementations.GuicedPersistenceDestroyer;
 
