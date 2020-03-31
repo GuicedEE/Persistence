@@ -1,5 +1,5 @@
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import com.guicedee.guicedpersistence.injectors.PersistenceServicesModule;
+import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 
 module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.db;

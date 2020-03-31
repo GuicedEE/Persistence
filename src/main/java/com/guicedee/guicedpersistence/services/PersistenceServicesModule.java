@@ -1,4 +1,4 @@
-package com.guicedee.guicedpersistence.injectors;
+package com.guicedee.guicedpersistence.services;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
@@ -53,7 +53,7 @@ public class PersistenceServicesModule
 					                                                 .add(jtaConnectionBaseInfo.get(key).getPersistenceUnitName());
 				                              }
 			                              }
-			                              catch (Throwable t)
+			                              catch (Exception t)
 			                              {
 				                              log.log(Level.SEVERE, "Cannot start datasource!", t);
 			                              }

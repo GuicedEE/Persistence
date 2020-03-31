@@ -2,12 +2,9 @@ package com.guicedee.guicedpersistence.db;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
-import com.google.inject.Singleton;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
-import com.guicedee.guicedpersistence.injectors.CustomJpaPersistModule;
-import com.guicedee.guicedpersistence.injectors.PersistenceServicesModule;
+import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.guicedee.guicedpersistence.injectors.JpaPersistPrivateModule;
 import com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
@@ -80,7 +77,6 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 																			  .getLoader(IPropertiesEntityManagerReader.class, true,
 		                                                                                 ServiceLoader.load(IPropertiesEntityManagerReader.class)))
 		{
-
 			Map<String, String> output = entityManagerReader.processProperties(pu, jdbcProperties);
 			if (output != null && !output.isEmpty())
 			{
@@ -93,7 +89,8 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		{
 			connectionBaseInfo.setJndiName(getJndiMapping());
 		}
-		DatabaseModule.log.fine(getPersistenceUnitName() + " - Connection Base Info Final - " + connectionBaseInfo);
+		log.fine(String.format("%s - Connection Base Info Final - %s",
+		                                      getPersistenceUnitName(), connectionBaseInfo));
 		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
 		PersistenceServicesModule.getModules()
 		                         .put(getBindingAnnotation(),
