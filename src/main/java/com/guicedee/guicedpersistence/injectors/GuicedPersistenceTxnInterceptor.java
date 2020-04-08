@@ -65,7 +65,7 @@ public class GuicedPersistenceTxnInterceptor
 			emProvider.begin();
 			didWeStartWork.set(true);
 		}
-		Boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
+		boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 		EntityManager em = emProvider.get();
 
 		boolean transactionAlreadyStarted = false;
@@ -105,7 +105,8 @@ public class GuicedPersistenceTxnInterceptor
 				{
 					if (handler.active(unit))
 					{
-						handler.commitTransacation(false, em, unit);
+						if(handler.transactionExists(em,unit))
+							handler.commitTransacation(false, em, unit);
 					}
 				}
 			}
@@ -124,7 +125,8 @@ public class GuicedPersistenceTxnInterceptor
 			{
 				if (handler.active(unit))
 				{
-					handler.commitTransacation(false, em, unit);
+					if(handler.transactionExists(em,unit))
+						handler.commitTransacation(false, em, unit);
 				}
 			}
 		}
@@ -132,8 +134,11 @@ public class GuicedPersistenceTxnInterceptor
 		{
 			if (startedWork)
 			{
-				em.clear();
-				em.close();
+				if(em != null && em.isOpen())
+				{
+					em.clear();
+					em.close();
+				}
 				didWeStartWork.remove();
 				unitOfWork.end();
 			}
