@@ -12,15 +12,13 @@ module com.guicedee.guicedpersistence {
 
 	exports com.oracle.jaxb21;
 
-	requires com.google.guice.extensions.persist;
-	requires com.guicedee.guicedinjection;
-
+	requires transitive com.google.guice.extensions.persist;
+	requires transitive com.guicedee.guicedinjection;
 	requires transitive java.xml.bind;
-
 	requires transitive java.persistence;
+	requires transitive java.transaction;
 
 	requires org.json;
-	requires java.transaction;
 	requires net.bytebuddy;
 
 	uses com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
