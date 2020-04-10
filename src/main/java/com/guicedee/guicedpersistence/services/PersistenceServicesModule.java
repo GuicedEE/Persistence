@@ -90,4 +90,10 @@ public class PersistenceServicesModule
 	{
 		return jtaPersistenceUnits;
 	}
+
+	@Override
+	public Integer sortOrder()
+	{
+		return Integer.MAX_VALUE - 500;
+	}
 }

@@ -71,7 +71,7 @@ public class PersistenceFileHandler
 	public Map<String, ResourceList.ByteArrayConsumer> onMatch()
 	{
 		Map<String, ResourceList.ByteArrayConsumer> map = new HashMap<>();
-		PersistenceFileHandler.log.info("Loading Persistence Unit Byte Array Consumer");
+		PersistenceFileHandler.log.info("Loading Persistence File Handling - persistence.xml");
 		ResourceList.ByteArrayConsumer processor = new PersistenceByteArrayConsumer();
 		map.put("persistence.xml", processor);
 		return map;
