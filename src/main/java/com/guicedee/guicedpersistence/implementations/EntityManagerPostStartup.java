@@ -25,6 +25,6 @@ public class EntityManagerPostStartup
 	@Override
 	public Integer sortOrder()
 	{
-		return Integer.MAX_VALUE - 500;
+		return Integer.MIN_VALUE + 500;
 	}
 }
