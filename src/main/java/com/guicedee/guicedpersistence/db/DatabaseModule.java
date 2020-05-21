@@ -74,7 +74,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 			return;
 		}
 		for (IPropertiesEntityManagerReader entityManagerReader : GuiceContext.instance()
-																			  .getLoader(IPropertiesEntityManagerReader.class, true,
+		                                                                      .getLoader(IPropertiesEntityManagerReader.class, true,
 		                                                                                 ServiceLoader.load(IPropertiesEntityManagerReader.class)))
 		{
 			Map<String, String> output = entityManagerReader.processProperties(pu, jdbcProperties);
@@ -83,20 +83,27 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 				jdbcProperties.putAll(output);
 			}
 		}
-		ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
-		connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
-		if (connectionBaseInfo.getJndiName() == null)
+		try
 		{
-			connectionBaseInfo.setJndiName(getJndiMapping());
+			ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
+			connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
+			if (connectionBaseInfo.getJndiName() == null)
+			{
+				connectionBaseInfo.setJndiName(getJndiMapping());
+			}
+			log.fine(String.format("%s - Connection Base Info Final - %s",
+			                       getPersistenceUnitName(), connectionBaseInfo));
+			bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
+			PersistenceServicesModule.getModules()
+			                         .put(getBindingAnnotation(),
+			                              new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
+			PersistenceServicesModule.getJtaConnectionBaseInfo()
+			                         .put(getBindingAnnotation(), connectionBaseInfo);
 		}
-		log.fine(String.format("%s - Connection Base Info Final - %s",
-		                                      getPersistenceUnitName(), connectionBaseInfo));
-		bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
-		PersistenceServicesModule.getModules()
-		                         .put(getBindingAnnotation(),
-		                              new JpaPersistPrivateModule(getPersistenceUnitName(),jdbcProperties, getBindingAnnotation()));
-		PersistenceServicesModule.getJtaConnectionBaseInfo()
-		                         .put(getBindingAnnotation(), connectionBaseInfo);
+		catch (Throwable T)
+		{
+			log.log(Level.SEVERE, "Unable to load DB Module [" + pu.getName() + "] - " + T.getMessage(), T);
+		}
 	}
 
 	/**
@@ -180,6 +187,14 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	}
 
 	/**
+	 * The annotation which will identify this guy
+	 *
+	 * @return The annotation that will identify the given databsae
+	 */
+	@NotNull
+	protected abstract Class<? extends Annotation> getBindingAnnotation();
+
+	/**
 	 * Returns the key used for the entity manager
 	 *
 	 * @return The key for the entity manager and the annotation
@@ -189,14 +204,6 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	{
 		return Key.get(EntityManager.class, getBindingAnnotation());
 	}
-
-	/**
-	 * The annotation which will identify this guy
-	 *
-	 * @return The annotation that will identify the given databsae
-	 */
-	@NotNull
-	protected abstract Class<? extends Annotation> getBindingAnnotation();
 
 	/**
 	 * Builds a property map from a persistence unit properties file
