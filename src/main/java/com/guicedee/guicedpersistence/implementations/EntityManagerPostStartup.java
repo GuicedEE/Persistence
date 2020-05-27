@@ -1,5 +1,6 @@
 package com.guicedee.guicedpersistence.implementations;
 
+import com.google.inject.persist.PersistService;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
 import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
@@ -19,7 +20,12 @@ public class EntityManagerPostStartup
 		PersistenceServicesModule.getModules()
 		                         .entrySet()
 		                         .parallelStream()
-		                         .forEach(entry -> GuiceContext.get(EntityManager.class, entry.getKey()));
+		                         .forEach(entry ->
+		                                  {
+			                                  PersistService ps = GuiceContext.get(PersistService.class, entry.getKey());
+			                                  ps.start();
+		                                  }
+		                                 );
 	}
 
 	@Override
