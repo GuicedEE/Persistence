@@ -50,7 +50,9 @@ module com.guicedee.guicedpersistence {
 	provides IGuiceModule with PersistenceServicesModule;
 
 	provides ITransactionHandler with BTMAutomatedTransactionHandler, JPAAutomatedTransactionHandler;
-	provides IPropertiesEntityManagerReader with BTMConnectionProperties, HibernateEntityManagerProperties, SystemEnvironmentVariablesPropertiesReader;
+	provides IPropertiesEntityManagerReader with BTMConnectionProperties,
+			                                        HibernateEntityManagerProperties,
+			                                        SystemEnvironmentVariablesPropertiesReader;
 
 	provides com.guicedee.guicedinjection.interfaces.IGuicePreDestroy with com.guicedee.guicedpersistence.implementations.GuicedPersistenceDestroyer, BTMDestroyer;
 

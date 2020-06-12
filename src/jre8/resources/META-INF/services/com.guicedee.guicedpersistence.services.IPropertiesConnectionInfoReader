@@ -1,0 +1,2 @@
+com.guicedee.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder
+com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateDefaultConnectionBaseBuilder
