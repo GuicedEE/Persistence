@@ -8,7 +8,7 @@ import javax.persistence.EntityManager;
 public class JPAAutomatedTransactionHandler
 		implements com.guicedee.guicedpersistence.services.ITransactionHandler<JPAAutomatedTransactionHandler>
 {
-	private static boolean active = true;
+	private static boolean active = false;
 
 	private static final String RESOURCE_LOCAL_STRING = "RESOURCE_LOCAL";
 

@@ -30,7 +30,7 @@ public class BTMAutomatedTransactionHandler
 	/**
 	 * Field active
 	 */
-	private static boolean active = true;
+	private static boolean active = false;
 
 	public static boolean isActive()
 	{
