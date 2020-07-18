@@ -30,7 +30,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.guicedee.services.extensions</groupId>
+            <groupId>com.guicedee.services</groupId>
             <artifactId>guice-persist</artifactId>
             <type>jar</type>
         </dependency>
