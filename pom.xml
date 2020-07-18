@@ -54,11 +54,6 @@
         </dependency>
 
         <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>hibernate-validator</artifactId>
             <scope>test</scope>
@@ -68,6 +63,12 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${bytebuddy.version}</version>
         </dependency>
 
     </dependencies>
