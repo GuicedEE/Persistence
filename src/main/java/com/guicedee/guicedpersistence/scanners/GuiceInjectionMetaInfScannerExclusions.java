@@ -12,7 +12,6 @@ public class GuiceInjectionMetaInfScannerExclusions
 	public Set<String> searchFor()
 	{
 		Set<String> strings = new HashSet<>();
-		strings.add("META-INF/resources");
 		strings.add("META-INF/services");
 		strings.add("META-INF/maven");
 		strings.add("META-INF/versions");
