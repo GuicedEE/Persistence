@@ -1,12 +1,12 @@
 package com.guicedee.guicedpersistence.scanners;
 
-import com.guicedee.guicedinjection.interfaces.IPathContentsBlacklistScanner;
+import com.guicedee.guicedinjection.interfaces.IPathContentsRejectListScanner;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class GuiceInjectionMetaInfScannerExclusions
-		implements IPathContentsBlacklistScanner
+		implements IPathContentsRejectListScanner
 {
 	@Override
 	public Set<String> searchFor()
