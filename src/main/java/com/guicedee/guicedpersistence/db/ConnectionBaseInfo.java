@@ -23,6 +23,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
  * Exists to specify the default properties for connections that a jtm should implement should btm be switched for a different
  * implementation
  */
+@SuppressWarnings({"UnusedReturnValue", "JavaDoc", "unused"})
 @JsonAutoDetect(fieldVisibility = ANY,
 		getterVisibility = NONE,
 		setterVisibility = NONE)
@@ -86,7 +87,6 @@ public abstract class ConnectionBaseInfo
 
 	public ConnectionBaseInfo()
 	{
-		//No config needed
 		serverInstanceNameProperty = "Instance";
 	}
 

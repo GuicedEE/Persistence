@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Assigns entity manager properties based on progammatic changes
+ * Assigns entity manager properties based on programmatic changes
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class HibernateEntityManagerProperties

@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@SuppressWarnings("unused")
 public class PersistenceServicesModule
         extends AbstractModule
         implements IGuiceModule<PersistenceServicesModule> {
@@ -32,11 +33,9 @@ public class PersistenceServicesModule
         log.config("Building Persistence Services Module");
         jtaConnectionBaseInfo.forEach((key, value) ->
         {
-            boolean datasourceRegistered = false;
-            DataSource ds = null;
+            DataSource ds;
             try {
                 if (!jtaDataSources.containsKey(value.getJndiName())) {
-                    datasourceRegistered = true;
                     log.config("Starting datasource - " + value.getJndiName());
                     ds = value.toPooledDatasource();
                     if (ds != null) {

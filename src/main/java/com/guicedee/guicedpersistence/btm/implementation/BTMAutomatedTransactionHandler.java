@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import static com.oracle.jaxb21.PersistenceUnitTransactionType.*;
 
+@SuppressWarnings("unused")
 public class BTMAutomatedTransactionHandler
 		implements ITransactionHandler<BTMAutomatedTransactionHandler>
 {
