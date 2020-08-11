@@ -58,8 +58,11 @@ public class JPAAutomatedTransactionHandler
 	@Override
 	public boolean transactionExists(EntityManager entityManager, PersistenceUnit persistenceUnit)
 	{
+		if(active)
 		return entityManager.getTransaction()
 		                    .isActive();
+		else
+			return false;
 	}
 
 	@Override
