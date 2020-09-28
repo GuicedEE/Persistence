@@ -1,7 +1,8 @@
 package com.guicedee.guicedpersistence.services;
 
 import com.guicedee.guicedinjection.interfaces.IDefaultService;
-import com.oracle.jaxb21.PersistenceUnit;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+
 
 import javax.persistence.EntityManager;
 
@@ -19,7 +20,7 @@ public interface ITransactionHandler<J extends ITransactionHandler<J>>
 	 * @param entityManager
 	 * 		The entity manager associated
 	 */
-	void beginTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit);
+	void beginTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit);
 
 	/**
 	 * What to do when committing a transaction, always called
@@ -29,7 +30,7 @@ public interface ITransactionHandler<J extends ITransactionHandler<J>>
 	 * @param entityManager
 	 * 		The entity manager associated
 	 */
-	void commitTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit);
+	void commitTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit);
 
 
 	/**
@@ -38,9 +39,9 @@ public interface ITransactionHandler<J extends ITransactionHandler<J>>
 	 * @param timeout
 	 * 		The timeout to apply default 30
 	 * @param entityManager
-	 * 		The entity manager associated
+	 * 		The entity manager ParsedPersistenceXmlDescriptor
 	 */
-	void setTransactionTimeout(int timeout, EntityManager entityManager, PersistenceUnit persistenceUnit);
+	void setTransactionTimeout(int timeout, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit);
 
 	/**
 	 * What to do when committing a transaction, always called
@@ -50,7 +51,7 @@ public interface ITransactionHandler<J extends ITransactionHandler<J>>
 	 * @param entityManager
 	 * 		The entity manager associated
 	 */
-	void rollbackTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit);
+	void rollbackTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit);
 
 	/**
 	 * Returns the value denoting if the transaction exists or not
@@ -60,14 +61,14 @@ public interface ITransactionHandler<J extends ITransactionHandler<J>>
 	 *
 	 * @return if the transaction exists or not
 	 */
-	boolean transactionExists(EntityManager entityManager, PersistenceUnit persistenceUnit);
+	boolean transactionExists(EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit);
 
 	/**
 	 * If this handler is active or not
 	 *
 	 * @return If this handler should be active
 	 */
-	default boolean active(PersistenceUnit persistenceUnit)
+	default boolean active(ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		return true;
 	}

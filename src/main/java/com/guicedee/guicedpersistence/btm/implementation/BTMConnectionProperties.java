@@ -2,7 +2,8 @@ package com.guicedee.guicedpersistence.btm.implementation;
 
 import com.google.common.base.Strings;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
-import com.oracle.jaxb21.PersistenceUnit;
+
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -159,11 +160,11 @@ public class BTMConnectionProperties
 	}
 
 	@Override
-	public Map<String, String> processProperties(PersistenceUnit persistenceUnit, Properties properties)
+	public Map<String, String> processProperties(ParsedPersistenceXmlDescriptor persistenceUnit, Properties properties)
 	{
 		if ((persistenceUnit.getTransactionType() == null || "RESOURCE_LOCAL".equals(persistenceUnit.getTransactionType()
 		                                                                                            .toString()))
-		    && Strings.isNullOrEmpty(persistenceUnit.getJtaDataSource()))
+		    && Strings.isNullOrEmpty(persistenceUnit.getJtaDataSource().toString()))
 		{
 			Logger.getLogger("BTMConnectionProperties")
 			      .warning("Persistence Unit : " + persistenceUnit.getName() +
@@ -171,9 +172,9 @@ public class BTMConnectionProperties
 		}
 		Map<String, String> props = new HashMap<>();
 
-		if (!Strings.isNullOrEmpty(persistenceUnit.getJtaDataSource()))
+		if (!Strings.isNullOrEmpty(persistenceUnit.getJtaDataSource().toString()))
 		{
-			props.put("hibernate.connection.datasource", persistenceUnit.getJtaDataSource());
+			props.put("hibernate.connection.datasource", persistenceUnit.getJtaDataSource().toString());
 		}
 		if (sessionContext)
 		{

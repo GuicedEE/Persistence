@@ -5,13 +5,13 @@ import bitronix.tm.jndi.BitronixContext;
 import com.google.common.base.Strings;
 import com.guicedee.guicedpersistence.services.ITransactionHandler;
 import com.guicedee.logger.LogFactory;
-import com.oracle.jaxb21.PersistenceUnit;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import javax.persistence.EntityManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.oracle.jaxb21.PersistenceUnitTransactionType.*;
+import static javax.persistence.spi.PersistenceUnitTransactionType.JTA;
 
 @SuppressWarnings("unused")
 public class BTMAutomatedTransactionHandler
@@ -52,7 +52,7 @@ public class BTMAutomatedTransactionHandler
 	 * 		The entity manager associated
 	 */
 	@Override
-	public void beginTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public void beginTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		try
 		{
@@ -74,7 +74,7 @@ public class BTMAutomatedTransactionHandler
 	 * 		The entity manager associated
 	 */
 	@Override
-	public void commitTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public void commitTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		try
 		{
@@ -88,7 +88,7 @@ public class BTMAutomatedTransactionHandler
 	}
 
 	@Override
-	public void setTransactionTimeout(int timeout, EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public void setTransactionTimeout(int timeout, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		try
 		{
@@ -110,7 +110,7 @@ public class BTMAutomatedTransactionHandler
 	 * 		The entity manager associated
 	 */
 	@Override
-	public void rollbackTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public void rollbackTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		try
 		{
@@ -124,7 +124,7 @@ public class BTMAutomatedTransactionHandler
 	}
 
 	@Override
-	public boolean transactionExists(EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public boolean transactionExists(EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		try
 		{
@@ -139,7 +139,7 @@ public class BTMAutomatedTransactionHandler
 	}
 
 	@Override
-	public boolean active(PersistenceUnit persistenceUnit)
+	public boolean active(ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		if (active)
 		{
@@ -152,7 +152,7 @@ public class BTMAutomatedTransactionHandler
 			{
 				return true;
 			}
-			if (!Strings.isNullOrEmpty(persistenceUnit.getJtaDataSource()))
+			if (!Strings.isNullOrEmpty(persistenceUnit.getJtaDataSource().toString()))
 			{
 				return true;
 			}

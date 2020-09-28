@@ -7,11 +7,9 @@ import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.guicedee.guicedpersistence.injectors.JpaPersistPrivateModule;
-import com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
 import com.guicedee.logger.LogFactory;
-import com.oracle.jaxb21.PersistenceUnit;
-import com.oracle.jaxb21.Property;
-
+import com.guicedee.services.hibernate.PersistenceFileHandler;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 import javax.persistence.EntityManager;
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
@@ -66,7 +64,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	{
 		DatabaseModule.log.config("Loading Database Module - " + getClass().getName() + " - " + getPersistenceUnitName());
 		Properties jdbcProperties = getJDBCPropertiesMap();
-		PersistenceUnit pu = getPersistenceUnit();
+		ParsedPersistenceXmlDescriptor pu = getPersistenceUnit();
 		if (pu == null)
 		{
 			DatabaseModule.log
@@ -93,7 +91,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 			}
 			log.fine(String.format("%s - Connection Base Info Final - %s",
 			                       getPersistenceUnitName(), connectionBaseInfo));
-			bind(Key.get(PersistenceUnit.class, getBindingAnnotation())).toInstance(pu);
+			bind(Key.get(ParsedPersistenceXmlDescriptor.class, getBindingAnnotation())).toInstance(pu);
 			PersistenceServicesModule.getModules()
 			                         .put(getBindingAnnotation(),
 			                              new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
@@ -119,11 +117,11 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	 *
 	 * @return The given persistence unit
 	 */
-	protected PersistenceUnit getPersistenceUnit()
+	protected ParsedPersistenceXmlDescriptor getPersistenceUnit()
 	{
 		try
 		{
-			for (PersistenceUnit pu : PersistenceFileHandler.getPersistenceUnits())
+			for (ParsedPersistenceXmlDescriptor pu : PersistenceFileHandler.getPersistenceUnits())
 			{
 				if (pu.getName()
 				      .equals(getPersistenceUnitName()))
@@ -151,7 +149,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	 * @return The new connetion base info
 	 */
 	@NotNull
-	protected abstract ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties);
+	protected abstract ConnectionBaseInfo getConnectionBaseInfo(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties);
 
 	/**
 	 * A properties map of the properties from the file
@@ -162,7 +160,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	private Properties getJDBCPropertiesMap()
 	{
 		Properties jdbcProperties = new Properties();
-		PersistenceUnit pu = getPersistenceUnit();
+		ParsedPersistenceXmlDescriptor pu = getPersistenceUnit();
 		configurePersistenceUnitProperties(pu, jdbcProperties);
 		return jdbcProperties;
 	}
@@ -215,17 +213,16 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	 * @param jdbcProperties
 	 * 		The final properties map
 	 */
-	protected void configurePersistenceUnitProperties(PersistenceUnit pu, Properties jdbcProperties)
+	protected void configurePersistenceUnitProperties(ParsedPersistenceXmlDescriptor pu, Properties jdbcProperties)
 	{
 		if (pu != null)
 		{
 			try
 			{
-				for (Property props : pu.getProperties()
-				                        .getProperty())
-				{
-					jdbcProperties.put(props.getName(), props.getValue());
-
+				for (Object o : pu.getProperties().keySet()) {
+					String key = o.toString();
+					String value = pu.getProperties().get(o).toString();
+					jdbcProperties.put(key, value);
 				}
 			}
 			catch (Throwable t)

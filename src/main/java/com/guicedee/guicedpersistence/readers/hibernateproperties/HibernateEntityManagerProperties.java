@@ -1,7 +1,8 @@
 package com.guicedee.guicedpersistence.readers.hibernateproperties;
 
 
-import com.oracle.jaxb21.PersistenceUnit;
+
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -173,7 +174,7 @@ public class HibernateEntityManagerProperties
 
 	 */
 	@Override
-	public Map<String, String> processProperties(PersistenceUnit persistenceUnit, Properties incomingProperties)
+	public Map<String, String> processProperties(ParsedPersistenceXmlDescriptor persistenceUnit, Properties incomingProperties)
 	{
 		Map<String, String> props = new HashMap<>();
 		HibernateEntityManagerProperties.getDefaultProperties()
@@ -198,7 +199,7 @@ public class HibernateEntityManagerProperties
 	 *
 	 * @return Map String   ,       String
 	 */
-	public Map<String, String> process(PersistenceUnit persistenceUnit, Properties incomingProperties)
+	public Map<String, String> process(ParsedPersistenceXmlDescriptor persistenceUnit, Properties incomingProperties)
 	{
 		if (enableFetchOutsizeLadyLoad != null)
 		{

@@ -23,9 +23,10 @@ import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.guicedpersistence.services.ITransactionHandler;
 import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 import com.guicedee.logger.LogFactory;
-import com.oracle.jaxb21.PersistenceUnit;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import javax.persistence.EntityManager;
 import java.lang.reflect.Method;
@@ -58,7 +59,7 @@ public class GuicedPersistenceTxnInterceptor
 
 		CustomJpaPersistService emProvider = GuiceContext.get(Key.get(CustomJpaPersistService.class, transactional.entityManagerAnnotation()));
 		UnitOfWork unitOfWork = GuiceContext.get(Key.get(UnitOfWork.class, transactional.entityManagerAnnotation()));
-		PersistenceUnit unit = GuiceContext.get(Key.get(PersistenceUnit.class, transactional.entityManagerAnnotation()));
+		ParsedPersistenceXmlDescriptor unit = GuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, transactional.entityManagerAnnotation()));
 
 		if (!emProvider.isWorking())
 		{
@@ -183,7 +184,7 @@ public class GuicedPersistenceTxnInterceptor
 	 * 		The associated persistence unit
 	 */
 	@SuppressWarnings("Duplicates")
-	private boolean rollbackIfNecessary(Transactional transactional, Exception e, PersistenceUnit unit, EntityManager em)
+	private boolean rollbackIfNecessary(Transactional transactional, Exception e, ParsedPersistenceXmlDescriptor unit, EntityManager em)
 	{
 		boolean commit = true;
 

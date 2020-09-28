@@ -23,9 +23,10 @@ import com.google.inject.persist.UnitOfWork;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 import com.guicedee.guicedpersistence.services.ITransactionHandler;
-import com.oracle.jaxb21.PersistenceUnit;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import javax.persistence.EntityManager;
 import java.lang.annotation.Annotation;
@@ -65,7 +66,7 @@ public class CustomJpaLocalTxnInterceptor
 		Transactional transactional = readTransactionMetadata(methodInvocation);
 		EntityManager em = emProvider.get();
 		Class<? extends Annotation> providedAnnotation = emProvider.getAnnotation();
-		PersistenceUnit unit = GuiceContext.get(Key.get(PersistenceUnit.class, providedAnnotation));
+		ParsedPersistenceXmlDescriptor unit = GuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, providedAnnotation));
 		Boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 
 		boolean transactionIsActive = false;
@@ -185,7 +186,7 @@ public class CustomJpaLocalTxnInterceptor
 	 * 		The associated persistence unit
 	 */
 	@SuppressWarnings("Duplicates")
-	private boolean rollbackIfNecessary(Transactional transactional, Exception e, PersistenceUnit unit, EntityManager em)
+	private boolean rollbackIfNecessary(Transactional transactional, Exception e, ParsedPersistenceXmlDescriptor unit, EntityManager em)
 	{
 		boolean commit = true;
 		for (Class<? extends Exception> rollBackOn : transactional.rollbackOn())

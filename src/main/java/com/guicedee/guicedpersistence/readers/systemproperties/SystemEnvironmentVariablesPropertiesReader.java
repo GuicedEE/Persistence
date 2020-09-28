@@ -2,7 +2,8 @@ package com.guicedee.guicedpersistence.readers.systemproperties;
 
 import com.google.common.base.Strings;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
-import com.oracle.jaxb21.PersistenceUnit;
+
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class SystemEnvironmentVariablesPropertiesReader
 {
 
 	@Override
-	public Map<String, String> processProperties(PersistenceUnit persistenceUnit, Properties incomingProperties)
+	public Map<String, String> processProperties(ParsedPersistenceXmlDescriptor persistenceUnit, Properties incomingProperties)
 	{
 		for (String prop : incomingProperties.stringPropertyNames())
 		{

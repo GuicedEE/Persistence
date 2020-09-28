@@ -1,6 +1,8 @@
 package com.guicedee.guicedpersistence.readers.hibernateproperties;
 
-import com.oracle.jaxb21.PersistenceUnit;
+
+
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.util.Properties;
 
@@ -12,7 +14,7 @@ public class HibernateDefaultConnectionBaseBuilder
 {
 
 	@Override
-	public com.guicedee.guicedpersistence.db.ConnectionBaseInfo populateConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties, com.guicedee.guicedpersistence.db.ConnectionBaseInfo cbi)
+	public com.guicedee.guicedpersistence.db.ConnectionBaseInfo populateConnectionBaseInfo(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties, com.guicedee.guicedpersistence.db.ConnectionBaseInfo cbi)
 	{
 		for (String prop : filteredProperties.stringPropertyNames())
 		{

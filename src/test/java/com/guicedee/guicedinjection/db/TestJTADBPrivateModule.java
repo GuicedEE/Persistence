@@ -3,7 +3,8 @@ package com.guicedee.guicedinjection.db;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 import com.guicedee.guicedpersistence.db.DatabaseModule;
 import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
-import com.oracle.jaxb21.PersistenceUnit;
+
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import javax.sql.DataSource;
 import javax.validation.constraints.NotNull;
@@ -23,7 +24,7 @@ public class TestJTADBPrivateModule
 	}
 
 	@Override
-	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(PersistenceUnit unit, Properties filteredProperties)
+	protected @NotNull ConnectionBaseInfo getConnectionBaseInfo(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties)
 	{
 		return new ConnectionBaseInfo()
 		{

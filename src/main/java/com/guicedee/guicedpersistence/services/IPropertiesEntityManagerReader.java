@@ -1,6 +1,7 @@
 package com.guicedee.guicedpersistence.services;
 
-import com.oracle.jaxb21.PersistenceUnit;
+
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.util.Map;
 import java.util.Properties;
@@ -16,5 +17,5 @@ public interface IPropertiesEntityManagerReader
 	 * <p>
 	 * return properties
 	 */
-	Map<String, String> processProperties(PersistenceUnit persistenceUnit, Properties incomingProperties);
+	Map<String, String> processProperties(ParsedPersistenceXmlDescriptor persistenceUnit, Properties incomingProperties);
 }

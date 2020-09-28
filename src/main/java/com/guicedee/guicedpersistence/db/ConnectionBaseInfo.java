@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
 import com.guicedee.logger.LogFactory;
-import com.oracle.jaxb21.PersistenceUnit;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -90,7 +91,7 @@ public abstract class ConnectionBaseInfo
 		serverInstanceNameProperty = "Instance";
 	}
 
-	public ConnectionBaseInfo populateFromProperties(PersistenceUnit unit, Properties filteredProperties)
+	public ConnectionBaseInfo populateFromProperties(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties)
 	{
 		for (IPropertiesConnectionInfoReader connectionInfoReader : GuiceContext.instance()
 																				.getLoader(IPropertiesConnectionInfoReader.class, true, ServiceLoader.load(

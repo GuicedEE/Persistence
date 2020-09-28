@@ -24,7 +24,7 @@ module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.jpa;
 	exports com.guicedee.guicedpersistence.scanners;
 
-	exports com.oracle.jaxb21;
+//	exports com.oracle.jaxb21;
 
 	requires transitive com.google.guice.extensions.persist;
 	requires transitive com.guicedee.guicedinjection;
@@ -41,10 +41,6 @@ module com.guicedee.guicedpersistence {
 	uses com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 	uses com.guicedee.guicedpersistence.services.ITransactionHandler;
 
-	provides com.guicedee.guicedinjection.interfaces.IPathContentsScanner with com.guicedee.guicedpersistence.scanners.GuiceInjectionMetaInfScanner;
-	provides com.guicedee.guicedinjection.interfaces.IPathContentsRejectListScanner with com.guicedee.guicedpersistence.scanners.GuiceInjectionMetaInfScannerExclusions;
-	provides com.guicedee.guicedinjection.interfaces.IFileContentsScanner with com.guicedee.guicedpersistence.scanners.PersistenceFileHandler;
-	provides com.guicedee.guicedinjection.interfaces.IGuiceConfigurator with com.guicedee.guicedpersistence.db.services.PersistenceGuiceConfigurator;
 	provides com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder with com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 	provides com.guicedee.guicedinjection.interfaces.IGuicePostStartup with com.guicedee.guicedpersistence.implementations.EntityManagerPostStartup;
 	provides IGuiceModule with PersistenceServicesModule;
@@ -59,7 +55,7 @@ module com.guicedee.guicedpersistence {
 	provides com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader with JPADefaultConnectionBaseBuilder,
 			                                                                                 HibernateDefaultConnectionBaseBuilder;
 
-	opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
+	//opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.guicedee.guicedpersistence.db to com.fasterxml.jackson.databind;
 	opens com.guicedee.guicedpersistence.injectors to com.google.guice;
 	opens com.guicedee.guicedpersistence.implementations to com.google.guice;

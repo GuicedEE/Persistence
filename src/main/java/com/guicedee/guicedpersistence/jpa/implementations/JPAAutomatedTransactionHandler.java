@@ -1,7 +1,9 @@
 package com.guicedee.guicedpersistence.jpa.implementations;
 
 
-import com.oracle.jaxb21.PersistenceUnit;
+
+
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import javax.persistence.EntityManager;
 
@@ -28,7 +30,7 @@ public class JPAAutomatedTransactionHandler
 	}
 
 	@Override
-	public void beginTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public void beginTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		entityManager.getTransaction()
 		             .begin();
@@ -36,27 +38,27 @@ public class JPAAutomatedTransactionHandler
 	}
 
 	@Override
-	public void commitTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public void commitTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		entityManager.getTransaction()
 		             .commit();
 	}
 
 	@Override
-	public void setTransactionTimeout(int timeout, EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public void setTransactionTimeout(int timeout, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 
 	}
 
 	@Override
-	public void rollbackTransacation(boolean createNew, EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public void rollbackTransacation(boolean createNew, EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		entityManager.getTransaction()
 		             .rollback();
 	}
 
 	@Override
-	public boolean transactionExists(EntityManager entityManager, PersistenceUnit persistenceUnit)
+	public boolean transactionExists(EntityManager entityManager, ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		if(active)
 		return entityManager.getTransaction()
@@ -66,7 +68,7 @@ public class JPAAutomatedTransactionHandler
 	}
 
 	@Override
-	public boolean active(PersistenceUnit persistenceUnit)
+	public boolean active(ParsedPersistenceXmlDescriptor persistenceUnit)
 	{
 		return active && persistenceUnit.getTransactionType() == null || persistenceUnit.getTransactionType()
 		                                                                                .toString().equals(RESOURCE_LOCAL_STRING);
