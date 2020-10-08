@@ -1,0 +1,2 @@
+com.guicedee.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler
+com.guicedee.guicedpersistence.jpa.implementations.JPAAutomatedTransactionHandler
