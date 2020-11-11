@@ -22,8 +22,8 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import java.lang.annotation.Annotation;
 import java.util.Map;
 

@@ -5,7 +5,7 @@ package com.guicedee.guicedpersistence.jpa.implementations;
 
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public class JPAAutomatedTransactionHandler
 		implements com.guicedee.guicedpersistence.services.ITransactionHandler<JPAAutomatedTransactionHandler>

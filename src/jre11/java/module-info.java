@@ -34,6 +34,9 @@ module com.guicedee.guicedpersistence {
 	requires transitive org.hibernate.orm.core;
 	requires transitive tm.bitronix.btm;
 
+	requires static java.naming;
+	requires static java.sql;
+
 	requires org.json;
 	requires net.bytebuddy;
 

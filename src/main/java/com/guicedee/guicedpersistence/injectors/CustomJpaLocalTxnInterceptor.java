@@ -28,7 +28,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 

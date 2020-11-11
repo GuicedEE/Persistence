@@ -7,11 +7,11 @@ import com.guicedee.guicedpersistence.services.ITransactionHandler;
 import com.guicedee.logger.LogFactory;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static javax.persistence.spi.PersistenceUnitTransactionType.JTA;
+import static jakarta.persistence.spi.PersistenceUnitTransactionType.JTA;
 
 @SuppressWarnings("unused")
 public class BTMAutomatedTransactionHandler

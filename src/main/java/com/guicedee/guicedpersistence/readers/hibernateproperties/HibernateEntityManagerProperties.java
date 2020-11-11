@@ -243,7 +243,7 @@ public class HibernateEntityManagerProperties
 		}
 		if (persistenceValidationMode != null)
 		{
-			incomingProperties.put("javax.persistence.validation.mode", persistenceValidationMode.toString());
+			incomingProperties.put("jakarta.persistence.validation.mode", persistenceValidationMode.toString());
 		}
 		if (useValidatorAutoRegisterListeners != null)
 		{

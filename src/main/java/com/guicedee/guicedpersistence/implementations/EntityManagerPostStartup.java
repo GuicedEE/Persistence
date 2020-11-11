@@ -7,7 +7,7 @@ import com.guicedee.guicedinjection.interfaces.JobService;
 import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 import com.guicedee.logger.LogFactory;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.logging.Level;
 
 public class EntityManagerPostStartup

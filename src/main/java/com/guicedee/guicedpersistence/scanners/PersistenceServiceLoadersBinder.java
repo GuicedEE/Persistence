@@ -51,6 +51,6 @@ public class PersistenceServiceLoadersBinder
 
 		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(Transactional.class), new GuicedPersistenceTxnInterceptor());
 		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(com.google.inject.persist.Transactional.class), new CustomJpaLocalTxnInterceptor());
-		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(javax.transaction.Transactional.class), new CustomJpaLocalTxnInterceptor());
+		module.bindInterceptor(Matchers.any(), Matchers.annotatedWith(jakarta.transaction.Transactional.class), new CustomJpaLocalTxnInterceptor());
 	}
 }

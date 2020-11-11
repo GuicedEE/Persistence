@@ -4,7 +4,7 @@ import com.guicedee.guicedinjection.interfaces.IDefaultService;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * A service for managing Entity Manager Transactions automagic like
