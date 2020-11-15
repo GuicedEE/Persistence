@@ -29,7 +29,7 @@ module com.guicedee.guicedpersistence {
 	requires transitive com.google.guice.extensions.persist;
 	requires transitive com.guicedee.guicedinjection;
 	requires transitive jakarta.xml.bind;
-	requires transitive java.persistence;
+	requires transitive jakarta.persistence;
 	requires transitive java.transaction;
 	requires transitive org.hibernate.orm.core;
 	requires transitive tm.bitronix.btm;
