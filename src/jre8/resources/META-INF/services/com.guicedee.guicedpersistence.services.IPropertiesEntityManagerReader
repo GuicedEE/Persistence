@@ -1,3 +1,0 @@
-com.guicedee.guicedpersistence.btm.implementation.BTMConnectionProperties
-com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateEntityManagerProperties
-com.guicedee.guicedpersistence.readers.systemproperties.SystemEnvironmentVariablesPropertiesReader
