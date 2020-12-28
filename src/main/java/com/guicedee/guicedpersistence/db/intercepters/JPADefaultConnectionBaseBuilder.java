@@ -17,21 +17,25 @@ public class JPADefaultConnectionBaseBuilder
 		{
 			switch (prop)
 			{
+				case "javax.persistence.jdbc.url":
 				case "jakarta.persistence.jdbc.url":
 				{
 					cbi.setUrl(filteredProperties.getProperty(prop));
 					break;
 				}
+				case "javax.persistence.jdbc.user":
 				case "jakarta.persistence.jdbc.user":
 				{
 					cbi.setUsername(filteredProperties.getProperty(prop));
 					break;
 				}
+				case "javax.persistence.jdbc.password":
 				case "jakarta.persistence.jdbc.password":
 				{
 					cbi.setPassword(filteredProperties.getProperty(prop));
 					break;
 				}
+				case "javax.persistence.jdbc.driver":
 				case "jakarta.persistence.jdbc.driver":
 				{
 					cbi.setDriverClass(filteredProperties.getProperty(prop));
