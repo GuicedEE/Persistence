@@ -20,15 +20,14 @@ import com.google.inject.Key;
 import com.google.inject.persist.UnitOfWork;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
-import com.guicedee.guicedpersistence.services.ITransactionHandler;
 import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
+import com.guicedee.guicedpersistence.services.ITransactionHandler;
 import com.guicedee.logger.LogFactory;
-
+import jakarta.persistence.EntityManager;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
-import jakarta.persistence.EntityManager;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,13 +69,24 @@ public class GuicedPersistenceTxnInterceptor
 		EntityManager em = emProvider.get();
 
 		boolean transactionAlreadyStarted = false;
-		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
+        ITransactionHandler<?> handle = null;
+		//active for automation handling, enabled for interception handling
+		for (ITransactionHandler<?> handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 		{
-			if (handler.active(unit) && handler.transactionExists(em, unit))
+			if (handler.enabled(unit))
 			{
-				transactionAlreadyStarted = true;
+				handle = handler;
 				break;
 			}
+		}
+		if (handle == null) {
+			log.log(Level.WARNING, "No transaction handler found");
+			return methodInvocation.proceed();
+		}
+
+		if (handle.transactionExists(em, unit))
+		{
+			transactionAlreadyStarted = true;
 		}
 
 		if (!startedWork && transactionAlreadyStarted)
@@ -84,14 +94,9 @@ public class GuicedPersistenceTxnInterceptor
 			return methodInvocation.proceed();
 		}
 
-		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
-		{
-			if (handler.active(unit))
-			{
-				handler.setTransactionTimeout(transactional.timeout(),em,unit);
-				handler.beginTransacation(false, em, unit);
-			}
-		}
+        handle.setTransactionTimeout(transactional.timeout(),em,unit);
+        handle.beginTransacation(false, em, unit);
+        startedWork = true;
 
 		Object result;
 		try
@@ -100,16 +105,11 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		catch (Exception e)
 		{
-			if (rollbackIfNecessary(transactional, e, unit, em))
+			if (rollbackIfNecessary(transactional, e,handle, unit, em))
 			{
-				for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
-				{
-					if (handler.active(unit))
-					{
-						if(handler.transactionExists(em,unit))
-							handler.commitTransacation(false, em, unit);
-					}
-				}
+                if(handle.transactionExists(em,unit)) {
+                    handle.commitTransacation(false, em, unit);
+                }
 			}
 
 			if (startedWork)
@@ -122,14 +122,9 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		try
 		{
-			for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
-			{
-				if (handler.active(unit))
-				{
-					if(handler.transactionExists(em,unit))
-						handler.commitTransacation(false, em, unit);
-				}
-			}
+            if(handle.transactionExists(em,unit)) {
+                handle.commitTransacation(false, em, unit);
+            }
 		}
 		finally
 		{
@@ -184,7 +179,7 @@ public class GuicedPersistenceTxnInterceptor
 	 * 		The associated persistence unit
 	 */
 	@SuppressWarnings("Duplicates")
-	private boolean rollbackIfNecessary(Transactional transactional, Exception e, ParsedPersistenceXmlDescriptor unit, EntityManager em)
+	private boolean rollbackIfNecessary(Transactional transactional, Exception e,ITransactionHandler<?> handle, ParsedPersistenceXmlDescriptor unit, EntityManager em)
 	{
 		boolean commit = true;
 
@@ -205,13 +200,7 @@ public class GuicedPersistenceTxnInterceptor
 
 				if (!commit)
 				{
-					for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
-					{
-						if (handler.active(unit))
-						{
-							handler.rollbackTransacation(false, em, unit);
-						}
-					}
+                    handle.rollbackTransacation(false, em, unit);
 				}
 				break;
 			}

@@ -7,6 +7,7 @@ import com.guicedee.guicedpersistence.jpa.implementations.JPAAutomatedTransactio
 import com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateDefaultConnectionBaseBuilder;
 import com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateEntityManagerProperties;
 import com.guicedee.guicedpersistence.readers.systemproperties.SystemEnvironmentVariablesPropertiesReader;
+import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.guicedee.guicedpersistence.services.ITransactionHandler;
 import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
@@ -44,9 +45,8 @@ module com.guicedee.guicedpersistence {
 	uses com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 	uses com.guicedee.guicedpersistence.services.ITransactionHandler;
 
-	provides com.guicedee.guicedinjection.interfaces.IGuiceDefaultBinder with com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 	provides com.guicedee.guicedinjection.interfaces.IGuicePostStartup with com.guicedee.guicedpersistence.implementations.EntityManagerPostStartup;
-	provides IGuiceModule with PersistenceServicesModule;
+	provides IGuiceModule with PersistenceServicesModule, PersistenceServiceLoadersBinder;
 
 	provides ITransactionHandler with BTMAutomatedTransactionHandler, JPAAutomatedTransactionHandler;
 	provides IPropertiesEntityManagerReader with BTMConnectionProperties,

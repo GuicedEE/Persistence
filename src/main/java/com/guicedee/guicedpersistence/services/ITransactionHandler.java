@@ -12,7 +12,9 @@ import jakarta.persistence.EntityManager;
 public interface ITransactionHandler<J extends ITransactionHandler<J>>
 		extends IDefaultService<J>
 {
-	/**
+    boolean enabled(ParsedPersistenceXmlDescriptor persistenceUnit);
+
+    /**
 	 * What to do when beginning a transaction, always called
 	 *
 	 * @param createNew
