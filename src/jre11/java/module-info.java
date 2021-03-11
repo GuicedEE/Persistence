@@ -25,8 +25,6 @@ module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.jpa;
 	exports com.guicedee.guicedpersistence.scanners;
 
-//	exports com.oracle.jaxb21;
-
 	requires transitive com.google.guice.extensions.persist;
 	requires transitive com.guicedee.guicedinjection;
 	requires transitive jakarta.xml.bind;
@@ -35,11 +33,10 @@ module com.guicedee.guicedpersistence {
 	requires transitive org.hibernate.orm.core;
 	requires transitive tm.bitronix.btm;
 
-	requires static java.naming;
-	requires static java.sql;
+	requires java.naming;
+	requires transitive java.sql;
 
 	requires org.json;
-	requires net.bytebuddy;
 
 	uses com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
 	uses com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
