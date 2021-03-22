@@ -25,6 +25,8 @@ module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.jpa;
 	exports com.guicedee.guicedpersistence.scanners;
 
+	exports com.guicedee.guicedpersistence.implementations;
+
 	requires transitive com.google.guice.extensions.persist;
 	requires transitive com.guicedee.guicedinjection;
 	requires transitive jakarta.xml.bind;
