@@ -47,11 +47,6 @@ public class CustomJpaLocalTxnInterceptor
 	 */
 	@Inject
 	private CustomJpaPersistService emProvider = null;
-	/**
-	 * The unit of work we are referencing
-	 */
-	@Inject
-	private UnitOfWork unitOfWork = null;
 
 	@Override
 	@SuppressWarnings("Duplicates")
@@ -66,8 +61,15 @@ public class CustomJpaLocalTxnInterceptor
 		Transactional transactional = readTransactionMetadata(methodInvocation);
 		EntityManager em = emProvider.get();
 		Class<? extends Annotation> providedAnnotation = emProvider.getAnnotation();
+		UnitOfWork unitOfWork = GuiceContext.get(Key.get(UnitOfWork.class, emProvider.getAnnotation()));
+		CustomJpaPersistService persistService =GuiceContext.get(Key.get(CustomJpaPersistService.class, emProvider.getAnnotation()));
+
 		ParsedPersistenceXmlDescriptor unit = GuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, providedAnnotation));
 		Boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
+		if (startedWork) {
+			persistService.start();
+			unitOfWork.begin();
+		}
 
 		boolean transactionIsActive = false;
 		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
@@ -115,6 +117,7 @@ public class CustomJpaLocalTxnInterceptor
 			{
 				didWeStartWork.remove();
 				unitOfWork.end();
+				persistService.end();
 			}
 
 			throw e;
@@ -135,10 +138,9 @@ public class CustomJpaLocalTxnInterceptor
 		{
 			if (startedWork)
 			{
-				em.clear();
-				em.close();
 				didWeStartWork.remove();
 				unitOfWork.end();
+				persistService.end();
 			}
 		}
 

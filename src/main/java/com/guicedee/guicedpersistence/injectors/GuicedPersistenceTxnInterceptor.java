@@ -31,7 +31,7 @@ import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import com.google.inject.persist.PersistService;
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
