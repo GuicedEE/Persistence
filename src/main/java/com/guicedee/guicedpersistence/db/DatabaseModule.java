@@ -92,9 +92,10 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 			log.fine(String.format("%s - Connection Base Info Final - %s",
 			                       getPersistenceUnitName(), connectionBaseInfo));
 			bind(Key.get(ParsedPersistenceXmlDescriptor.class, getBindingAnnotation())).toInstance(pu);
+			JpaPersistPrivateModule jpaModule = new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation());
 			PersistenceServicesModule.getModules()
 			                         .put(getBindingAnnotation(),
-			                              new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation()));
+					                         jpaModule);
 			PersistenceServicesModule.getJtaConnectionBaseInfo()
 			                         .put(getBindingAnnotation(), connectionBaseInfo);
 		}

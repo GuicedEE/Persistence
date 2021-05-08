@@ -3,6 +3,7 @@ package com.guicedee.guicedpersistence.db;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
 import com.guicedee.logger.LogFactory;
@@ -683,6 +684,10 @@ public abstract class ConnectionBaseInfo
 	 */
 	public ConnectionBaseInfo setUsername(String username)
 	{
+		if (Strings.isNullOrEmpty(username))
+		{
+			username = null;
+		}
 		this.username = username;
 		return this;
 	}
@@ -704,6 +709,10 @@ public abstract class ConnectionBaseInfo
 	 */
 	public ConnectionBaseInfo setPassword(String password)
 	{
+		if (Strings.isNullOrEmpty(password))
+		{
+			password = null;
+		}
 		this.password = password;
 		return this;
 	}

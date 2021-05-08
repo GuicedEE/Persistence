@@ -1,5 +1,6 @@
 package com.guicedee.guicedpersistence.implementations;
 
+import com.google.inject.Module;
 import com.google.inject.persist.PersistService;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
@@ -8,77 +9,105 @@ import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 import com.guicedee.logger.LogFactory;
 
 import jakarta.persistence.EntityManager;
+
+import java.lang.annotation.Annotation;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class EntityManagerPostStartup
 		implements IGuicePostStartup<EntityManagerPostStartup>
 {
 	private static boolean blocking = true;
 	private static boolean startPersistenceServices = true;
-
+	
+	private static final Logger log = LogFactory.getLog(".persistence.EntityManagerPostStartup");
+	
 	@Override
 	public void postLoad()
 	{
-		if(startPersistenceServices) {
+		if (startPersistenceServices)
+		{
 			LogFactory.getLog(EntityManagerPostStartup.class)
-					.log(Level.CONFIG, "Starting up Entity Managers");
-			if(blocking) {
-				PersistenceServicesModule.getModules()
-						.entrySet()
-						.parallelStream()
-						.forEach(entry ->
-								{
-									PersistService ps = GuiceContext.get(PersistService.class, entry.getKey());
-									ps.start();
-									LogFactory.getLog(EntityManagerPostStartup.class)
-											.log(Level.CONFIG, "Started " + entry);
-								}
-						);
-			}else
+			          .log(Level.CONFIG, "Starting up Entity Managers");
+			if (blocking)
 			{
-				PersistenceServicesModule.getModules().forEach((key,value)->{
-					JobService.getInstance().addJob("DatabaseStartups",()->{
-						PersistService ps = GuiceContext.get(PersistService.class, key);
+				List<Map.Entry<Class<? extends Annotation>, Module>> collect = new ArrayList<>(PersistenceServicesModule.getModules()
+				                                                                                                        .entrySet());
+				collect.parallelStream().forEach(entry -> {
+					log.log(Level.CONFIG, "Starting " + entry);
+					try
+					{
+						PersistService ps = GuiceContext.get(PersistService.class, entry.getKey());
 						ps.start();
-						LogFactory.getLog(EntityManagerPostStartup.class)
-								.log(Level.CONFIG, "Started " + key);
-					});
+						log.log(Level.CONFIG, "Started " + entry);
+					}
+					catch (Throwable t)
+					{
+						log.log(Level.SEVERE, "Fatal exception in starting Persistence Service - " + entry.getKey(), t);
+					}
 				});
+			}
+			else
+			{
+				PersistenceServicesModule.getModules()
+				                         .forEach((key, value) -> {
+					                         log.log(Level.CONFIG, "Starting Async " + key);
+					                         JobService.getInstance()
+					                                   .addJob("DatabaseStartups", () -> {
+						                                   try
+						                                   {
+							                                   PersistService ps = GuiceContext.get(PersistService.class, key);
+							                                   ps.start();
+							                                   log.log(Level.CONFIG, "Started " + key);
+						                                   }
+						                                   catch (Throwable t)
+						                                   {
+							                                   log.log(Level.SEVERE, "Fatal exception in starting Persistence Service - " + key, t);
+						                                   }
+					                                   });
+				                         });
 			}
 		}
 	}
-
+	
 	/**
 	 * If loading the entity managers should block the load
-	 *
 	 */
-	public static boolean isBlocking() {
+	public static boolean isBlocking()
+	{
 		return blocking;
 	}
-
+	
 	/**
 	 * If the service starting should block the load sequence
+	 *
 	 * @param blocking
 	 */
-	public static void setBlocking(boolean blocking) {
+	public static void setBlocking(boolean blocking)
+	{
 		EntityManagerPostStartup.blocking = blocking;
 	}
-
+	
 	/**
 	 * If the persistence services should start on boot, or when you want them too
 	 */
-	public static boolean isStartPersistenceServices() {
+	public static boolean isStartPersistenceServices()
+	{
 		return startPersistenceServices;
 	}
-
+	
 	/**
 	 * If the persistence services should start on boot, or when you want them too
+	 *
 	 * @param startPersistenceServices default true
 	 */
-	public static void setStartPersistenceServices(boolean startPersistenceServices) {
+	public static void setStartPersistenceServices(boolean startPersistenceServices)
+	{
 		EntityManagerPostStartup.startPersistenceServices = startPersistenceServices;
 	}
-
+	
 	@Override
 	public Integer sortOrder()
 	{

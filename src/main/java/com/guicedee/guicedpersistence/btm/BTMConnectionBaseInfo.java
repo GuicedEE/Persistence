@@ -131,8 +131,14 @@ public class BTMConnectionBaseInfo
 		{
 			processNonXa(this, pds);
 		}
-
-		pds.init();
+		
+		try
+		{
+			pds.init();
+		}catch (IllegalStateException ise)
+		{
+			//expected for duplicates
+		}
 
 		return pds;
 	}
@@ -223,6 +229,11 @@ public class BTMConnectionBaseInfo
 			pds.getDriverProperties()
 			   .setProperty("password", cbi.getPassword());
 		}
+		/*if (cbi.getInstanceName() != null)
+		{
+			pds.getDriverProperties()
+			   .setProperty(cbi.getServerInstanceNameProperty(), cbi.getInstanceName());
+		}*/
 		getCustomProperties().forEach((a,b) -> pds.getDriverProperties()
 		                                          .setProperty(a, b));
 		return pds;

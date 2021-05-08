@@ -145,7 +145,7 @@ public class CustomJpaPersistService
 	 * Starts up the Entity Manager Factory
 	 */
 	@Override
-	public synchronized void start()
+	public void start()
 	{
 		if (emFactory != null && emFactory.isOpen())
 		{
@@ -175,7 +175,7 @@ public class CustomJpaPersistService
 	 * Stops the Entity Manager Factory
 	 */
 	@Override
-	public synchronized void stop()
+	public void stop()
 	{
 		if (emFactory == null || !emFactory.isOpen())
 		{
