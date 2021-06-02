@@ -1,1 +1,2 @@
 com.guicedee.guicedpersistence.services.PersistenceServicesModule
+com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder
