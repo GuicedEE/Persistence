@@ -3,6 +3,7 @@ import com.guicedee.guicedpersistence.btm.implementation.BTMAutomatedTransaction
 import com.guicedee.guicedpersistence.btm.implementation.BTMConnectionProperties;
 import com.guicedee.guicedpersistence.btm.implementation.BTMDestroyer;
 import com.guicedee.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
+import com.guicedee.guicedpersistence.implementations.*;
 import com.guicedee.guicedpersistence.jpa.implementations.JPAAutomatedTransactionHandler;
 import com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateDefaultConnectionBaseBuilder;
 import com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateEntityManagerProperties;
@@ -32,6 +33,7 @@ module com.guicedee.guicedpersistence {
 	requires transitive jakarta.xml.bind;
 	requires transitive jakarta.persistence;
 	requires transitive java.transaction;
+	
 	requires transitive org.hibernate.orm.core;
 	requires transitive tm.bitronix.btm;
 
@@ -56,9 +58,15 @@ module com.guicedee.guicedpersistence {
 
 	provides com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader with JPADefaultConnectionBaseBuilder,
 			                                                                                 HibernateDefaultConnectionBaseBuilder;
-
+	
+	//provides com.guicedee.guicedinjection.interfaces.IFileContentsScanner with PersistenceFileHandler;
+	//provides com.guicedee.guicedinjection.interfaces.IGuiceConfigurator with PersistenceGuiceConfigurator;
+//	provides com.guicedee.guicedinjection.interfaces.IPathContentsRejectListScanner with GuiceInjectionMetaInfScannerExclusions;
+	//provides com.guicedee.guicedinjection.interfaces.IPathContentsScanner with GuiceInjectionMetaInfScanner;
+	
+	
 	//opens com.oracle.jaxb21 to com.fasterxml.jackson.databind;
 	opens com.guicedee.guicedpersistence.db to com.fasterxml.jackson.databind;
 	opens com.guicedee.guicedpersistence.injectors to com.google.guice;
-	opens com.guicedee.guicedpersistence.implementations to com.google.guice;
+	opens com.guicedee.guicedpersistence.implementations to com.google.guice,com.fasterxml.jackson.databind;
 }

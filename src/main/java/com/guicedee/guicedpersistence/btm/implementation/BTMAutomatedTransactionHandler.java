@@ -69,7 +69,8 @@ public class BTMAutomatedTransactionHandler
         try {
             BitronixTransactionManager userTransaction = (BitronixTransactionManager) bc.lookup(UserTransactionReference);
             userTransaction.begin();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             BTMAutomatedTransactionHandler.log.log(Level.WARNING, "Unable to being a transaction for BTM", e);
         }
     }
