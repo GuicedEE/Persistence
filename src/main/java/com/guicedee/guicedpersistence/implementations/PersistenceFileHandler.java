@@ -34,7 +34,7 @@ public class PersistenceFileHandler
 		List<ParsedPersistenceXmlDescriptor> parsedPersistenceXmlDescriptors = PersistenceXmlParser.locatePersistenceUnits(new HashMap());
 		for (ParsedPersistenceXmlDescriptor parsedPersistenceXmlDescriptor : parsedPersistenceXmlDescriptors)
 		{
-			System.out.println("Parsed XML Descriptor - " + parsedPersistenceXmlDescriptor.getName());
+			log.config("Parsed XML Descriptor - " + parsedPersistenceXmlDescriptor.getName());
 		}
 		persistenceUnits.addAll(parsedPersistenceXmlDescriptors.stream()
 		                                                       .filter(a -> !"true".equals(a.getProperties()
