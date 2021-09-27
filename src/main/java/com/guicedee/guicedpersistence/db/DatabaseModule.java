@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import com.guicedee.guicedpersistence.implementations.PersistenceFileHandler;
+import org.hibernate.boot.archive.internal.PersistenceFileHandler;
 import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.guicedee.guicedpersistence.injectors.JpaPersistPrivateModule;
