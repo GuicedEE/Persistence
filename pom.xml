@@ -5,8 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.guicedee</groupId>
-        <artifactId>guicedee-projects</artifactId>
+        <artifactId>dev-kit</artifactId>
         <version>0.0.0_0-SNAPSHOT</version>
+        <relativePath>../../../</relativePath>
     </parent>
 
     <groupId>com.guicedee.persistence</groupId>
@@ -20,7 +21,10 @@
         Requires JDK 8
     </description>
     <url>https://github.com/GedMarc/GuicedPersistence</url>
-
+    <properties>
+        <ignore.moditect>true</ignore.moditect>
+        <flatten.pom>false</flatten.pom>
+    </properties>
     <dependencies>
 
         <dependency>
