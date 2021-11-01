@@ -13,7 +13,7 @@
     <artifactId>guiced-persistence</artifactId>
 
     <packaging>jar</packaging>
-
+    <version>0.0.0_0-SNAPSHOT</version>
     <name>Guiced Persistence</name>
     <description>A complete JPA 2.1 implementation for Standalone or EE Implementation. Enables Multiple Persistence units
         with full JTA Support using BTM. Perfect for Guice implementations, test suites, and Guice enabled Web Applications or EAR Projects.
