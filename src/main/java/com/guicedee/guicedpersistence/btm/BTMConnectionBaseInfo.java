@@ -42,10 +42,6 @@ public class BTMConnectionBaseInfo
 	public DataSource toPooledDatasource()
 	{
 		PoolingDataSource pds = new PoolingDataSource();
-		if (!isXa())
-		{
-			setAllowLocalTransactions(true);
-		}
 		if (getTransactionIsolation() != null)
 		{
 			pds.setIsolationLevel(getTransactionIsolation());
@@ -121,7 +117,6 @@ public class BTMConnectionBaseInfo
 		{
 			throw new UnsupportedOperationException("Please make sure to specify a driver class to use in the persistence.xml file or manually in this configuration " + "object.");
 		}
-		pds.setClassName(getDriverClass());
 
 		if (isXa())
 		{
@@ -156,6 +151,11 @@ public class BTMConnectionBaseInfo
 	@SuppressWarnings("UnusedReturnValue")
 	private PoolingDataSource processXa(ConnectionBaseInfo cbi, PoolingDataSource pds)
 	{
+		if (cbi.getClassName() != null)
+		{
+			pds.setClassName(cbi.getClassName());
+		}
+
 		if (cbi.getDatabaseName() != null)
 		{
 			pds.getDriverProperties()
@@ -209,6 +209,7 @@ public class BTMConnectionBaseInfo
 			pds.setIsolationLevel(cbi.getTransactionIsolation());
 		}
 		pds.setClassName("bitronix.tm.resource.jdbc.lrc.LrcXADataSource");
+		
 		if (cbi.getDriverClass() != null)
 		{
 			pds.getDriverProperties()

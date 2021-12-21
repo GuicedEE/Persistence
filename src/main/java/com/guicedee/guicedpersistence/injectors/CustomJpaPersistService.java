@@ -16,21 +16,16 @@
 
 package com.guicedee.guicedpersistence.injectors;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.persist.PersistService;
-import com.google.inject.persist.UnitOfWork;
-import com.guicedee.logger.LogFactory;
+import com.google.common.annotations.*;
+import com.google.common.base.*;
+import com.google.inject.*;
+import com.google.inject.persist.*;
+import com.guicedee.logger.*;
+import jakarta.persistence.*;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import java.lang.annotation.*;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.*;
+import java.util.logging.*;
 
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
@@ -42,7 +37,7 @@ public class CustomJpaPersistService
 	 * Field log
 	 */
 	private static final Logger log = LogFactory.getLog("PersistService");
-
+	
 	/**
 	 * Thread Local instances of Entity Managers
 	 */
@@ -63,12 +58,12 @@ public class CustomJpaPersistService
 	 * The service em factory
 	 */
 	private volatile EntityManagerFactory emFactory;
-
+	
 	public CustomJpaPersistService()
 	{
 		//No configuration
 	}
-
+	
 	public CustomJpaPersistService(
 			String persistenceUnitName, Map<?, ?> persistenceProperties, Class<? extends Annotation> annotation)
 	{
@@ -76,7 +71,7 @@ public class CustomJpaPersistService
 		this.persistenceProperties = persistenceProperties;
 		this.annotation = annotation;
 	}
-
+	
 	@Override
 	public EntityManager get()
 	{
@@ -84,30 +79,30 @@ public class CustomJpaPersistService
 		{
 			begin();
 		}
-
+		
 		EntityManager em = entityManager.get();
 		Preconditions.checkState(
 				null != em,
 				"Requested EntityManager outside work unit. "
 				+ "Try calling UnitOfWork.begin() first, or use a PersistFilter if you "
 				+ "are inside a servlet environment.");
-
+		
 		em.setProperty("annotation", annotation);
 		return em;
 	}
-
+	
 	public boolean isWorking()
 	{
 		return entityManager.get() != null;
 	}
-
+	
 	@Override
 	public void begin()
 	{
 		if (entityManager.get() != null)
 		{
-			log.warning("Work already begun on this thread. Looks like you have called UnitOfWork.begin() twice"
-			            + " without a balancing call to end() in between.");
+			log.finer("Work already begun on this thread. Looks like you have called UnitOfWork.begin() twice"
+			         + " without a balancing call to end() in between.");
 		}
 		if (emFactory == null)
 		{
@@ -119,18 +114,18 @@ public class CustomJpaPersistService
 		}
 		entityManager.set(emFactory.createEntityManager());
 	}
-
+	
 	@Override
 	public void end()
 	{
 		EntityManager em = entityManager.get();
-
+		
 		// Let's not penalize users for calling end() multiple times.
 		if (null == em)
 		{
 			return;
 		}
-
+		
 		try
 		{
 			em.close();
@@ -140,7 +135,7 @@ public class CustomJpaPersistService
 			entityManager.remove();
 		}
 	}
-
+	
 	/**
 	 * Starts up the Entity Manager Factory
 	 */
@@ -170,7 +165,7 @@ public class CustomJpaPersistService
 			CustomJpaPersistService.log.log(Level.SEVERE, "Unable to get entity factory : " + T.getMessage(), T);
 		}
 	}
-
+	
 	/**
 	 * Stops the Entity Manager Factory
 	 */
@@ -184,90 +179,90 @@ public class CustomJpaPersistService
 		emFactory.close();
 		log.finer("Entity Manager Factory for " + persistenceUnitName + " has been closed on the current thread");
 	}
-
+	
 	@VisibleForTesting
 	synchronized void start(EntityManagerFactory emFactory)
 	{
 		this.emFactory = emFactory;
 	}
-
+	
 	public String getPersistenceUnitName()
 	{
 		return persistenceUnitName;
 	}
-
+	
 	public void setPersistenceUnitName(String persistenceUnitName)
 	{
 		this.persistenceUnitName = persistenceUnitName;
 	}
-
+	
 	public Map<?, ?> getPersistenceProperties()
 	{
 		return persistenceProperties;
 	}
-
+	
 	public void setPersistenceProperties(Map<?, ?> persistenceProperties)
 	{
 		this.persistenceProperties = persistenceProperties;
 	}
-
+	
 	public Class<? extends Annotation> getAnnotation()
 	{
 		return annotation;
 	}
-
+	
 	public void setAnnotation(Class<? extends Annotation> annotation)
 	{
 		this.annotation = annotation;
 	}
-
+	
 	public EntityManagerFactory getEmFactory()
 	{
 		return emFactory;
 	}
-
+	
 	public void setEmFactory(EntityManagerFactory emFactory)
 	{
 		this.emFactory = emFactory;
 	}
-
+	
 	@Documented
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.PARAMETER)
 	private @interface Nullable {}
-
+	
 	public static class EntityManagerFactoryProvider
 			implements Provider<EntityManagerFactory>
 	{
 		private CustomJpaPersistService emProvider;
-
+		
 		public EntityManagerFactoryProvider()
 		{
 		}
-
+		
 		@Inject
 		public EntityManagerFactoryProvider(CustomJpaPersistService emProvider)
 		{
 			this.emProvider = emProvider;
 		}
-
+		
 		public CustomJpaPersistService getEmProvider()
 		{
 			return emProvider;
 		}
-
+		
 		public void setEmProvider(CustomJpaPersistService emProvider)
 		{
 			this.emProvider = emProvider;
 		}
-
+		
 		@Override
 		public EntityManagerFactory get()
 		{
 			assert null != emProvider.emFactory;
 			return emProvider.emFactory;
 		}
-
-
+		
+		
 	}
 }

@@ -1,20 +1,15 @@
 package com.guicedee.guicedpersistence.implementations;
 
 import com.google.inject.Module;
-import com.google.inject.persist.PersistService;
-import com.guicedee.guicedinjection.GuiceContext;
-import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
-import com.guicedee.guicedinjection.interfaces.JobService;
-import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
-import com.guicedee.logger.LogFactory;
+import com.google.inject.persist.*;
+import com.guicedee.guicedinjection.*;
+import com.guicedee.guicedinjection.interfaces.*;
+import com.guicedee.guicedpersistence.services.*;
+import com.guicedee.logger.*;
 
-import jakarta.persistence.EntityManager;
-
-import java.lang.annotation.Annotation;
+import java.lang.annotation.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import java.util.logging.*;
 
 public class EntityManagerPostStartup
 		implements IGuicePostStartup<EntityManagerPostStartup>
@@ -35,39 +30,42 @@ public class EntityManagerPostStartup
 			{
 				List<Map.Entry<Class<? extends Annotation>, Module>> collect = new ArrayList<>(PersistenceServicesModule.getModules()
 				                                                                                                        .entrySet());
-				collect.parallelStream().forEach(entry -> {
-					log.log(Level.CONFIG, "Starting " + entry);
-					try
-					{
-						PersistService ps = GuiceContext.get(PersistService.class, entry.getKey());
-						ps.start();
-						log.log(Level.CONFIG, "Started " + entry);
-					}
-					catch (Throwable t)
-					{
-						log.log(Level.SEVERE, "Fatal exception in starting Persistence Service - " + entry.getKey(), t);
-					}
-				});
+				if (!collect.isEmpty())
+				{
+					Map.Entry<Class<? extends Annotation>, Module> entry = collect.stream()
+					                                                              .findFirst()
+					                                                              .get();
+					PersistService ps = GuiceContext.get(PersistService.class, entry.getKey());
+					ps.start();
+					log.log(Level.CONFIG, "Started " + entry);
+				}
 			}
 			else
 			{
-				PersistenceServicesModule.getModules()
-				                         .forEach((key, value) -> {
-					                         log.log(Level.CONFIG, "Starting Async " + key);
-					                         JobService.getInstance()
-					                                   .addJob("DatabaseStartups", () -> {
-						                                   try
-						                                   {
-							                                   PersistService ps = GuiceContext.get(PersistService.class, key);
-							                                   ps.start();
-							                                   log.log(Level.CONFIG, "Started " + key);
-						                                   }
-						                                   catch (Throwable t)
-						                                   {
-							                                   log.log(Level.SEVERE, "Fatal exception in starting Persistence Service - " + key, t);
-						                                   }
-					                                   });
-				                         });
+				List<Map.Entry<Class<? extends Annotation>, Module>> collect = new ArrayList<>(PersistenceServicesModule.getModules()
+				                                                                                                        .entrySet());
+				if (!collect.isEmpty())
+				{
+					Map.Entry<Class<? extends Annotation>, Module> entry = collect.stream()
+					                                                              .findFirst()
+					                                                              .get();
+					
+					log.log(Level.CONFIG, "Starting Async " + entry);
+					JobService.getInstance()
+					          .addJob("DatabaseStartups", () -> {
+						          try
+						          {
+							          PersistService ps = GuiceContext.get(PersistService.class, entry.getKey());
+							          ps.start();
+							          log.log(Level.CONFIG, "Started " + entry);
+						          }
+						          catch (Throwable t)
+						          {
+							          log.log(Level.SEVERE, "Fatal exception in starting Persistence Service - " + entry, t);
+						          }
+					          });
+					
+				}
 			}
 		}
 	}

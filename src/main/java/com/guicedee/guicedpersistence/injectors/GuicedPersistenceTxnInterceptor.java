@@ -55,19 +55,13 @@ public class GuicedPersistenceTxnInterceptor
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
 	{
 		Transactional transactional = readTransactionMetadata(methodInvocation);
-
+		
 		CustomJpaPersistService emProvider = GuiceContext.get(Key.get(CustomJpaPersistService.class, transactional.entityManagerAnnotation()));
+		
 		UnitOfWork unitOfWork = GuiceContext.get(Key.get(UnitOfWork.class, transactional.entityManagerAnnotation()));
 		ParsedPersistenceXmlDescriptor unit = GuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, transactional.entityManagerAnnotation()));
-
-		if (!emProvider.isWorking())
-		{
-			emProvider.begin();
-			didWeStartWork.set(true);
-		}
-		boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 		EntityManager em = emProvider.get();
-
+		
 		boolean transactionAlreadyStarted = false;
         ITransactionHandler<?> handle = null;
 		//active for automation handling, enabled for interception handling
@@ -88,7 +82,14 @@ public class GuicedPersistenceTxnInterceptor
 		{
 			transactionAlreadyStarted = true;
 		}
-
+		
+		if (!emProvider.isWorking())
+		{
+			emProvider.begin();
+			didWeStartWork.set(true);
+		}
+		boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
+		
 		if (!startedWork && transactionAlreadyStarted)
 		{
 			return methodInvocation.proceed();

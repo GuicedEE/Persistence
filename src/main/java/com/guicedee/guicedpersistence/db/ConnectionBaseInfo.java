@@ -51,6 +51,7 @@ public abstract class ConnectionBaseInfo
 	private String instanceName;
 	private String driver;
 	private String driverClass;
+	private String className;
 	private String username;
 	@JsonIgnore
 	private String password;
@@ -896,5 +897,25 @@ public abstract class ConnectionBaseInfo
 			          .log(Level.SEVERE, "Cannot render ConnectionBaseInfo", e);
 			return "Unable to render";
 		}
+	}
+	
+	/**
+	 * The datasource class name of the driver to use
+	 * @return
+	 */
+	public String getClassName()
+	{
+		return className;
+	}
+	
+	/**
+	 * The datasource of the driver to use
+	 * @param className
+	 * @return
+	 */
+	public ConnectionBaseInfo setClassName(String className)
+	{
+		this.className = className;
+		return this;
 	}
 }

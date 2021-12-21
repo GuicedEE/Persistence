@@ -1,20 +1,16 @@
 package com.guicedee.guicedpersistence.services;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Key;
 import com.google.inject.Module;
-import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
-import com.guicedee.logger.LogFactory;
+import com.google.inject.*;
+import com.guicedee.guicedinjection.interfaces.*;
+import com.guicedee.guicedpersistence.db.*;
+import com.guicedee.logger.*;
 
-import javax.sql.DataSource;
-import java.lang.annotation.Annotation;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.sql.*;
+import java.lang.annotation.*;
+import java.sql.*;
+import java.util.*;
+import java.util.logging.*;
 
 @SuppressWarnings("unused")
 public class PersistenceServicesModule
@@ -50,6 +46,10 @@ public class PersistenceServicesModule
 					{
 						jtaDataSources.put(v.getJndiName(), ds);
 						bind(Key.get(DataSource.class, k)).toInstance(ds);
+						
+						log.config("Bound DataSource.class with Key " + k.getSimpleName());
+						bind(Key.get(Connection.class, k)).toProvider(new DataSourceConnectionProvider(k));
+						log.config("Bound Thread Local Connection.class with Key " + k.getSimpleName());
 					}
 					if (!jtaPersistenceUnits.containsKey(v.getJndiName()))
 					{
