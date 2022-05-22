@@ -31,7 +31,9 @@ import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import com.google.inject.persist.PersistService;
+
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
@@ -44,12 +46,12 @@ public class GuicedPersistenceTxnInterceptor
 	 */
 	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
 	private static final Logger log = LogFactory.getLog("GuicedPersistenceTxnIntercepter");
-
+	
 	public GuicedPersistenceTxnInterceptor()
 	{
 		//No config required
 	}
-
+	
 	@Override
 	@SuppressWarnings("Duplicates")
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
@@ -63,7 +65,7 @@ public class GuicedPersistenceTxnInterceptor
 		EntityManager em = emProvider.get();
 		
 		boolean transactionAlreadyStarted = false;
-        ITransactionHandler<?> handle = null;
+		ITransactionHandler<?> handle = null;
 		//active for automation handling, enabled for interception handling
 		for (ITransactionHandler<?> handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 		{
@@ -73,11 +75,12 @@ public class GuicedPersistenceTxnInterceptor
 				break;
 			}
 		}
-		if (handle == null) {
+		if (handle == null)
+		{
 			log.log(Level.WARNING, "No transaction handler found");
 			return methodInvocation.proceed();
 		}
-
+		
 		if (handle.transactionExists(em, unit))
 		{
 			transactionAlreadyStarted = true;
@@ -90,15 +93,17 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 		
-		if (!startedWork && transactionAlreadyStarted)
+		if ((startedWork && transactionAlreadyStarted) || methodInvocation.getMethod()
+		                                                                  .isSynthetic())
 		{
 			return methodInvocation.proceed();
 		}
-
-        handle.setTransactionTimeout(transactional.timeout(),em,unit);
-        handle.beginTransacation(false, em, unit);
-        startedWork = true;
-
+		
+		handle.setTransactionTimeout(transactional.timeout(), em, unit);
+		handle.beginTransacation(false, em, unit);
+		startedWork = true;
+		didWeStartWork.set(true);
+		
 		Object result;
 		try
 		{
@@ -106,13 +111,14 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		catch (Exception e)
 		{
-			if (rollbackIfNecessary(transactional, e,handle, unit, em))
+			if (rollbackIfNecessary(transactional, e, handle, unit, em))
 			{
-                if(handle.transactionExists(em,unit)) {
-                    handle.commitTransacation(false, em, unit);
-                }
+				if (startedWork)
+				{
+					handle.commitTransacation(false, em, unit);
+				}
 			}
-
+			
 			if (startedWork)
 			{
 				didWeStartWork.remove();
@@ -123,15 +129,16 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		try
 		{
-            if(handle.transactionExists(em,unit)) {
-                handle.commitTransacation(false, em, unit);
-            }
+			if (startedWork)
+			{
+				handle.commitTransacation(false, em, unit);
+			}
 		}
 		finally
 		{
 			if (startedWork)
 			{
-				if(em != null && em.isOpen())
+				if (em != null && em.isOpen())
 				{
 					em.clear();
 					em.close();
@@ -142,13 +149,11 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		return result;
 	}
-
+	
 	/**
 	 * Method readTransactionMetadata ...
 	 *
-	 * @param methodInvocation
-	 * 		of type MethodInvocation
-	 *
+	 * @param methodInvocation of type MethodInvocation
 	 * @return Transactional
 	 */
 	@SuppressWarnings("Duplicates")
@@ -158,7 +163,7 @@ public class GuicedPersistenceTxnInterceptor
 		Method method = methodInvocation.getMethod();
 		Class<?> targetClass = methodInvocation.getThis()
 		                                       .getClass();
-
+		
 		transactional = method.getAnnotation(Transactional.class);
 		if (null == transactional)
 		{
@@ -166,30 +171,26 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		return transactional;
 	}
-
+	
 	/**
 	 * Returns True if rollback DID NOT HAPPEN (i.e. if commit should continue).
 	 *
-	 * @param transactional
-	 * 		The metadata annotation of the method
-	 * @param e
-	 * 		The exception to test for rollback
-	 * @param em
-	 * 		Entity Manager
-	 * @param unit
-	 * 		The associated persistence unit
+	 * @param transactional The metadata annotation of the method
+	 * @param e             The exception to test for rollback
+	 * @param em            Entity Manager
+	 * @param unit          The associated persistence unit
 	 */
 	@SuppressWarnings("Duplicates")
-	private boolean rollbackIfNecessary(Transactional transactional, Exception e,ITransactionHandler<?> handle, ParsedPersistenceXmlDescriptor unit, EntityManager em)
+	private boolean rollbackIfNecessary(Transactional transactional, Exception e, ITransactionHandler<?> handle, ParsedPersistenceXmlDescriptor unit, EntityManager em)
 	{
 		boolean commit = true;
-
+		
 		for (Class<? extends Exception> rollBackOn : transactional.rollbackOn())
 		{
 			if (rollBackOn.isInstance(e))
 			{
 				commit = false;
-
+				
 				for (Class<? extends Exception> exceptOn : transactional.ignore())
 				{
 					if (exceptOn.isInstance(e))
@@ -198,15 +199,15 @@ public class GuicedPersistenceTxnInterceptor
 						break;
 					}
 				}
-
+				
 				if (!commit)
 				{
-                    handle.rollbackTransacation(false, em, unit);
+					handle.rollbackTransacation(false, em, unit);
 				}
 				break;
 			}
 		}
-
+		
 		return commit;
 	}
 }

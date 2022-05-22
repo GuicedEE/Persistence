@@ -87,7 +87,7 @@ public class BTMAutomatedTransactionHandler
             BitronixTransactionManager userTransaction = (BitronixTransactionManager) bc.lookup(UserTransactionReference);
             userTransaction.commit();
         } catch (Exception e) {
-            BTMAutomatedTransactionHandler.log.log(Level.WARNING, "Unable to automatically start the transaction", e);
+            BTMAutomatedTransactionHandler.log.log(Level.WARNING, "Unable to automatically commit the transaction", e);
         }
     }
 
