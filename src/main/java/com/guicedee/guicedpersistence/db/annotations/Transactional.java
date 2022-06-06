@@ -26,7 +26,7 @@ public @interface Transactional
 	 *
 	 * @return Default of 30 seconds (30)
 	 */
-	int timeout() default 30;
+	int timeout() default 600;
 
 	/**
 	 * A list of exceptions to rollback on, if thrown by the transactional method. These exceptions
