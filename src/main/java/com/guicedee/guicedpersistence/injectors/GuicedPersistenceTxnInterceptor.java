@@ -45,6 +45,7 @@ public class GuicedPersistenceTxnInterceptor
 	 * Tracks if the unit of work was begun implicitly by this transaction.
 	 */
 	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
+	private final ThreadLocal<ITransactionHandler<?>> handler = new ThreadLocal<>();
 	private static final Logger log = LogFactory.getLog("GuicedPersistenceTxnIntercepter");
 	
 	public GuicedPersistenceTxnInterceptor()
@@ -57,46 +58,49 @@ public class GuicedPersistenceTxnInterceptor
 	public Object invoke(MethodInvocation methodInvocation) throws Throwable
 	{
 		Transactional transactional = readTransactionMetadata(methodInvocation);
+		boolean startedWork = didWeStartWork.get() != null && didWeStartWork.get();
 		
+		if ((startedWork) || methodInvocation.getMethod()
+		                                     .isSynthetic())
+		{
+			return methodInvocation.proceed();
+		}
 		CustomJpaPersistService emProvider = GuiceContext.get(Key.get(CustomJpaPersistService.class, transactional.entityManagerAnnotation()));
 		
 		UnitOfWork unitOfWork = GuiceContext.get(Key.get(UnitOfWork.class, transactional.entityManagerAnnotation()));
 		ParsedPersistenceXmlDescriptor unit = GuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, transactional.entityManagerAnnotation()));
 		EntityManager em = emProvider.get();
-		
-		boolean transactionAlreadyStarted = false;
 		ITransactionHandler<?> handle = null;
-		//active for automation handling, enabled for interception handling
-		for (ITransactionHandler<?> handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
-		{
-			if (handler.enabled(unit))
-			{
-				handle = handler;
-				break;
-			}
-		}
-		if (handle == null)
-		{
-			log.log(Level.WARNING, "No transaction handler found");
-			return methodInvocation.proceed();
-		}
 		
+		if(handler.get() == null)
+		{
+			//active for automation handling, enabled for interception handling
+			for (ITransactionHandler<?> handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
+			{
+				if (handler.enabled(unit))
+				{
+					handle = handler;
+					break;
+				}
+			}
+			if (handle == null)
+			{
+				log.log(Level.WARNING, "No transaction handler found");
+				return methodInvocation.proceed();
+			}
+		}else {
+			handle = handler.get();
+		}
+/*
 		if (handle.transactionExists(em, unit))
 		{
 			transactionAlreadyStarted = true;
-		}
+		}*/
 		
 		if (!emProvider.isWorking())
 		{
 			emProvider.begin();
 			didWeStartWork.set(true);
-		}
-		boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
-		
-		if ((startedWork && transactionAlreadyStarted) || methodInvocation.getMethod()
-		                                                                  .isSynthetic())
-		{
-			return methodInvocation.proceed();
 		}
 		
 		handle.setTransactionTimeout(transactional.timeout(), em, unit);
@@ -122,6 +126,7 @@ public class GuicedPersistenceTxnInterceptor
 			if (startedWork)
 			{
 				didWeStartWork.remove();
+				handler.remove();
 				unitOfWork.end();
 			}
 			log.log(Level.SEVERE, "Unable to commit : ", e);
@@ -136,6 +141,7 @@ public class GuicedPersistenceTxnInterceptor
 		}
 		finally
 		{
+			handler.remove();
 			if (startedWork)
 			{
 				if (em != null && em.isOpen())

@@ -1,6 +1,7 @@
 package com.guicedee.guicedpersistence.readers.systemproperties;
 
 import com.google.common.base.Strings;
+import com.guicedee.guicedinjection.properties.*;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.guicedee.logger.LogFactory;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
@@ -37,7 +38,7 @@ public class SystemEnvironmentVariablesPropertiesReader
                 matchedText = matchedText.replace("{", "\\{");
                 matchedText = matchedText.replace("}", "\\}");
                 String searchProperty = a.group(1);
-                String systemProperty = System.getProperty(searchProperty, matchedText);
+                String systemProperty = GlobalProperties.getSystemPropertyOrEnvironment(searchProperty, matchedText);
                 if (searchProperty.equals(matchedText)) {
                     log.warning("Missing System Property - " + matchedText);
                 } else {
