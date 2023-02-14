@@ -28,6 +28,8 @@ public class JpaPersistPrivateModule
 	protected final Properties props;
 
 	protected final Class<? extends Annotation> qualifier;
+	
+	private boolean defaultEntityManager;
 
 	public JpaPersistPrivateModule(String persistenceUnitName, Class<? extends Annotation> qualifier)
 	{
@@ -54,6 +56,11 @@ public class JpaPersistPrivateModule
 		JpaPersistPrivateModule.log.log(Level.FINE, "Bound UnitOfWork.class with @" + qualifier.getSimpleName());
 		JpaPersistPrivateModule.log.log(Level.FINE, "Bound PersistenceUnit.class with @" + qualifier.getSimpleName());
 		rebind(qualifier, EntityManagerFactory.class, EntityManager.class, PersistService.class, UnitOfWork.class, CustomJpaPersistService.class);
+		
+		if (defaultEntityManager)
+		{
+			expose(EntityManager.class);
+		}
 		
 		doConfigure();
 	}
@@ -117,5 +124,16 @@ public class JpaPersistPrivateModule
 	{
 		bind(clazz);
 		expose(clazz);
+	}
+	
+	public boolean isDefaultEntityManager()
+	{
+		return defaultEntityManager;
+	}
+	
+	public JpaPersistPrivateModule setDefaultEntityManager(boolean defaultEntityManager)
+	{
+		this.defaultEntityManager = defaultEntityManager;
+		return this;
 	}
 }

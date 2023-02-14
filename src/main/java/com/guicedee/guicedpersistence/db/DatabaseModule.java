@@ -93,6 +93,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 			                       getPersistenceUnitName(), connectionBaseInfo));
 			bind(Key.get(ParsedPersistenceXmlDescriptor.class, getBindingAnnotation())).toInstance(pu);
 			JpaPersistPrivateModule jpaModule = new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation());
+			jpaModule.setDefaultEntityManager(isDefault());
 			PersistenceServicesModule.getModules()
 			                         .put(getBindingAnnotation(),
 					                         jpaModule);
@@ -113,6 +114,11 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	@NotNull
 	protected abstract String getPersistenceUnitName();
 
+	protected boolean isDefault()
+	{
+		return false;
+	}
+	
 	/**
 	 * Returns the persistence unit associated with the supplied name
 	 *
