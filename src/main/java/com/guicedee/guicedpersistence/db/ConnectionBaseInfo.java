@@ -6,7 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
-import com.guicedee.logger.LogFactory;
+import com.guicedee.services.jsonrepresentation.IJsonRepresentation;
+import lombok.extern.java.Log;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 
@@ -31,6 +32,7 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
 		setterVisibility = NONE)
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Log
 public abstract class ConnectionBaseInfo
 		implements Cloneable
 {
@@ -889,12 +891,11 @@ public abstract class ConnectionBaseInfo
 	{
 		try
 		{
-			return new ObjectMapper().writeValueAsString(this);
+			return IJsonRepresentation.getObjectMapper().writeValueAsString(this);
 		}
 		catch (JsonProcessingException e)
 		{
-			LogFactory.getLog("ConnectionBaseInfo")
-			          .log(Level.SEVERE, "Cannot render ConnectionBaseInfo", e);
+			log.log(Level.SEVERE, "Cannot render ConnectionBaseInfo", e);
 			return "Unable to render";
 		}
 	}

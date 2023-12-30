@@ -3,16 +3,14 @@ package com.guicedee.guicedpersistence.btm.implementation;
 import bitronix.tm.TransactionManagerServices;
 import bitronix.tm.resource.ResourceRegistrar;
 import com.guicedee.guicedinjection.interfaces.IGuicePreDestroy;
-import com.guicedee.logger.LogFactory;
+import lombok.extern.java.Log;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Log
 public class BTMDestroyer
 		implements IGuicePreDestroy<BTMDestroyer>
 {
-	private static final Logger log = LogFactory.getLog("BTMDestroyer");
-
 	@Override
 	public void onDestroy()
 	{

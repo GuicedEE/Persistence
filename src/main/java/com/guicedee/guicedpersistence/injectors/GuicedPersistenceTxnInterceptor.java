@@ -22,22 +22,19 @@ import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 import com.guicedee.guicedpersistence.services.ITransactionHandler;
-import com.guicedee.logger.LogFactory;
 import jakarta.persistence.EntityManager;
+import lombok.extern.java.Log;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.lang.reflect.Method;
 import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.google.inject.persist.PersistService;
 
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
-
+@Log
 public class GuicedPersistenceTxnInterceptor
 		implements MethodInterceptor
 {
@@ -46,8 +43,6 @@ public class GuicedPersistenceTxnInterceptor
 	 */
 	private final ThreadLocal<Boolean> didWeStartWork = new ThreadLocal<>();
 	private final ThreadLocal<ITransactionHandler<?>> handler = new ThreadLocal<>();
-	private static final Logger log = LogFactory.getLog("GuicedPersistenceTxnIntercepter");
-	
 	public GuicedPersistenceTxnInterceptor()
 	{
 		//No config required

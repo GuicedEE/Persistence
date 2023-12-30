@@ -1,3 +1,4 @@
+import com.guicedee.guicedinjection.interfaces.IGuiceConfigurator;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 import com.guicedee.guicedpersistence.btm.implementation.BTMAutomatedTransactionHandler;
 import com.guicedee.guicedpersistence.btm.implementation.BTMConnectionProperties;
@@ -32,16 +33,17 @@ module com.guicedee.guicedpersistence {
 	requires transitive com.guicedee.guicedinjection;
 	requires transitive jakarta.xml.bind;
 	requires transitive jakarta.persistence;
-	requires transitive java.transaction;
+	requires transitive jakarta.transaction;
 	
 	requires transitive org.hibernate.orm.core;
 	requires transitive tm.bitronix.btm;
+	
+	requires com.guicedee.jsonrepresentation;
 
 	requires java.naming;
 	requires transitive java.sql;
-
-	requires org.json;
-
+	requires static lombok;
+	
 	uses com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
 	uses com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 	uses com.guicedee.guicedpersistence.services.ITransactionHandler;
@@ -58,6 +60,8 @@ module com.guicedee.guicedpersistence {
 
 	provides com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader with JPADefaultConnectionBaseBuilder,
 			                                                                                 HibernateDefaultConnectionBaseBuilder;
+	
+	provides IGuiceConfigurator with GuicedConfigurator;
 	
 	//provides com.guicedee.guicedinjection.interfaces.IFileContentsScanner with PersistenceFileHandler;
 	//provides com.guicedee.guicedinjection.interfaces.IGuiceConfigurator with PersistenceGuiceConfigurator;

@@ -9,7 +9,6 @@ import java.util.Properties;
 /**
  * Manages properties passed into the entity manager factory
  */
-@FunctionalInterface
 public interface IPropertiesEntityManagerReader
 {
 	/**
@@ -18,4 +17,11 @@ public interface IPropertiesEntityManagerReader
 	 * return properties
 	 */
 	Map<String, String> processProperties(ParsedPersistenceXmlDescriptor persistenceUnit, Properties incomingProperties);
+	
+	/**
+	 * If this class is applicable to the persistence type coming in
+	 *
+	 * @return true or false if this is the manager that must be used
+	 */
+	boolean applicable(ParsedPersistenceXmlDescriptor persistenceUnit);
 }

@@ -20,8 +20,11 @@ import com.google.common.annotations.*;
 import com.google.common.base.*;
 import com.google.inject.*;
 import com.google.inject.persist.*;
-import com.guicedee.logger.*;
+
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.java.Log;
 
 import java.lang.annotation.*;
 import java.util.*;
@@ -30,33 +33,38 @@ import java.util.logging.*;
 /**
  * @author Dhanji R. Prasanna (dhanji@gmail.com)
  */
+@Log
 public class CustomJpaPersistService
 		implements Provider<EntityManager>, UnitOfWork, PersistService
 {
 	/**
-	 * Field log
-	 */
-	private static final Logger log = LogFactory.getLog("PersistService");
-	
-	/**
 	 * Thread Local instances of Entity Managers
 	 */
+	@Getter
 	private final ThreadLocal<EntityManager> entityManager = new ThreadLocal<>();
 	/**
 	 * The assigned persistence unit name
 	 */
+	@Getter
+	@Setter
 	private String persistenceUnitName;
 	/**
 	 * The given properties object
 	 */
+	@Getter
+	@Setter
 	private Map<?, ?> persistenceProperties;
 	/**
 	 * The assigned annotation for the entity manager
 	 */
+	@Getter
+	@Setter
 	private Class<? extends Annotation> annotation;
 	/**
 	 * The service em factory
 	 */
+	@Getter
+	@Setter
 	private volatile EntityManagerFactory emFactory;
 	
 	public CustomJpaPersistService()
@@ -119,13 +127,11 @@ public class CustomJpaPersistService
 	public void end()
 	{
 		EntityManager em = entityManager.get();
-		
 		// Let's not penalize users for calling end() multiple times.
 		if (null == em)
 		{
 			return;
 		}
-		
 		try
 		{
 			em.close();
@@ -185,47 +191,6 @@ public class CustomJpaPersistService
 	{
 		this.emFactory = emFactory;
 	}
-	
-	public String getPersistenceUnitName()
-	{
-		return persistenceUnitName;
-	}
-	
-	public void setPersistenceUnitName(String persistenceUnitName)
-	{
-		this.persistenceUnitName = persistenceUnitName;
-	}
-	
-	public Map<?, ?> getPersistenceProperties()
-	{
-		return persistenceProperties;
-	}
-	
-	public void setPersistenceProperties(Map<?, ?> persistenceProperties)
-	{
-		this.persistenceProperties = persistenceProperties;
-	}
-	
-	public Class<? extends Annotation> getAnnotation()
-	{
-		return annotation;
-	}
-	
-	public void setAnnotation(Class<? extends Annotation> annotation)
-	{
-		this.annotation = annotation;
-	}
-	
-	public EntityManagerFactory getEmFactory()
-	{
-		return emFactory;
-	}
-	
-	public void setEmFactory(EntityManagerFactory emFactory)
-	{
-		this.emFactory = emFactory;
-	}
-	
 	@Documented
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.PARAMETER)

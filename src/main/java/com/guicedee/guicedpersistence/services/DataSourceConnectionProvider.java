@@ -2,11 +2,14 @@ package com.guicedee.guicedpersistence.services;
 
 import com.google.inject.*;
 import com.guicedee.guicedinjection.*;
+import lombok.extern.java.Log;
 
 import javax.sql.*;
 import java.lang.annotation.*;
 import java.sql.*;
+import java.util.logging.Level;
 
+@Log
 public class DataSourceConnectionProvider implements Provider<Connection>
 {
 	private static final ThreadLocal<Connection> connection = new ThreadLocal<>();
@@ -36,7 +39,7 @@ public class DataSourceConnectionProvider implements Provider<Connection>
 			}
 			catch (SQLException e)
 			{
-				e.printStackTrace();
+				log.log(Level.SEVERE,"Cannot determine connection ",e);
 			}
 		}
 		return connection.get();
@@ -52,7 +55,7 @@ public class DataSourceConnectionProvider implements Provider<Connection>
 		}
 		catch (SQLException e)
 		{
-			e.printStackTrace();
+			log.log(Level.SEVERE,"Cannot determine connection ",e);
 		}
 	}
 }

@@ -4,34 +4,30 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Key;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import org.hibernate.boot.archive.internal.PersistenceFileHandler;
-import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
-import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.guicedee.guicedpersistence.injectors.JpaPersistPrivateModule;
-import com.guicedee.logger.LogFactory;
-import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
+import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 import jakarta.persistence.EntityManager;
-import javax.sql.DataSource;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.java.Log;
+import org.hibernate.boot.archive.internal.PersistenceFileHandler;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+
+import javax.sql.DataSource;
 import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An abstract implementation for persistence.xml
  * <p>
  * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
+@Log
 public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		extends AbstractModule
 		implements IGuiceModule<J>
 {
-	/**
-	 * Field log
-	 */
-	private static final Logger log = LogFactory.getLog("DatabaseModule");
-
 	/**
 	 * A set of all annotations that this abstraction built
 	 */
@@ -75,6 +71,10 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		                                                                      .getLoader(IPropertiesEntityManagerReader.class, true,
 		                                                                                 ServiceLoader.load(IPropertiesEntityManagerReader.class)))
 		{
+			if (!entityManagerReader.applicable(pu))
+			{
+				continue;
+			}
 			Map<String, String> output = entityManagerReader.processProperties(pu, jdbcProperties);
 			if (output != null && !output.isEmpty())
 			{

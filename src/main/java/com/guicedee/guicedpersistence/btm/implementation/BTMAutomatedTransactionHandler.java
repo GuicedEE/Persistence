@@ -4,23 +4,20 @@ import bitronix.tm.BitronixTransactionManager;
 import bitronix.tm.jndi.BitronixContext;
 import com.google.common.base.Strings;
 import com.guicedee.guicedpersistence.services.ITransactionHandler;
-import com.guicedee.logger.LogFactory;
+import lombok.Getter;
+import lombok.extern.java.Log;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import jakarta.persistence.EntityManager;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import static jakarta.persistence.spi.PersistenceUnitTransactionType.JTA;
+import static jakarta.persistence.PersistenceUnitTransactionType.JTA;
 
+@Log
 @SuppressWarnings("unused")
 public class BTMAutomatedTransactionHandler
         implements ITransactionHandler<BTMAutomatedTransactionHandler> {
-    /**
-     * Field log
-     */
-    private static final Logger log = LogFactory.getLog("BTMAutomatedTransactionHandler");
     /**
      * Field bitronixContext
      */
@@ -33,6 +30,7 @@ public class BTMAutomatedTransactionHandler
      */
     private static boolean active = false;
 
+    @Getter
     private static boolean enabled = true;
 
     @Override
@@ -40,8 +38,8 @@ public class BTMAutomatedTransactionHandler
         if (persistenceUnit.getTransactionType() == null) {
             return false;
         }
-        if (persistenceUnit.getTransactionType()
-                .equals(JTA)) {
+        if (persistenceUnit.getTransactionType().toString()
+                .equalsIgnoreCase(JTA.toString())) {
             return enabled;
         }
         if (!Strings.isNullOrEmpty(persistenceUnit.getJtaDataSource().toString())) {
@@ -132,11 +130,7 @@ public class BTMAutomatedTransactionHandler
     public boolean active(ParsedPersistenceXmlDescriptor persistenceUnit) {
         return enabled(persistenceUnit) && active;
     }
-
-    public static boolean isEnabled() {
-        return enabled;
-    }
-
+    
     public static void setEnabled(boolean enabled) {
         BTMAutomatedTransactionHandler.enabled = enabled;
     }

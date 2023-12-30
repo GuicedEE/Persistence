@@ -1,0 +1,39 @@
+package com.guicedee.guicedpersistence.test.services;
+
+import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
+import com.guicedee.guicedpersistence.db.DatabaseModule;
+import com.guicedee.guicedpersistence.jpa.JPAConnectionBaseInfo;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+
+import java.lang.annotation.Annotation;
+import java.util.Properties;
+
+public class TestModule1 extends DatabaseModule<TestModule1>
+{
+	
+	@Override
+	protected String getPersistenceUnitName()
+	{
+		return "guiceinjectionh2test";
+	}
+	
+	@Override
+	protected ConnectionBaseInfo getConnectionBaseInfo(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties)
+	{
+		return new JPAConnectionBaseInfo();
+	}
+	
+	@Override
+	protected String getJndiMapping()
+	{
+		return "jdbc/testmodule";
+	}
+	
+	@Override
+	protected Class<? extends Annotation> getBindingAnnotation()
+	{
+		return TestDB1.class;
+	}
+	
+	
+}

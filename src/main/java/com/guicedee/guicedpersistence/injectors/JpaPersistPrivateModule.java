@@ -3,26 +3,24 @@ package com.guicedee.guicedpersistence.injectors;
 import com.google.inject.PrivateModule;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.UnitOfWork;
-import com.guicedee.logger.LogFactory;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import lombok.extern.java.Log;
+
 import java.lang.annotation.Annotation;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Provides jar scoped persistence private modules, and exposes them with the given annotation outwards
  *
  * @author GedMarc
  */
+@Log
 @SuppressWarnings("MissingClassJavaDoc")
 public class JpaPersistPrivateModule
 		extends PrivateModule
 {
-	private static final Logger log = LogFactory.getLog("JpaPersistPrivateModule");
-
 	protected final String persistenceUnitName;
 
 	protected final Properties props;

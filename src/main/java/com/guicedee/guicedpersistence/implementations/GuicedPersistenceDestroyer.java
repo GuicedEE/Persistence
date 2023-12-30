@@ -4,17 +4,15 @@ import com.google.inject.persist.PersistService;
 import com.guicedee.guicedinjection.GuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuicePreDestroy;
 import com.guicedee.guicedpersistence.db.DatabaseModule;
-import com.guicedee.logger.LogFactory;
+import lombok.extern.java.Log;
 
 import java.lang.annotation.Annotation;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+@Log
 public class GuicedPersistenceDestroyer
 		implements IGuicePreDestroy<GuicedPersistenceDestroyer>
 {
-	private static final Logger log = LogFactory.getLog("GuicedPersistenceDestroyer");
-
 	@Override
 	public void onDestroy()
 	{

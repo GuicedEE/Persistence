@@ -1,15 +1,14 @@
 package com.guicedee.guicedpersistence.readers.systemproperties;
 
 import com.google.common.base.Strings;
-import com.guicedee.guicedinjection.properties.*;
+import com.guicedee.guicedinjection.properties.GlobalProperties;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
-import com.guicedee.logger.LogFactory;
+import lombok.extern.java.Log;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Logger;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,13 +17,12 @@ import java.util.stream.Collectors;
 /**
  * A default connection string builder for H2 Databases
  */
+@Log
 public class SystemEnvironmentVariablesPropertiesReader
         implements IPropertiesEntityManagerReader {
     private static final String pat = "\\$\\{([a-zA-Z_\\-\\.]*)\\}";
     private static final Pattern pattern = Pattern.compile(pat);
-
-    private static final Logger log = LogFactory.getLog(SystemEnvironmentVariablesPropertiesReader.class);
-
+    
     @Override
     public Map<String, String> processProperties(ParsedPersistenceXmlDescriptor persistenceUnit, Properties incomingProperties) {
         for (String prop : incomingProperties.stringPropertyNames()) {
@@ -50,5 +48,11 @@ public class SystemEnvironmentVariablesPropertiesReader
             }
         }
         return new HashMap<>();
+    }
+    
+    @Override
+    public boolean applicable(ParsedPersistenceXmlDescriptor persistenceUnit)
+    {
+        return true;
     }
 }
