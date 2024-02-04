@@ -18,21 +18,13 @@ import static jakarta.persistence.PersistenceUnitTransactionType.JTA;
 @SuppressWarnings("unused")
 public class BTMAutomatedTransactionHandler
         implements ITransactionHandler<BTMAutomatedTransactionHandler> {
-    /**
-     * Field bitronixContext
-     */
     private static final BitronixContext bc = new BitronixContext();
-
     private static final String UserTransactionReference = "java:comp/UserTransaction";
-
-    /**
-     * Field active
-     */
     private static boolean active = false;
-
+    
     @Getter
     private static boolean enabled = true;
-
+    
     @Override
     public boolean enabled(ParsedPersistenceXmlDescriptor persistenceUnit) {
         if (persistenceUnit.getTransactionType() == null) {

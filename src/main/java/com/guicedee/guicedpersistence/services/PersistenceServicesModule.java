@@ -17,9 +17,7 @@ import java.util.*;
 import java.util.logging.*;
 
 @Log
-public class PersistenceServicesModule
-		extends AbstractModule
-		implements IGuiceModule<PersistenceServicesModule>
+public class PersistenceServicesModule extends AbstractModule implements IGuiceModule<PersistenceServicesModule>
 {
 	@Getter
 	private static final Map<Class<? extends Annotation>, Module> modules = new LinkedHashMap<>();
@@ -43,7 +41,7 @@ public class PersistenceServicesModule
 			Class<? extends Annotation> k = entry.getKey();
 			ConnectionBaseInfo v = entry.getValue();
 			
-			JobService.getInstance().addJob("DataSources Binding",()->{
+			JobService.getInstance().addJob("DataSources Binding", () -> {
 				DataSource ds;
 				try
 				{
@@ -55,20 +53,14 @@ public class PersistenceServicesModule
 						{
 							jtaDataSources.put(v.getJndiName(), ds);
 							bind(Key.get(DataSource.class, k)).toInstance(ds);
-							
 							log.config("Bound DataSource.class with Key " + k.getSimpleName());
-							bind(Key.get(Connection.class, k)).toProvider(new DataSourceConnectionProvider(k));
-							log.config("Bound Thread Local Connection.class with Key " + k.getSimpleName());
 						}
 						if (!jtaPersistenceUnits.containsKey(v.getJndiName()))
 						{
 							jtaPersistenceUnits.put(v.getJndiName(), new LinkedHashSet<>());
 						}
-						jtaPersistenceUnits.get(v.getJndiName())
-										.add(jtaConnectionBaseInfo.get(k)
-														.getPersistenceUnitName());
-					}
-					else
+						jtaPersistenceUnits.get(v.getJndiName()).add(jtaConnectionBaseInfo.get(k).getPersistenceUnitName());
+					} else
 					{
 						ds = jtaDataSources.get(v.getJndiName());
 						if (ds != null)
@@ -76,8 +68,7 @@ public class PersistenceServicesModule
 							bind(Key.get(DataSource.class, k)).toInstance(ds);
 						}
 					}
-				}
-				catch (Exception t)
+				} catch (Exception t)
 				{
 					log.log(Level.SEVERE, "Cannot start datasource!", t);
 				}
@@ -92,8 +83,7 @@ public class PersistenceServicesModule
 		{
 			jtaPersistenceUnits.put(jndi, new LinkedHashSet<>());
 		}
-		jtaPersistenceUnits.get(jndi)
-		                   .add(persistenceUnitName);
+		jtaPersistenceUnits.get(jndi).add(persistenceUnitName);
 	}
 	
 	@Override

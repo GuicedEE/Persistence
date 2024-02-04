@@ -91,9 +91,9 @@ public class CustomJpaLocalTxnInterceptor
 			if (handler.active(unit))
 			{
 				handler.beginTransacation(false, em, unit);
+				break;
 			}
 		}
-
 		Object result;
 		try
 		{
@@ -109,6 +109,7 @@ public class CustomJpaLocalTxnInterceptor
 					if (handler.active(unit))
 					{
 						handler.commitTransacation(false, em, unit);
+						break;
 					}
 				}
 			}
@@ -119,9 +120,7 @@ public class CustomJpaLocalTxnInterceptor
 				unitOfWork.end();
 				persistService.end();
 			}
-
 			throw e;
-
 		}
 
 		try
@@ -131,6 +130,7 @@ public class CustomJpaLocalTxnInterceptor
 				if (handler.active(unit))
 				{
 					handler.commitTransacation(false, em, unit);
+					break;
 				}
 			}
 		}
@@ -212,6 +212,7 @@ public class CustomJpaLocalTxnInterceptor
 						if (handler.active(unit))
 						{
 							handler.rollbackTransacation(false, em, unit);
+							break;
 						}
 					}
 				}

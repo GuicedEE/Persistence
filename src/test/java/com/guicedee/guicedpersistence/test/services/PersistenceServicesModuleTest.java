@@ -10,6 +10,7 @@ class PersistenceServicesModuleTest
 	public void testDBStart()
 	{
 		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "fine");
+		
 		GuiceContext.registerModule("com.guicedee.guicedpersistence.test");
 		GuiceContext.registerModule(new TestModule1());
 		GuiceContext.inject();

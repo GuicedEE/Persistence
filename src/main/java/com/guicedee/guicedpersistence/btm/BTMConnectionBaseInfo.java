@@ -12,7 +12,6 @@ import javax.sql.DataSource;
  */
 public class BTMConnectionBaseInfo
 		extends ConnectionBaseInfo
-		implements Cloneable
 {
 	/**
 	 * Constructor BTMConnectionBaseInfo creates a new BTMConnectionBaseInfo instance with XA enabled
@@ -238,19 +237,5 @@ public class BTMConnectionBaseInfo
 		getCustomProperties().forEach((a,b) -> pds.getDriverProperties()
 		                                          .setProperty(a, b));
 		return pds;
-	}
-
-	/**
-	 * Method clone ...
-	 *
-	 * @return Object
-	 *
-	 * @throws CloneNotSupportedException
-	 * 		when
-	 */
-	@Override
-	protected BTMConnectionBaseInfo clone() throws CloneNotSupportedException
-	{
-		return (BTMConnectionBaseInfo) super.clone();
 	}
 }
