@@ -1,6 +1,6 @@
 package com.guicedee.guicedpersistence.test.services;
 
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.client.*;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 
@@ -11,10 +11,10 @@ class PersistenceServicesModuleTest
 	{
 		System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "fine");
 		
-		GuiceContext.registerModule("com.guicedee.guicedpersistence.test");
-		GuiceContext.registerModule(new TestModule1());
-		GuiceContext.inject();
-		EntityManager em = GuiceContext.get(EntityManager.class, TestDB1.class);
+		IGuiceContext.registerModule("com.guicedee.guicedpersistence.test");
+		IGuiceContext.registerModule(new TestModule1());
+		IGuiceContext.getContext().inject();
+		EntityManager em = IGuiceContext.get(EntityManager.class, TestDB1.class);
 		System.out.println(em.isOpen());
 	}
 }

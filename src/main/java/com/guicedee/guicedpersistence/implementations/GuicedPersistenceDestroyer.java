@@ -1,7 +1,7 @@
 package com.guicedee.guicedpersistence.implementations;
 
 import com.google.inject.persist.PersistService;
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.client.*;
 import com.guicedee.guicedinjection.interfaces.IGuicePreDestroy;
 import com.guicedee.guicedpersistence.db.DatabaseModule;
 import lombok.extern.java.Log;
@@ -21,7 +21,7 @@ public class GuicedPersistenceDestroyer
 			try
 			{
 				log.log(Level.INFO, "Stopping EMF and Persist Service [" + boundAnnotation.getCanonicalName() + "]");
-				PersistService service = GuiceContext.get(PersistService.class, boundAnnotation);
+				PersistService service = IGuiceContext.get(PersistService.class, boundAnnotation);
 				service.stop();
 			}
 			catch (Exception e)

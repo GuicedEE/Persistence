@@ -2,7 +2,7 @@ package com.guicedee.guicedpersistence.db;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Key;
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.client.*;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
 import com.guicedee.guicedpersistence.injectors.JpaPersistPrivateModule;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
@@ -67,8 +67,9 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 					.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
 			return;
 		}
-		for (IPropertiesEntityManagerReader entityManagerReader : GuiceContext.instance()
-		                                                                      .getLoader(IPropertiesEntityManagerReader.class, true,
+		for (IPropertiesEntityManagerReader entityManagerReader : IGuiceContext
+				                                                          .instance()
+				                                                          .getLoader(IPropertiesEntityManagerReader.class, true,
 		                                                                                 ServiceLoader.load(IPropertiesEntityManagerReader.class)))
 		{
 			if (!entityManagerReader.applicable(pu))

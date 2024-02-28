@@ -30,7 +30,7 @@ module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.implementations;
 
 	requires transitive com.google.guice.extensions.persist;
-	requires transitive com.guicedee.guicedinjection;
+	requires transitive com.guicedee.client;
 	requires transitive jakarta.xml.bind;
 	requires transitive jakarta.persistence;
 	requires transitive jakarta.transaction;

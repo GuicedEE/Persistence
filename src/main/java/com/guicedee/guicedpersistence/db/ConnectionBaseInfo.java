@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.guicedee.guicedinjection.GuiceContext;
+
+import com.guicedee.client.*;
 import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
 import com.guicedee.services.jsonrepresentation.IJsonRepresentation;
 import lombok.extern.java.Log;
@@ -97,8 +98,9 @@ public abstract class ConnectionBaseInfo
 
 	public ConnectionBaseInfo populateFromProperties(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties)
 	{
-		for (IPropertiesConnectionInfoReader connectionInfoReader : GuiceContext.instance()
-																				.getLoader(IPropertiesConnectionInfoReader.class, true, ServiceLoader.load(
+		for (IPropertiesConnectionInfoReader connectionInfoReader : IGuiceContext
+				                                                            .instance()
+				                                                            .getLoader(IPropertiesConnectionInfoReader.class, true, ServiceLoader.load(
 				                                                                       IPropertiesConnectionInfoReader.class)))
 		{
 			connectionInfoReader.populateConnectionBaseInfo(unit, filteredProperties, this);

@@ -2,7 +2,7 @@ package com.guicedee.guicedpersistence.implementations;
 
 import com.google.inject.Module;
 import com.google.inject.persist.*;
-import com.guicedee.guicedinjection.*;
+import com.guicedee.client.*;
 import com.guicedee.guicedinjection.interfaces.*;
 import com.guicedee.guicedpersistence.services.*;
 import lombok.extern.java.Log;
@@ -33,7 +33,7 @@ public class EntityManagerPostStartup
 					Map.Entry<Class<? extends Annotation>, Module> entry = collect.stream()
 					                                                              .findFirst()
 					                                                              .get();
-					PersistService ps = GuiceContext.get(PersistService.class, entry.getKey());
+					PersistService ps = IGuiceContext.get(PersistService.class, entry.getKey());
 					ps.start();
 					log.log(Level.CONFIG, "Started " + entry);
 				}
@@ -46,11 +46,11 @@ public class EntityManagerPostStartup
 				{
 					collect.forEach((entry)->{
 						log.log(Level.CONFIG, "Starting Async " + entry);
-						JobService.getInstance()
+						IJobService.getInstance()
 										.addJob("DatabaseStartups", () -> {
 											try
 											{
-												PersistService ps = GuiceContext.get(PersistService.class, entry.getKey());
+												PersistService ps = IGuiceContext.get(PersistService.class, entry.getKey());
 												ps.start();
 												log.log(Level.CONFIG, "Started " + entry);
 											}
@@ -60,7 +60,7 @@ public class EntityManagerPostStartup
 											}
 										});
 					});
-					JobService.getInstance().removeJob("DatabaseStartups");
+					IJobService.getInstance().removeJob("DatabaseStartups");
 				}
 			}
 		}

@@ -18,7 +18,7 @@ package com.guicedee.guicedpersistence.injectors;
 
 import com.google.inject.Key;
 import com.google.inject.persist.UnitOfWork;
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.client.*;
 import com.guicedee.guicedpersistence.db.annotations.Transactional;
 import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 import com.guicedee.guicedpersistence.services.ITransactionHandler;
@@ -60,17 +60,17 @@ public class GuicedPersistenceTxnInterceptor
 		{
 			return methodInvocation.proceed();
 		}
-		CustomJpaPersistService emProvider = GuiceContext.get(Key.get(CustomJpaPersistService.class, transactional.entityManagerAnnotation()));
+		CustomJpaPersistService emProvider = IGuiceContext.get(Key.get(CustomJpaPersistService.class, transactional.entityManagerAnnotation()));
 		
-		UnitOfWork unitOfWork = GuiceContext.get(Key.get(UnitOfWork.class, transactional.entityManagerAnnotation()));
-		ParsedPersistenceXmlDescriptor unit = GuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, transactional.entityManagerAnnotation()));
+		UnitOfWork unitOfWork = IGuiceContext.get(Key.get(UnitOfWork.class, transactional.entityManagerAnnotation()));
+		ParsedPersistenceXmlDescriptor unit = IGuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, transactional.entityManagerAnnotation()));
 		EntityManager em = emProvider.get();
 		ITransactionHandler<?> handle = null;
 		
 		if(handler.get() == null)
 		{
 			//active for automation handling, enabled for interception handling
-			for (ITransactionHandler<?> handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
+			for (ITransactionHandler<?> handler : IGuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 			{
 				if (handler.enabled(unit))
 				{

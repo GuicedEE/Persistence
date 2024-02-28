@@ -20,7 +20,7 @@ import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.persist.Transactional;
 import com.google.inject.persist.UnitOfWork;
-import com.guicedee.guicedinjection.GuiceContext;
+import com.guicedee.client.*;
 import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 import com.guicedee.guicedpersistence.services.ITransactionHandler;
 
@@ -61,10 +61,10 @@ public class CustomJpaLocalTxnInterceptor
 		Transactional transactional = readTransactionMetadata(methodInvocation);
 		EntityManager em = emProvider.get();
 		Class<? extends Annotation> providedAnnotation = emProvider.getAnnotation();
-		UnitOfWork unitOfWork = GuiceContext.get(Key.get(UnitOfWork.class, emProvider.getAnnotation()));
-		CustomJpaPersistService persistService =GuiceContext.get(Key.get(CustomJpaPersistService.class, emProvider.getAnnotation()));
+		UnitOfWork unitOfWork = IGuiceContext.get(Key.get(UnitOfWork.class, emProvider.getAnnotation()));
+		CustomJpaPersistService persistService =IGuiceContext.get(Key.get(CustomJpaPersistService.class, emProvider.getAnnotation()));
 
-		ParsedPersistenceXmlDescriptor unit = GuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, providedAnnotation));
+		ParsedPersistenceXmlDescriptor unit = IGuiceContext.get(Key.get(ParsedPersistenceXmlDescriptor.class, providedAnnotation));
 		Boolean startedWork = didWeStartWork.get() == null ? false : didWeStartWork.get();
 		if (startedWork) {
 			persistService.start();
@@ -72,7 +72,7 @@ public class CustomJpaLocalTxnInterceptor
 		}
 
 		boolean transactionIsActive = false;
-		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
+		for (ITransactionHandler handler : IGuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 		{
 			if (handler.active(unit) && handler.transactionExists(em, unit))
 			{
@@ -86,7 +86,7 @@ public class CustomJpaLocalTxnInterceptor
 			return methodInvocation.proceed();
 		}
 
-		for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
+		for (ITransactionHandler handler : IGuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 		{
 			if (handler.active(unit))
 			{
@@ -104,7 +104,7 @@ public class CustomJpaLocalTxnInterceptor
 		{
 			if (rollbackIfNecessary(transactional, e, unit, em))
 			{
-				for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
+				for (ITransactionHandler handler : IGuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 				{
 					if (handler.active(unit))
 					{
@@ -125,7 +125,7 @@ public class CustomJpaLocalTxnInterceptor
 
 		try
 		{
-			for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
+			for (ITransactionHandler handler : IGuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 			{
 				if (handler.active(unit))
 				{
@@ -207,7 +207,7 @@ public class CustomJpaLocalTxnInterceptor
 
 				if (!commit)
 				{
-					for (ITransactionHandler handler : GuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
+					for (ITransactionHandler handler : IGuiceContext.get(PersistenceServiceLoadersBinder.ITransactionHandlerReader))
 					{
 						if (handler.active(unit))
 						{

@@ -2,7 +2,6 @@ package com.guicedee.guicedpersistence.services;
 
 import com.google.inject.Module;
 import com.google.inject.*;
-import com.guicedee.guicedinjection.JobService;
 import com.guicedee.guicedinjection.interfaces.*;
 import com.guicedee.guicedpersistence.db.*;
 import lombok.Getter;
@@ -41,7 +40,7 @@ public class PersistenceServicesModule extends AbstractModule implements IGuiceM
 			Class<? extends Annotation> k = entry.getKey();
 			ConnectionBaseInfo v = entry.getValue();
 			
-			JobService.getInstance().addJob("DataSources Binding", () -> {
+			IJobService.getInstance().addJob("DataSources Binding", () -> {
 				DataSource ds;
 				try
 				{
@@ -74,7 +73,7 @@ public class PersistenceServicesModule extends AbstractModule implements IGuiceM
 				}
 			});
 		}
-		JobService.getInstance().removeJob("DataSources Binding");
+		IJobService.getInstance().removeJob("DataSources Binding");
 	}
 	
 	public static void addJtaPersistenceUnits(String jndi, String persistenceUnitName)

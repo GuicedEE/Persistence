@@ -31,7 +31,7 @@
 
         <dependency>
             <groupId>com.guicedee</groupId>
-            <artifactId>guice-injection</artifactId>
+            <artifactId>guice-inject-client</artifactId>
         </dependency>
 
         <dependency>
@@ -78,6 +78,12 @@
         <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>json-representation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.guicedee</groupId>
+            <artifactId>guice-injection</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
