@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.guicedee.guicedpersistence.injectors;
+package com.guicedee.guicedpersistence.jta;
 
 import com.google.inject.BindingAnnotation;
 
@@ -28,4 +28,4 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @BindingAnnotation
-@interface CustomJpa {}
+@interface Jpa {}

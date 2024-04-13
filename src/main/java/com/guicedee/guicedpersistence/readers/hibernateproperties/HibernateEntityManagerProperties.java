@@ -1,8 +1,5 @@
 package com.guicedee.guicedpersistence.readers.hibernateproperties;
 
-
-
-import com.google.common.base.Strings;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.util.HashMap;

@@ -1,26 +1,23 @@
 package com.guicedee.guicedpersistence.db;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-
-import com.guicedee.client.*;
+import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
-import com.guicedee.services.jsonrepresentation.IJsonRepresentation;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.extern.java.Log;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
-
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.ServiceLoader;
-import java.util.logging.Level;
 
-import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.*;
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
+import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 /**
  * This class is a basic container (mirror) for the database jtm builder string.
@@ -34,9 +31,14 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Log
+@ToString
+@EqualsAndHashCode(of = {"persistenceUnitName","driver"})
 public abstract class ConnectionBaseInfo
-		implements Cloneable
 {
+	/**
+	 * If this is the connection that must be default bound when no @Named is present
+	 */
+	private boolean defaultConnection = true;
 	/**
 	 * The persistence unit name applied to this cbi
 	 */
@@ -887,20 +889,6 @@ public abstract class ConnectionBaseInfo
 	{
 		return password == null ? "Empty" : "*********";
 	}
-
-	@Override
-	public String toString()
-	{
-		try
-		{
-			return IJsonRepresentation.getObjectMapper().writeValueAsString(this);
-		}
-		catch (JsonProcessingException e)
-		{
-			log.log(Level.SEVERE, "Cannot render ConnectionBaseInfo", e);
-			return "Unable to render";
-		}
-	}
 	
 	/**
 	 * The datasource class name of the driver to use
@@ -919,6 +907,26 @@ public abstract class ConnectionBaseInfo
 	public ConnectionBaseInfo setClassName(String className)
 	{
 		this.className = className;
+		return this;
+	}
+
+	/**
+	 * If this is the connection that must be default bound when no @Named is present
+	 * @return
+	 */
+	public boolean isDefaultConnection()
+	{
+		return defaultConnection;
+	}
+
+	/**
+	 * If this is the connection that must be default bound when no @Named is present
+	 * @param defaultConnection
+	 * @return
+	 */
+	public ConnectionBaseInfo setDefaultConnection(boolean defaultConnection)
+	{
+		this.defaultConnection = defaultConnection;
 		return this;
 	}
 }

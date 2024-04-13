@@ -16,19 +16,15 @@ public class BTMDestroyer
 	{
 		try
 		{
-			ResourceRegistrar.getResourcesUniqueNames()
-			                 .forEach(name ->
-			                          {
-				                          try
-				                          {
-					                          ResourceRegistrar.unregister(ResourceRegistrar.get(name));
-				                          }
-				                          catch (Throwable T)
-				                          {
-					                          log.log(Level.SEVERE, "Unable to unregister resource [" + name + "] during destroy");
-				                          }
-			                          });
-		}catch(Throwable T)
+            for (String name : ResourceRegistrar.getResourcesUniqueNames()) {
+                try {
+                    ResourceRegistrar.unregister(ResourceRegistrar.get(name));
+					log.info("BTM Database Resource Unregistered: " + name);
+                } catch (Throwable T) {
+                    log.log(Level.SEVERE, "Unable to unregister resource [" + name + "] during destroy");
+                }
+            }
+        }catch(Throwable T)
 		{
 			log.log(Level.SEVERE, "Unable to unregister resource", T);
 		}
