@@ -1,13 +1,15 @@
 package com.guicedee.guicedpersistence.scanners;
 
-import com.google.inject.*;
-import com.google.inject.matcher.*;
-import com.guicedee.client.*;
-import com.guicedee.guicedinjection.interfaces.*;
-import com.guicedee.guicedpersistence.db.annotations.*;
-import com.guicedee.guicedpersistence.services.*;
+import com.google.inject.AbstractModule;
+import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
+import com.guicedee.client.IGuiceContext;
+import com.guicedee.guicedinjection.interfaces.IGuiceModule;
+import com.guicedee.guicedpersistence.services.IPropertiesConnectionInfoReader;
+import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 
-import java.util.*;
+import java.util.ServiceLoader;
+import java.util.Set;
 
 public class PersistenceServiceLoadersBinder extends AbstractModule implements IGuiceModule<PersistenceServiceLoadersBinder>
 {

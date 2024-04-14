@@ -13,8 +13,7 @@ import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 
 module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.db;
-	exports com.guicedee.guicedpersistence.db.annotations;
-	exports com.guicedee.guicedpersistence.db.exceptions;
+    exports com.guicedee.guicedpersistence.db.exceptions;
 	exports com.guicedee.guicedpersistence.db.intercepters;
 	exports com.guicedee.guicedpersistence.services;
 	exports com.guicedee.guicedpersistence.readers.hibernateproperties;
