@@ -7,7 +7,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <jta-data-source>java:jboss/datasources/testLargeDSProperties</jta-data-source>
         <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServer2008Dialect"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect"/>
 
             <!-- <property name="hibernate.hbm2ddl.auto" value="update" /> -->
 

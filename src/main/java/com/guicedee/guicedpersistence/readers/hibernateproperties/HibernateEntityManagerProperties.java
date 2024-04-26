@@ -1,7 +1,5 @@
 package com.guicedee.guicedpersistence.readers.hibernateproperties;
 
-
-
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
 
 import java.util.HashMap;
@@ -597,5 +595,12 @@ public class HibernateEntityManagerProperties
 	public void setUseValidatorApplyToDDL(Boolean useValidatorApplyToDDL)
 	{
 		this.useValidatorApplyToDDL = useValidatorApplyToDDL;
+	}
+	
+	@Override
+	public boolean applicable(ParsedPersistenceXmlDescriptor persistenceUnit)
+	{
+		return (persistenceUnit.getTransactionType() == null || "RESOURCE_LOCAL".equals(persistenceUnit.getTransactionType()
+						.toString()));
 	}
 }

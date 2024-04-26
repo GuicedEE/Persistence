@@ -1,41 +1,34 @@
 package com.guicedee.guicedpersistence.db;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Key;
-import com.guicedee.guicedinjection.GuiceContext;
+import com.google.inject.PrivateModule;
+import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuiceModule;
-import org.hibernate.boot.archive.internal.PersistenceFileHandler;
-import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
+import com.guicedee.guicedpersistence.jta.JtaPersistModule;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
-import com.guicedee.guicedpersistence.injectors.JpaPersistPrivateModule;
-import com.guicedee.logger.LogFactory;
-import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
-import jakarta.persistence.EntityManager;
-import javax.sql.DataSource;
+import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 import jakarta.validation.constraints.NotNull;
-import java.lang.annotation.Annotation;
-import java.util.*;
+import lombok.extern.java.Log;
+import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import org.hibernate.jpa.boot.internal.PersistenceXmlParser;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ServiceLoader;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An abstract implementation for persistence.xml
  * <p>
  * Configuration conf = TransactionManagerServices.getConfiguration(); can be used to configure the transaction manager.
  */
+@Log
 public abstract class DatabaseModule<J extends DatabaseModule<J>>
-		extends AbstractModule
+		extends PrivateModule
 		implements IGuiceModule<J>
 {
-	/**
-	 * Field log
-	 */
-	private static final Logger log = LogFactory.getLog("DatabaseModule");
 
-	/**
-	 * A set of all annotations that this abstraction built
-	 */
-	private static final Set<Class<? extends Annotation>> boundAnnotations = new HashSet<>();
+	private static final List<ParsedPersistenceXmlDescriptor> parsedPersistenceXmlDescriptors = PersistenceXmlParser.locatePersistenceUnits(Map.of());
 
 	/**
 	 * Constructor DatabaseModule creates a new DatabaseModule instance.
@@ -46,19 +39,8 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	}
 
 	/**
-	 * Returns a full list of all annotations that have bindings
-	 *
-	 * @return The set of all annotations that have bindings
-	 */
-	public static Set<Class<? extends Annotation>> getBoundAnnotations()
-	{
-		return DatabaseModule.boundAnnotations;
-	}
-
-	/**
 	 * Configures the module with the bindings
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void configure()
 	{
@@ -71,10 +53,15 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 					.severe("Unable to register persistence unit with name " + getPersistenceUnitName() + " - No persistence unit containing this name was found.");
 			return;
 		}
-		for (IPropertiesEntityManagerReader entityManagerReader : GuiceContext.instance()
-		                                                                      .getLoader(IPropertiesEntityManagerReader.class, true,
+		for (IPropertiesEntityManagerReader entityManagerReader : IGuiceContext
+				                                                          .instance()
+				                                                          .getLoader(IPropertiesEntityManagerReader.class, true,
 		                                                                                 ServiceLoader.load(IPropertiesEntityManagerReader.class)))
 		{
+			if (!entityManagerReader.applicable(pu))
+			{
+				continue;
+			}
 			Map<String, String> output = entityManagerReader.processProperties(pu, jdbcProperties);
 			if (output != null && !output.isEmpty())
 			{
@@ -85,20 +72,17 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		{
 			ConnectionBaseInfo connectionBaseInfo = getConnectionBaseInfo(pu, jdbcProperties);
 			connectionBaseInfo.populateFromProperties(pu, jdbcProperties);
+
 			if (connectionBaseInfo.getJndiName() == null)
 			{
 				connectionBaseInfo.setJndiName(getJndiMapping());
 			}
 			log.fine(String.format("%s - Connection Base Info Final - %s",
 			                       getPersistenceUnitName(), connectionBaseInfo));
-			bind(Key.get(ParsedPersistenceXmlDescriptor.class, getBindingAnnotation())).toInstance(pu);
-			JpaPersistPrivateModule jpaModule = new JpaPersistPrivateModule(getPersistenceUnitName(), jdbcProperties, getBindingAnnotation());
-			jpaModule.setDefaultEntityManager(isDefault());
-			PersistenceServicesModule.getModules()
-			                         .put(getBindingAnnotation(),
-					                         jpaModule);
-			PersistenceServicesModule.getJtaConnectionBaseInfo()
-			                         .put(getBindingAnnotation(), connectionBaseInfo);
+			connectionBaseInfo.setPersistenceUnitName(getPersistenceUnitName());
+			JtaPersistModule jpaModule = new JtaPersistModule(getPersistenceUnitName(), connectionBaseInfo);
+			jpaModule.properties(jdbcProperties);
+			PersistenceServicesModule.getConnectionModules().put(connectionBaseInfo, jpaModule);
 		}
 		catch (Throwable T)
 		{
@@ -113,17 +97,15 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	 */
 	@NotNull
 	protected abstract String getPersistenceUnitName();
+/*
 
-	protected boolean isDefault()
-	{
-		return false;
-	}
-	
-	/**
+	*/
+/**
 	 * Returns the persistence unit associated with the supplied name
 	 *
 	 * @return The given persistence unit
-	 */
+	 *//*
+
 	protected ParsedPersistenceXmlDescriptor getPersistenceUnit()
 	{
 		try
@@ -144,6 +126,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 		DatabaseModule.log.log(Level.WARNING, "Couldn't Find Persistence Unit for the given name [" + getPersistenceUnitName() + "]. Returning a Null Instance");
 		return null;
 	}
+*/
 
 	/**
 	 * Builds up connection base data info from a persistence unit.
@@ -158,6 +141,19 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	@NotNull
 	protected abstract ConnectionBaseInfo getConnectionBaseInfo(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties);
 
+	private ParsedPersistenceXmlDescriptor getPersistenceUnit()
+	{
+		for (ParsedPersistenceXmlDescriptor parsedPersistenceXmlDescriptor : parsedPersistenceXmlDescriptors)
+		{
+			if (parsedPersistenceXmlDescriptor.getName()
+											  .equals(getPersistenceUnitName()))
+			{
+				return parsedPersistenceXmlDescriptor;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * A properties map of the properties from the file
 	 *
@@ -167,8 +163,7 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	private Properties getJDBCPropertiesMap()
 	{
 		Properties jdbcProperties = new Properties();
-		ParsedPersistenceXmlDescriptor pu = getPersistenceUnit();
-		configurePersistenceUnitProperties(pu, jdbcProperties);
+		configurePersistenceUnitProperties(getPersistenceUnit(), jdbcProperties);
 		return jdbcProperties;
 	}
 
@@ -177,37 +172,9 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	 *
 	 * @return The JNDI mapping name to use
 	 */
-	@NotNull
-	protected abstract String getJndiMapping();
-
-	/**
-	 * Returns the generated key for the data source
-	 *
-	 * @return The key of the annotation and data source
-	 */
-	@NotNull
-	protected Key<DataSource> getDataSourceKey()
+	protected String getJndiMapping()
 	{
-		return Key.get(DataSource.class, getBindingAnnotation());
-	}
-
-	/**
-	 * The annotation which will identify this guy
-	 *
-	 * @return The annotation that will identify the given databsae
-	 */
-	@NotNull
-	protected abstract Class<? extends Annotation> getBindingAnnotation();
-
-	/**
-	 * Returns the key used for the entity manager
-	 *
-	 * @return The key for the entity manager and the annotation
-	 */
-	@NotNull
-	protected Key<EntityManager> getEntityManagerKey()
-	{
-		return Key.get(EntityManager.class, getBindingAnnotation());
+		return null;
 	}
 
 	/**
@@ -243,10 +210,5 @@ public abstract class DatabaseModule<J extends DatabaseModule<J>>
 	public Integer sortOrder()
 	{
 		return 50;
-	}
-
-	public boolean isDataSourceAvailable()
-	{
-		return true;
 	}
 }
