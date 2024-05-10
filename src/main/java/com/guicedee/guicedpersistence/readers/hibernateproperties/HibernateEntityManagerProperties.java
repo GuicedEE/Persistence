@@ -86,6 +86,8 @@ public class HibernateEntityManagerProperties
 	 */
 	private Boolean useValidatorApplyToDDL;
 
+	private Integer batchSize;
+
 	/**
 	 * Method getMaxFetchDepth returns the maxFetchDepth of this HibernateEntityManagerProperties object.
 	 * <p>
@@ -250,6 +252,10 @@ public class HibernateEntityManagerProperties
 		if (useValidatorApplyToDDL != null)
 		{
 			incomingProperties.put("hibernate.validator.apply_to_ddl", Boolean.toString(useValidatorApplyToDDL));
+		}
+		if (batchSize != null)
+		{
+			incomingProperties.put("hibernate.jdbc.batch_size", batchSize);
 		}
 
 		return new HashMap<>();
@@ -602,5 +608,25 @@ public class HibernateEntityManagerProperties
 	{
 		return (persistenceUnit.getTransactionType() == null || "RESOURCE_LOCAL".equals(persistenceUnit.getTransactionType()
 						.toString()));
+	}
+
+	/**
+	 * Batch size for DML
+	 * @return
+	 */
+	public Integer getBatchSize()
+	{
+		return batchSize;
+	}
+
+	/**
+	 * Sets an override batch size configuration
+	 * @param batchSize
+	 * @return
+	 */
+	public HibernateEntityManagerProperties setBatchSize(Integer batchSize)
+	{
+		this.batchSize = batchSize;
+		return this;
 	}
 }
