@@ -54,6 +54,7 @@ public final class JtaPersistModule extends PersistModule
     public JtaPersistModule(String jpaUnit, ConnectionBaseInfo connectionBaseInfo)
     {
         this(jpaUnit, JtaPersistOptions.builder()
+                                       //.setAutoBeginWorkOnEntityManagerCreation(true)
                                        .build(), connectionBaseInfo);
     }
 
@@ -93,7 +94,7 @@ public final class JtaPersistModule extends PersistModule
         transactionInterceptor = new JtaLocalTxnInterceptor(ps, connectionBaseInfo);
         requestInjection(transactionInterceptor);
 
-        if(!defaultSet && connectionBaseInfo.isDefaultConnection())
+        if (!defaultSet && connectionBaseInfo.isDefaultConnection())
         {
             defaultSet = true;
             bind(EntityManagerFactory.class).to(getKey(EntityManagerFactory.class));
@@ -101,7 +102,8 @@ public final class JtaPersistModule extends PersistModule
             bind(UnitOfWork.class).to(getKey(UnitOfWork.class));
             bind(PersistService.class).to(getKey(PersistService.class));
             bind(JtaPersistOptions.class).to(getKey(JtaPersistOptions.class));
-        } else if(defaultSet && connectionBaseInfo.isDefaultConnection())
+        }
+        else if (defaultSet && connectionBaseInfo.isDefaultConnection())
         {
             throw new InvalidConnectionInfoException("Cannot have two database connection information set as default - " + jpaUnit + " - " + connectionBaseInfo);
         }

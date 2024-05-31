@@ -8,6 +8,9 @@ import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
 import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
 import lombok.extern.java.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 @Log
@@ -17,18 +20,25 @@ public class EntityManagerPostStartup
     private static boolean startPersistenceServices = true;
 
     @Override
-    public void postLoad()
+    public List<CompletableFuture<Boolean>> postLoad()
     {
+        List<CompletableFuture<Boolean>> futures = new ArrayList<>();
         if (startPersistenceServices)
         {
-            log.log(Level.CONFIG, "Starting up Entity Managers");
             PersistenceServicesModule.getConnectionModules()
                                      .forEach((connection, module) -> {
-                                         Key<PersistService> persistServiceKey = Key.get(PersistService.class, Names.named(connection.getPersistenceUnitName()));
-                                         PersistService persistService = IGuiceContext.get(persistServiceKey);
-                                         persistService.start();
+                                         CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
+                                             log.log(Level.INFO, "Starting up Entity Manager [" + connection.getPersistenceUnitName() + "]");
+                                             Key<PersistService> persistServiceKey = Key.get(PersistService.class, Names.named(connection.getPersistenceUnitName()));
+                                             PersistService persistService = IGuiceContext.get(persistServiceKey);
+                                             persistService.start();
+                                             log.log(Level.INFO, "Completed Entity Manager [" + connection.getPersistenceUnitName() + "]");
+                                             return true;
+                                         }, getExecutorService());
+                                         futures.add(future);
                                      });
         }
+        return futures;
     }
 
     /**
@@ -52,6 +62,6 @@ public class EntityManagerPostStartup
     @Override
     public Integer sortOrder()
     {
-        return Integer.MIN_VALUE + 500;
+        return Integer.MIN_VALUE + 1;
     }
 }
