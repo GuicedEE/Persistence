@@ -21,6 +21,7 @@ module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.btm.implementation;
 	exports com.guicedee.guicedpersistence.jta;
 	exports com.guicedee.guicedpersistence.scanners;
+	exports com.guicedee.guicedpersistence.lambda;
 
 	exports com.guicedee.guicedpersistence.implementations;
 
@@ -67,4 +68,5 @@ module com.guicedee.guicedpersistence {
 	//opens com.guicedee.guicedpersistence.injectors to com.google.guice;
 	opens com.guicedee.guicedpersistence.implementations to com.google.guice,com.fasterxml.jackson.databind;
 	opens com.guicedee.guicedpersistence.jta to com.google.guice;
+	opens com.guicedee.guicedpersistence.lambda to com.google.guice,com.fasterxml.jackson.databind,org.hibernate.orm.core;
 }
