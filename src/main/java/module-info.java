@@ -26,6 +26,10 @@ module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.implementations;
 
 	requires transitive com.google.guice.extensions.persist;
+
+	requires transitive com.guicedee.vertx;
+	requires static com.guicedee.vertx.web;
+
 	requires transitive com.guicedee.client;
 	requires transitive jakarta.xml.bind;
 	requires transitive jakarta.persistence;
@@ -33,6 +37,7 @@ module com.guicedee.guicedpersistence {
 	requires transitive jakarta.validation;
 	requires transitive org.hibernate.orm.core;
 	requires tm.bitronix.btm;
+
 
 	requires java.naming;
 	requires transitive java.sql;
