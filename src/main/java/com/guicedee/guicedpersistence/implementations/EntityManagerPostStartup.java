@@ -1,44 +1,48 @@
 package com.guicedee.guicedpersistence.implementations;
 
+import com.google.inject.Inject;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import com.google.inject.persist.PersistService;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedinjection.interfaces.IGuicePostStartup;
 import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
-@Log
+@Log4j2
 public class EntityManagerPostStartup
         implements IGuicePostStartup<EntityManagerPostStartup>
 {
     private static boolean startPersistenceServices = true;
 
+    @Inject
+    private Vertx vertx;
+
     @Override
-    public List<CompletableFuture<Boolean>> postLoad()
+    public List<Future<Boolean>> postLoad()
     {
-        List<CompletableFuture<Boolean>> futures = new ArrayList<>();
-        if (startPersistenceServices)
-        {
-            PersistenceServicesModule.getConnectionModules()
-                                     .forEach((connection, module) -> {
-                                         CompletableFuture<Boolean> future = CompletableFuture.supplyAsync(() -> {
-                                             log.log(Level.INFO, "Starting up Entity Manager [" + connection.getPersistenceUnitName() + "]");
-                                             Key<PersistService> persistServiceKey = Key.get(PersistService.class, Names.named(connection.getPersistenceUnitName()));
-                                             PersistService persistService = IGuiceContext.get(persistServiceKey);
-                                             persistService.start();
-                                             log.log(Level.INFO, "Completed Entity Manager [" + connection.getPersistenceUnitName() + "]");
-                                             return true;
-                                         }, getExecutorService());
-                                         futures.add(future);
-                                     });
-        }
-        return futures;
+        Promise<Boolean> promise = Promise.promise();
+        PersistenceServicesModule.getConnectionModules()
+                .forEach((connection, module) -> {
+                    vertx.executeBlocking(() -> {
+                        log.info("Starting up Entity Manager [" + connection.getPersistenceUnitName() + "]");
+                        Key<PersistService> persistServiceKey = Key.get(PersistService.class, Names.named(connection.getPersistenceUnitName()));
+                        PersistService persistService = IGuiceContext.get(persistServiceKey);
+                        persistService.start();
+                        log.info("Completed Entity Manager [" + connection.getPersistenceUnitName() + "]");
+                        return true;
+                    }, false);
+                });
+        return List.of(promise.future());
     }
 
     /**
