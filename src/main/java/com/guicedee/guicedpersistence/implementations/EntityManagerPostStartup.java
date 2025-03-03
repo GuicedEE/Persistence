@@ -31,17 +31,23 @@ public class EntityManagerPostStartup
     public List<Future<Boolean>> postLoad()
     {
         Promise<Boolean> promise = Promise.promise();
+        List<Future<Boolean>> futures = new ArrayList<>();
         PersistenceServicesModule.getConnectionModules()
                 .forEach((connection, module) -> {
-                    vertx.executeBlocking(() -> {
+                    futures.add(vertx.executeBlocking(() -> {
                         log.info("Starting up Entity Manager [" + connection.getPersistenceUnitName() + "]");
                         Key<PersistService> persistServiceKey = Key.get(PersistService.class, Names.named(connection.getPersistenceUnitName()));
                         PersistService persistService = IGuiceContext.get(persistServiceKey);
                         persistService.start();
                         log.info("Completed Entity Manager [" + connection.getPersistenceUnitName() + "]");
                         return true;
-                    }, false);
+                    }, false));
                 });
+        Future.all(futures).onComplete(ar -> {
+            promise.complete();
+        }).onFailure(t -> {
+            promise.fail(t);
+        });
         return List.of(promise.future());
     }
 
@@ -66,6 +72,6 @@ public class EntityManagerPostStartup
     @Override
     public Integer sortOrder()
     {
-        return Integer.MIN_VALUE + 1;
+        return Integer.MIN_VALUE + 800;
     }
 }
