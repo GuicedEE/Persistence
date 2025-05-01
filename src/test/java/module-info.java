@@ -3,7 +3,7 @@ import com.guicedee.guicedpersistence.test.services.TestModule1;
 import com.guicedee.guicedpersistence.test.services.TestModule1JTA;
 
 module com.guicedee.guicedpersistence.test {
-	requires com.guicedee.guicedpersistence;
+	requires transitive com.guicedee.guicedpersistence;
 
 	requires org.junit.jupiter.api;
 	//requires org.slf4j;

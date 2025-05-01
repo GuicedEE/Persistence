@@ -21,8 +21,10 @@ import com.google.inject.name.Named;
 import com.google.inject.name.Names;
 import com.google.inject.persist.Transactional;
 import com.google.inject.persist.UnitOfWork;
+import com.guicedee.client.CallScoper;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
+import com.guicedee.guicedservlets.websockets.options.CallScopeProperties;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -71,12 +73,30 @@ class JtaLocalTxnInterceptor implements MethodInterceptor {
       unitOfWork = IGuiceContext.get(Key.get(UnitOfWork.class, Names.named(name)));
     }
 
-    // Should we start a unit of work?
-    if (!emProvider.isWorking()) {
-      emProvider.begin();
-      didWeStartWork.set(true);
+    CallScoper callScoper = IGuiceContext.get(CallScoper.class);
+    if(callScoper.isStartedScope())
+    {
+      CallScopeProperties csp = IGuiceContext.get(CallScopeProperties.class);
+      if (csp.getProperties().containsKey("startedOnThisThread"))
+      {
+        boolean startedOnThisThread = (boolean) csp.getProperties().get("startedOnThisThread");
+        didWeStartWork.set(startedOnThisThread);
+        if (startedOnThisThread && !emProvider.isWorking())
+        {
+          emProvider.begin();
+          //this is when we transfer transactions across threads
+        }
+      }
     }
 
+    {
+      // Should we start a unit of work?
+      if (!emProvider.isWorking())
+      {
+        emProvider.begin();
+        didWeStartWork.set(true);
+      }
+    }
     Transactional transactional = readTransactionMetadata(methodInvocation);
     EntityManager em = IGuiceContext.get(Key.get(EntityManager.class, Names.named(name)));
 
