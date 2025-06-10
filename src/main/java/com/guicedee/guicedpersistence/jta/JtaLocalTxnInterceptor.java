@@ -24,7 +24,7 @@ import com.google.inject.persist.UnitOfWork;
 import com.guicedee.client.CallScoper;
 import com.guicedee.client.IGuiceContext;
 import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
-import com.guicedee.guicedservlets.websockets.options.CallScopeProperties;
+import com.guicedee.client.CallScopeProperties;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import org.aopalliance.intercept.MethodInterceptor;
