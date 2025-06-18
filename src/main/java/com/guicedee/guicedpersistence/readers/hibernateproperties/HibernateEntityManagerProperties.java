@@ -1,6 +1,7 @@
 package com.guicedee.guicedpersistence.readers.hibernateproperties;
 
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -174,7 +175,7 @@ public class HibernateEntityManagerProperties
 
 	 */
 	@Override
-	public Map<String, String> processProperties(ParsedPersistenceXmlDescriptor persistenceUnit, Properties incomingProperties)
+	public Map<String, String> processProperties(PersistenceUnitDescriptor persistenceUnit, Properties incomingProperties)
 	{
 		Map<String, String> props = new HashMap<>();
 		HibernateEntityManagerProperties.getDefaultProperties()
@@ -199,7 +200,7 @@ public class HibernateEntityManagerProperties
 	 *
 	 * @return Map String   ,       String
 	 */
-	public Map<String, String> process(ParsedPersistenceXmlDescriptor persistenceUnit, Properties incomingProperties)
+	public Map<String, String> process(PersistenceUnitDescriptor persistenceUnit, Properties incomingProperties)
 	{
 		if (enableFetchOutsizeLadyLoad != null)
 		{
@@ -604,7 +605,7 @@ public class HibernateEntityManagerProperties
 	}
 	
 	@Override
-	public boolean applicable(ParsedPersistenceXmlDescriptor persistenceUnit)
+	public boolean applicable(PersistenceUnitDescriptor persistenceUnit)
 	{
 		return (persistenceUnit.getTransactionType() == null || "RESOURCE_LOCAL".equals(persistenceUnit.getTransactionType()
 						.toString()));

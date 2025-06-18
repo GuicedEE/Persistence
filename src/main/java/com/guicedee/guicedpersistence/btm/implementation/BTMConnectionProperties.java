@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -155,7 +156,7 @@ public class BTMConnectionProperties
 	}
 	
 	@Override
-	public Map<String, String> processProperties(ParsedPersistenceXmlDescriptor persistenceUnit, Properties properties)
+	public Map<String, String> processProperties(PersistenceUnitDescriptor persistenceUnit, Properties properties)
 	{
 		Map<String, String> props = new HashMap<>();
 		if (!Strings.isNullOrEmpty(persistenceUnit.getJtaDataSource().toString()))
@@ -187,7 +188,7 @@ public class BTMConnectionProperties
 	}
 	
 	@Override
-	public boolean applicable(ParsedPersistenceXmlDescriptor persistenceUnit)
+	public boolean applicable(PersistenceUnitDescriptor persistenceUnit)
 	{
 		return (!(persistenceUnit.getTransactionType() == null || "RESOURCE_LOCAL".equals(persistenceUnit.getTransactionType()
 						.toString()))

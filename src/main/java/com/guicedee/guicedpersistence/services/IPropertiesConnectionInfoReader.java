@@ -2,6 +2,7 @@ package com.guicedee.guicedpersistence.services;
 
 import com.guicedee.guicedpersistence.db.ConnectionBaseInfo;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
 
 import java.util.Properties;
@@ -24,5 +25,5 @@ public interface IPropertiesConnectionInfoReader
 	 *
 	 * @return ConnectionBaseInfo
 	 */
-	ConnectionBaseInfo populateConnectionBaseInfo(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties, ConnectionBaseInfo cbi);
+	ConnectionBaseInfo populateConnectionBaseInfo(PersistenceUnitDescriptor unit, Properties filteredProperties, ConnectionBaseInfo cbi);
 }

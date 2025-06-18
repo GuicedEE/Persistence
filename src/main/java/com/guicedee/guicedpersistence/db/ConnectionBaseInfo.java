@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.extern.java.Log;
 import org.hibernate.jpa.boot.internal.ParsedPersistenceXmlDescriptor;
+import org.hibernate.jpa.boot.spi.PersistenceUnitDescriptor;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -98,7 +99,7 @@ public abstract class ConnectionBaseInfo
 		serverInstanceNameProperty = "Instance";
 	}
 
-	public ConnectionBaseInfo populateFromProperties(ParsedPersistenceXmlDescriptor unit, Properties filteredProperties)
+	public ConnectionBaseInfo populateFromProperties(PersistenceUnitDescriptor unit, Properties filteredProperties)
 	{
 		for (IPropertiesConnectionInfoReader connectionInfoReader : IGuiceContext
 				                                                            .instance()
