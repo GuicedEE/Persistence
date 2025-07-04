@@ -4,12 +4,15 @@ import com.guicedee.guicedpersistence.btm.implementation.BTMConnectionProperties
 import com.guicedee.guicedpersistence.btm.implementation.BTMDestroyer;
 import com.guicedee.guicedpersistence.db.intercepters.JPADefaultConnectionBaseBuilder;
 import com.guicedee.guicedpersistence.implementations.GuicedConfigurator;
+import com.guicedee.guicedpersistence.implementations.TransactionalCallScope;
 import com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateDefaultConnectionBaseBuilder;
 import com.guicedee.guicedpersistence.readers.hibernateproperties.HibernateEntityManagerProperties;
 import com.guicedee.guicedpersistence.readers.systemproperties.SystemEnvironmentVariablesPropertiesReader;
 import com.guicedee.guicedpersistence.scanners.PersistenceServiceLoadersBinder;
 import com.guicedee.guicedpersistence.services.IPropertiesEntityManagerReader;
 import com.guicedee.guicedpersistence.services.PersistenceServicesModule;
+import com.guicedee.guicedservlets.servlets.services.IOnCallScopeEnter;
+import com.guicedee.guicedservlets.servlets.services.IOnCallScopeExit;
 
 module com.guicedee.guicedpersistence {
 	exports com.guicedee.guicedpersistence.db;
@@ -50,6 +53,9 @@ module com.guicedee.guicedpersistence {
 
 	provides com.guicedee.guicedinjection.interfaces.IGuicePostStartup with com.guicedee.guicedpersistence.implementations.EntityManagerPostStartup;
 	provides IGuiceModule with PersistenceServicesModule, PersistenceServiceLoadersBinder;
+
+	provides IOnCallScopeEnter with TransactionalCallScope;
+	provides IOnCallScopeExit with TransactionalCallScope;
 
 	provides IPropertiesEntityManagerReader with BTMConnectionProperties,
 			                                        HibernateEntityManagerProperties,

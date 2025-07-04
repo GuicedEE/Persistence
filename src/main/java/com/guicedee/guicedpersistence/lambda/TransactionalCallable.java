@@ -146,12 +146,14 @@ public class TransactionalCallable<T> implements Callable<T> {
     public T call() throws Exception {
         if (this.callable != null) {
             Transaction previousTransaction = null;
-
+            boolean started = false;
             try {
                 // Transfer the scope's context values if present
+
                 if (values != null && !values.isEmpty()) {
                     IGuiceContext.get(CallScoper.class).setValues(values);
                     IGuiceContext.get(CallScoper.class).enter();
+                    started = true;
                 }
 
                 //check if must transfer the transaction
@@ -183,8 +185,8 @@ public class TransactionalCallable<T> implements Callable<T> {
                         log.severe("Error restoring the previous transaction in call(): " + e.getMessage());
                     }
                 }
-
-                IGuiceContext.get(CallScoper.class).exit();
+                if(started)
+                    IGuiceContext.get(CallScoper.class).exit();
                 // Reset the internal state
                 values = null;
                 callable = null;

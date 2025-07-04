@@ -72,11 +72,11 @@ class JtaPersistService implements Provider<EntityManager>, UnitOfWork, PersistS
 
   @Override
   public void begin() {
-    Preconditions.checkState(
+    /*Preconditions.checkState(
         null == entityManager.get(),
         "Work already begun on this thread. Looks like you have called UnitOfWork.begin() twice"
             + " without a balancing call to end() in between.");
-
+*/
     entityManager.set(emFactory.createEntityManager());
   }
 
