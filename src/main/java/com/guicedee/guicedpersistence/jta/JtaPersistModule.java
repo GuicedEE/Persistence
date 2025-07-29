@@ -105,7 +105,7 @@ public final class JtaPersistModule extends PersistModule
         }
         else if (defaultSet && connectionBaseInfo.isDefaultConnection())
         {
-            throw new InvalidConnectionInfoException("Cannot have two database connection information set as default - " + jpaUnit + " - " + connectionBaseInfo);
+           // throw new InvalidConnectionInfoException("Cannot have two database connection information set as default - " + jpaUnit + " - " + connectionBaseInfo);
         }
         // Bind dynamic finders.
         for (Class<?> finder : dynamicFinders)
